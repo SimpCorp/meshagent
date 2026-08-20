@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No Mesh — Campus Feed</title>
+  <title>No Mesh — Direct Campus Wire</title>
   
-  <!-- Modern Clean Typography (Inter + Space Mono for accents) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -52,12 +51,12 @@
 <body class="bg-lightBg dark:bg-darkBg text-neutral-900 dark:text-neutral-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
   <!-- TOP APP BAR -->
-  <header class="w-full max-w-4xl mx-auto p-4 flex items-center justify-between z-30">
+  <header class="w-full max-w-5xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div class="w-2.5 h-2.5 rounded-full bg-accent"></div>
       <div class="flex flex-col">
         <h1 class="text-sm font-semibold tracking-tight">No Mesh</h1>
-        <span class="text-[10px] text-neutral-400 font-mono">Campus Local Feed</span>
+        <span class="text-[10px] text-neutral-400 font-mono">Peer-to-Peer Campus DMs</span>
       </div>
     </div>
 
@@ -75,30 +74,28 @@
 
       <!-- Action Button -->
       <button id="navLaunchBtn" onclick="openAuthModal()" class="px-4 py-1.5 rounded-full bg-accent text-white text-xs font-semibold hover:opacity-90 transition">
-        Join Chat
+        Enter Terminal
       </button>
     </div>
   </header>
 
-  <!-- ==================== LANDING VIEW ==================== -->
-  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-12">
-    
-    <!-- Hero Header -->
+  <!-- ==================== VIEW 1: LANDING ==================== -->
+  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-12">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 text-xs font-medium text-neutral-500 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        Direct Campus Communication
+        Direct 1-on-1 Ephemeral Chat
       </div>
       <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-950 dark:text-white">
-        Simple. Secure.<br>Private Campus Chat.
+        Direct Campus Messaging.<br>Gone on Tab Close.
       </h2>
       <p class="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
-        A fast, lightweight space to chat with students across campus. End-to-end encrypted in your browser, no tracking, and no app installs needed.
+        Connect directly with peers on campus. Active users update in real-time. Messages stay only in your current session and vanish when the tab is closed.
       </p>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
         <button onclick="openAuthModal()" class="px-6 py-3 rounded-2xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold hover:opacity-90 transition shadow-md">
-          Start Chatting →
+          Start Session →
         </button>
         <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-medium text-neutral-600 dark:text-neutral-300 transition">
           Open Source Code
@@ -108,17 +105,16 @@
 
     <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-      
       <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs font-mono text-accent font-semibold">01</span>
-        <h3 class="text-sm font-semibold">Browser-Level Encryption</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">All messages are encrypted using the Web Crypto API on your device before transmission.</p>
+        <h3 class="text-sm font-semibold">Live Peer Presence</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">See all currently active students across campus. Search, select, and initiate direct private chats.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs font-mono text-accent font-semibold">02</span>
-        <h3 class="text-sm font-semibold">Zero Persistent Logs</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Real-time broadcast streams run in-memory. Transmissions leave no central cloud footprint.</p>
+        <h3 class="text-sm font-semibold">Ephemeral Storage</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Chats are stored in session memory only while your tab stays open. Zero database logs.</p>
       </div>
 
       <div onclick="openSourceNotice()" class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 transition group">
@@ -126,41 +122,80 @@
           <span class="text-xs font-mono text-accent font-semibold">03</span>
           <span class="text-xs text-neutral-400 group-hover:translate-x-0.5 transition">↗</span>
         </div>
-        <h3 class="text-sm font-semibold">Open Source & Auditable</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Transparent source code. Tap to request Git repository access or report bugs.</p>
+        <h3 class="text-sm font-semibold">Open Source Auditing</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Complete transparent logic. Tap to inspect source code or report issues.</p>
       </div>
-
     </div>
   </main>
 
-  <!-- ==================== CHAT VIEW ==================== -->
-  <main id="chatView" class="hidden w-full max-w-lg mx-auto h-[84vh] flex flex-col bg-white dark:bg-darkCard sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl relative overflow-hidden my-auto">
+  <!-- ==================== VIEW 2: SPLIT DM TERMINAL ==================== -->
+  <main id="chatView" class="hidden w-full max-w-5xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl relative overflow-hidden my-auto">
     
-    <!-- Chat Header -->
-    <div class="p-4 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass-nav bg-white/50 dark:bg-darkCard/50">
-      <div>
-        <p id="userStatusTag" class="text-xs font-semibold text-neutral-900 dark:text-neutral-100">@User</p>
-        <p class="text-[10px] text-neutral-400 font-mono">Live Session Active</p>
+    <!-- LEFT SIDEBAR: Active Users & Search -->
+    <section class="w-full sm:w-80 border-r border-neutral-200 dark:border-neutral-800 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30">
+      
+      <!-- Search and Header -->
+      <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase font-mono tracking-wide">Active Peers</span>
+          <span id="activeCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
+        </div>
+        <input id="userSearchInput" type="text" placeholder="Search by name or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-neutral-400">
       </div>
-      <button onclick="disconnectSession()" class="text-xs font-medium text-neutral-400 hover:text-accent transition">Leave</button>
-    </div>
 
-    <!-- Messages -->
-    <div id="chatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
-      <div class="text-center py-3">
-        <span class="text-[11px] font-mono text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800">
-          🔒 End-to-end encrypted session
+      <!-- Users List -->
+      <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll">
+        <div class="p-4 text-center text-xs text-neutral-400 font-mono">
+          Waiting for peers to connect...
+        </div>
+      </div>
+
+      <!-- Current Profile Footer -->
+      <div class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 truncate">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
+          <span id="myUsernameDisplay" class="font-semibold truncate">@me</span>
+        </div>
+        <button onclick="disconnectSession()" class="text-neutral-400 hover:text-accent font-medium text-[11px] shrink-0">Leave</button>
+      </div>
+    </section>
+
+    <!-- RIGHT SECTION: 1-on-1 DM Chat Pane -->
+    <section class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard" id="chatPane">
+      
+      <!-- DM Header -->
+      <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass-nav">
+        <div class="flex items-center gap-2.5">
+          <button onclick="closeChatMobile()" class="sm:hidden text-xs text-neutral-400">←</button>
+          <div>
+            <p id="activeChatPeerName" class="text-xs font-bold text-neutral-900 dark:text-white">Select a peer to chat</p>
+            <p id="activeChatPeerMeta" class="text-[10px] text-neutral-400 font-mono">No active session</p>
+          </div>
+        </div>
+        <span class="text-[10px] font-mono text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full border border-neutral-200 dark:border-neutral-800">
+          Ephemeral Session
         </span>
       </div>
-    </div>
 
-    <!-- Chat Input Form -->
-    <form id="chatForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex gap-2 glass-nav bg-white/50 dark:bg-darkCard/50">
-      <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off" class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent">
-      <button type="submit" class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90">
-        Send
-      </button>
-    </form>
+      <!-- Message History Scroll Area -->
+      <div id="dmChatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
+        <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
+          <div class="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center text-xs font-mono text-neutral-400">
+            DM
+          </div>
+          <p class="text-xs text-neutral-400 max-w-xs">Select any active student from the left panel to begin a private conversation.</p>
+        </div>
+      </div>
+
+      <!-- Message Input Form -->
+      <form id="dmForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex gap-2 glass-nav">
+        <input id="dmInput" type="text" placeholder="Type direct message..." autocomplete="off" disabled class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent disabled:opacity-50">
+        <button id="dmSendBtn" type="submit" disabled class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90 disabled:opacity-40">
+          Send
+        </button>
+      </form>
+
+    </section>
   </main>
 
   <!-- ==================== ONBOARDING MODAL ==================== -->
@@ -234,7 +269,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold">Open Source & Audits</h3>
       <p class="text-xs text-neutral-500 leading-relaxed">
-        The cryptographic implementation, peer relay protocols, and client code are available for review.
+        The direct messaging protocol and presence mesh are open for audit.
       </p>
       <div class="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-mono font-medium select-all">
         simpcorp@proton.me
@@ -246,13 +281,12 @@
   </div>
 
   <!-- PROMINENT DEVELOPER FOOTER -->
-  <footer class="w-full max-w-4xl mx-auto p-4 border-t border-neutral-200 dark:border-neutral-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
+  <footer class="w-full max-w-5xl mx-auto p-4 border-t border-neutral-200 dark:border-neutral-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-neutral-400 font-mono">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Live Node: Operational</span>
+      <span>Session Memory Active (Wipes on Exit)</span>
     </div>
 
-    <!-- Visible Framed Developer Badge -->
     <div class="px-3.5 py-1.5 rounded-full bg-neutral-200/60 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-300 font-medium flex items-center gap-1.5 shadow-sm">
       <span class="text-accent font-mono text-[11px]">●</span>
       <span>Developed by a Jobless B.COM 1st year student <strong class="text-neutral-900 dark:text-white font-semibold">(SimpCorp)</strong></span>
@@ -269,15 +303,19 @@
     let selectedYear = "";
     let isLoginMode = false;
     let currentUser = null;
+    let activeChatUser = null;
     let clientIP = "";
     let selectedWifi = "StudentOne";
     let channel = null;
+    let onlineUsersMap = new Map();
 
+    // Fetch IP
     fetch("https://api64.ipify.org?format=json")
-      .then(res => res.json())
+      .then(r => r.json())
       .then(d => clientIP = d.ip)
       .catch(() => clientIP = "lan_client");
 
+    // UI View Switching
     function showLandingView() {
       document.getElementById("landingView").classList.remove("hidden");
       document.getElementById("chatView").classList.add("hidden");
@@ -288,22 +326,12 @@
       document.getElementById("chatView").classList.remove("hidden");
     }
 
-    function openAuthModal() {
-      document.getElementById("authModal").classList.remove("hidden");
-    }
+    function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
+    function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
+    function openSourceNotice() { document.getElementById("sourceModal").classList.remove("hidden"); }
+    function closeSourceModal() { document.getElementById("sourceModal").classList.add("hidden"); }
 
-    function closeAuthModal() {
-      document.getElementById("authModal").classList.add("hidden");
-    }
-
-    function openSourceNotice() {
-      document.getElementById("sourceModal").classList.remove("hidden");
-    }
-
-    function closeSourceModal() {
-      document.getElementById("sourceModal").classList.add("hidden");
-    }
-
+    // Step Nav
     function selectCourse(c) {
       selectedCourse = c;
       document.getElementById("stepCourse").classList.add("hidden");
@@ -327,10 +355,11 @@
       isLoginMode = true;
       document.getElementById("stepCourse").classList.add("hidden");
       document.getElementById("stepAuth").classList.remove("hidden");
-      document.getElementById("authHeading").innerText = "Account Sign In";
-      document.getElementById("authActionBtn").innerText = "Sign In";
+      document.getElementById("authHeading").innerText = "Sign In";
+      document.getElementById("authActionBtn").innerText = "Authenticate";
     }
 
+    // Auth
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
@@ -350,18 +379,18 @@
           err.classList.remove("hidden");
           return;
         }
-        enterChat(data);
+        initUserSession(data);
       } else {
         const { data: ipCheck } = await sb.from("campus_users").select("username").eq("registration_ip", clientIP).maybeSingle();
         if (ipCheck) {
-          err.innerText = "An account is already linked to this network/device. Please Sign In.";
+          err.innerText = "Account already exists from this IP. Please Sign In.";
           err.classList.remove("hidden");
           return;
         }
 
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
         if (userCheck) {
-          err.innerText = "Username already taken. Please choose another.";
+          err.innerText = "Username taken. Try another.";
           err.classList.remove("hidden");
           return;
         }
@@ -376,73 +405,225 @@
         }]).select().single();
 
         if (insErr) {
-          err.innerText = "Registration failed. Try again.";
+          err.innerText = "Registration failed.";
           err.classList.remove("hidden");
           return;
         }
-        enterChat(newUser);
+        initUserSession(newUser);
       }
     }
 
-    function enterChat(userData) {
+    // Realtime Presence & DM Setup
+    function initUserSession(userData) {
       currentUser = userData;
       closeAuthModal();
-      document.getElementById("userStatusTag").innerText = `@${currentUser.username} • ${currentUser.course} (${currentUser.year})`;
       showChatView();
+      document.getElementById("myUsernameDisplay").innerText = `@${currentUser.username} (${currentUser.course})`;
 
-      channel = sb.channel("nomesh_feed", { config: { broadcast: { self: false } } });
-      channel.on("broadcast", { event: "msg" }, ({ payload }) => renderMsg(payload, false));
-      channel.subscribe();
+      // Join Presence + Broadcast Channel
+      channel = sb.channel("nomesh_campus_mesh", {
+        config: {
+          presence: { key: currentUser.username },
+          broadcast: { self: false }
+        }
+      });
+
+      // Track online presence
+      channel
+        .on("presence", { event: "sync" }, () => {
+          const state = channel.presenceState();
+          onlineUsersMap.clear();
+
+          Object.keys(state).forEach((key) => {
+            if (key !== currentUser.username) {
+              const meta = state[key][0];
+              onlineUsersMap.set(key, meta);
+            }
+          });
+          renderUsersList();
+        })
+        // Listen for direct messages
+        .on("broadcast", { event: "direct_msg" }, ({ payload }) => {
+          if (payload.recipient === currentUser.username) {
+            saveMessageToSession(payload.sender, payload);
+            if (activeChatUser && activeChatUser.username === payload.sender) {
+              renderDmBubble(payload, false);
+            } else {
+              renderUsersList(); // Update unread indicator
+            }
+          }
+        })
+        .subscribe(async (status) => {
+          if (status === "SUBSCRIBED") {
+            await channel.track({
+              username: currentUser.username,
+              course: currentUser.course,
+              year: currentUser.year,
+              wifi: selectedWifi
+            });
+          }
+        });
     }
 
-    function disconnectSession() {
-      if (channel) sb.removeChannel(channel);
-      currentUser = null;
-      showLandingView();
+    // User Directory Rendering
+    function renderUsersList() {
+      const container = document.getElementById("usersList");
+      const filter = document.getElementById("userSearchInput").value.toLowerCase();
+      const badge = document.getElementById("activeCountBadge");
+      
+      const peers = Array.from(onlineUsersMap.values()).filter(p => 
+        p.username.toLowerCase().includes(filter) || p.course.toLowerCase().includes(filter)
+      );
+
+      badge.innerText = `${onlineUsersMap.size} Online`;
+
+      if (peers.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-neutral-400 font-mono">No active peers matching.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      peers.forEach(peer => {
+        const isSelected = activeChatUser && activeChatUser.username === peer.username;
+        const btn = document.createElement("button");
+        btn.className = `w-full text-left p-2.5 rounded-2xl flex items-center justify-between transition ${
+          isSelected 
+            ? "bg-neutral-200 dark:bg-neutral-800" 
+            : "hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
+        }`;
+        
+        btn.innerHTML = `
+          <div class="flex items-center gap-2.5 truncate">
+            <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
+            <div class="truncate">
+              <p class="text-xs font-semibold text-neutral-900 dark:text-white truncate">@${peer.username}</p>
+              <p class="text-[10px] text-neutral-400 font-mono truncate">${peer.course} • ${peer.year}</p>
+            </div>
+          </div>
+          <span class="text-[9px] font-mono text-neutral-400 bg-neutral-200/50 dark:bg-neutral-800 px-1.5 py-0.5 rounded">${peer.wifi}</span>
+        `;
+
+        btn.onclick = () => selectPeerForChat(peer);
+        container.appendChild(btn);
+      });
     }
 
-    const chatArea = document.getElementById("chatArea");
-    function renderMsg(data, isSelf) {
+    function filterUsers() {
+      renderUsersList();
+    }
+
+    // Switch DM conversation
+    function selectPeerForChat(peer) {
+      activeChatUser = peer;
+      renderUsersList();
+
+      document.getElementById("chatPane").classList.remove("hidden");
+      document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
+      document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${peer.wifi}]`;
+      
+      const input = document.getElementById("dmInput");
+      const btn = document.getElementById("dmSendBtn");
+      input.removeAttribute("disabled");
+      btn.removeAttribute("disabled");
+      input.placeholder = `Message @${peer.username}...`;
+
+      loadConversationFromSession(peer.username);
+    }
+
+    function closeChatMobile() {
+      document.getElementById("chatPane").classList.add("hidden");
+      activeChatUser = null;
+      renderUsersList();
+    }
+
+    // Session-only Storage Handling (Wiped on tab close)
+    function getSessionKey(peerName) {
+      return `chat_${currentUser.username}_with_${peerName}`;
+    }
+
+    function saveMessageToSession(peerName, messageObj) {
+      const key = getSessionKey(peerName);
+      const history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      history.push(messageObj);
+      sessionStorage.setItem(key, JSON.stringify(history));
+    }
+
+    function loadConversationFromSession(peerName) {
+      const area = document.getElementById("dmChatArea");
+      area.innerHTML = "";
+
+      const key = getSessionKey(peerName);
+      const history = JSON.parse(sessionStorage.getItem(key) || "[]");
+
+      if (history.length === 0) {
+        area.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-1">
+            <span class="text-xs font-semibold">Beginning of session with @${peerName}</span>
+            <p class="text-[10px] text-neutral-400 font-mono">Chats remain intact until you close the tab.</p>
+          </div>
+        `;
+        return;
+      }
+
+      history.forEach(msg => {
+        renderDmBubble(msg, msg.sender === currentUser.username);
+      });
+    }
+
+    // DM Rendering
+    function renderDmBubble(msg, isSelf) {
+      const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
-      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1`;
-
-      const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[10px] text-neutral-400 px-1 font-mono";
-      meta.innerHTML = `<span>${data.user}</span> <span>(${data.course})</span> <span class="text-accent">• ${data.wifi}</span>`;
+      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-0.5`;
 
       const bubble = document.createElement("div");
-      bubble.className = `max-w-[85%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed ${
+      bubble.className = `max-w-[80%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed ${
         isSelf 
           ? "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-br-none shadow-sm" 
           : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
       }`;
-      bubble.textContent = data.text;
+      bubble.textContent = msg.text;
 
-      wrap.appendChild(meta);
       wrap.appendChild(bubble);
-      chatArea.appendChild(wrap);
-      chatArea.scrollTop = chatArea.scrollHeight;
+      area.appendChild(wrap);
+      area.scrollTop = area.scrollHeight;
     }
 
-    document.getElementById("chatForm").addEventListener("submit", (e) => {
+    // Send DM
+    document.getElementById("dmForm").addEventListener("submit", (e) => {
       e.preventDefault();
-      const inp = document.getElementById("messageInput");
+      const inp = document.getElementById("dmInput");
       const text = inp.value.trim();
-      if (!text || !channel) return;
+      if (!text || !activeChatUser || !channel) return;
 
-      const payload = {
-        user: currentUser.username,
-        course: currentUser.course,
-        year: currentUser.year,
+      const messagePayload = {
+        sender: currentUser.username,
+        recipient: activeChatUser.username,
+        text: text,
         wifi: selectedWifi,
-        text: text
+        timestamp: Date.now()
       };
 
       inp.value = "";
-      renderMsg(payload, true);
-      channel.send({ type: "broadcast", event: "msg", payload });
+      saveMessageToSession(activeChatUser.username, messagePayload);
+      renderDmBubble(messagePayload, true);
+
+      channel.send({
+        type: "broadcast",
+        event: "direct_msg",
+        payload: messagePayload
+      });
     });
 
+    function disconnectSession() {
+      if (channel) sb.removeChannel(channel);
+      sessionStorage.clear();
+      currentUser = null;
+      activeChatUser = null;
+      showLandingView();
+    }
+
+    // Wi-Fi Switcher
     const wifiOneBtn = document.getElementById("wifiOneBtn");
     const wifiTwoBtn = document.getElementById("wifiTwoBtn");
 
@@ -458,6 +639,7 @@
       wifiOneBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
     });
 
+    // Theme Toggle
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
