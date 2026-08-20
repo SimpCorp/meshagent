@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAMPUS // LINK</title>
+  
+  <!-- Fonts: Space Grotesk & DotGothic16 for Nothing OS look + Inter for Apple cleanliness -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace'],
+            dot: ['"DotGothic16"', 'monospace']
+          },
+          colors: {
+            nothing: {
+              red: '#D71921',
+              dark: '#0a0a0a',
+              darkcard: '#121212',
+              light: '#f5f5f7',
+              lightcard: '#ffffff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .dot-matrix {
+      font-family: 'DotGothic16', monospace;
+      letter-spacing: 0.05em;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(150, 150, 150, 0.2);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-nothing-light dark:bg-nothing-dark text-neutral-900 dark:text-neutral-100 transition-colors duration-300 font-sans min-h-screen flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden select-none">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-lg h-screen sm:h-[92vh] flex flex-col bg-nothing-lightcard dark:bg-nothing-darkcard sm:rounded-3xl border-0 sm:border border-neutral-200 dark:border-neutral-800 shadow-2xl relative overflow-hidden">
+    
+    <!-- Top Header -->
+    <header class="p-4 border-b border-neutral-200 dark:border-neutral-800/80 glass bg-white/60 dark:bg-neutral-950/60 z-30 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-2.5 h-2.5 rounded-full bg-nothing-red animate-pulse"></div>
+        <div>
+          <h1 class="text-xs font-mono font-bold tracking-widest uppercase dark:text-neutral-200">CAMPUS // LINK</h1>
+          <p id="userStatusTag" class="text-[10px] text-neutral-500 font-mono tracking-tighter">DISCONNECTED</p>
+        </div>
+      </div>
+
+      <!-- Controls: Wi-Fi Selector & Theme Toggle -->
+      <div class="flex items-center gap-2">
+        <!-- Wi-Fi Toggle Pill -->
+        <div class="flex p-0.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-[10px] font-mono">
+          <button id="wifiOneBtn" class="px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold">StudentOne</button>
+          <button id="wifiTwoBtn" class="px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white">StudentTwo</button>
+        </div>
+
+        <!-- Light / Dark Switch -->
+        <button id="themeToggle" class="w-8 h-8 rounded-full border border-neutral-200 dark:border-neutral-800 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-900 transition">
+          <span id="themeIcon" class="text-xs">🌓</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Viewport -->
+    <main id="chatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll relative">
+      <div class="text-center py-6">
+        <div class="inline-block dot-matrix text-xs px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-400 bg-neutral-50 dark:bg-neutral-900">
+          ● END-TO-END ENCRYPTED CAMPUS NODE ●
+        </div>
+      </div>
+    </main>
+
+    <!-- Chat Message Input -->
+    <footer class="p-3 border-t border-neutral-200 dark:border-neutral-800/80 glass bg-white/60 dark:bg-neutral-950/60 z-20">
+      <form id="chatForm" class="flex gap-2">
+        <input id="messageInput" type="text" placeholder="Type a transmission..." autocomplete="off" disabled class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-nothing-red dark:focus:border-nothing-red transition disabled:opacity-50 font-sans">
+        <button id="sendBtn" type="submit" disabled class="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-mono text-xs px-5 py-3 rounded-2xl transition hover:opacity-90 disabled:opacity-40">
+          SEND
+        </button>
+      </form>
+    </footer>
+
+    <!-- Watermark Badge -->
+    <div class="px-4 py-1 bg-neutral-100 dark:bg-neutral-900/40 border-t border-neutral-200 dark:border-neutral-800/50 flex justify-between items-center text-[9px] font-mono text-neutral-400">
+      <span>CAMPUS MESH v1.0</span>
+      <span class="dot-matrix tracking-wider">Developed by a Jobless B.COM 1st year student (SimpCorp)</span>
+    </div>
+
+    <!-- Multi-Step Onboarding Modal -->
+    <div id="authModal" class="absolute inset-0 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl z-50 flex flex-col justify-center p-6 transition-all duration-300">
+      
+      <!-- STEP 1: Course Selection -->
+      <div id="stepCourse" class="space-y-4">
+        <span class="text-xs font-mono text-nothing-red font-semibold">01 // SELECT PROGRAM</span>
+        <h2 class="text-2xl font-bold tracking-tight">Which course are you in?</h2>
+        <div class="grid grid-cols-1 gap-2 pt-2">
+          <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition font-medium flex justify-between items-center">
+            <span>BCom (Hons)</span>
+            <span class="font-mono text-xs text-neutral-400">→</span>
+          </button>
+          <button onclick="selectCourse('BBA')" class="w-full text-left p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition font-medium flex justify-between items-center">
+            <span>BBA</span>
+            <span class="font-mono text-xs text-neutral-400">→</span>
+          </button>
+          <button onclick="selectCourse('ADS')" class="w-full text-left p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition font-medium flex justify-between items-center">
+            <span>ADS</span>
+            <span class="font-mono text-xs text-neutral-400">→</span>
+          </button>
+          <button onclick="selectCourse('B.A ECO')" class="w-full text-left p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition font-medium flex justify-between items-center">
+            <span>B.A ECO</span>
+            <span class="font-mono text-xs text-neutral-400">→</span>
+          </button>
+          <button onclick="selectCourse('B.S F.E.D.A')" class="w-full text-left p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition font-medium flex justify-between items-center">
+            <span>B.S F.E.D.A</span>
+            <span class="font-mono text-xs text-neutral-400">→</span>
+          </button>
+        </div>
+        <p class="text-center pt-3 text-xs text-neutral-500 cursor-pointer hover:underline font-mono" onclick="toggleToLogin()">Already have an account? Login here</p>
+      </div>
+
+      <!-- STEP 2: Year Selection -->
+      <div id="stepYear" class="space-y-4 hidden">
+        <span class="text-xs font-mono text-nothing-red font-semibold">02 // ACADEMIC STAGE</span>
+        <h2 class="text-2xl font-bold tracking-tight">Select your academic year</h2>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button onclick="selectYear('1st')" class="p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-center font-bold text-lg">1st Year</button>
+          <button onclick="selectYear('2nd')" class="p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-center font-bold text-lg">2nd Year</button>
+          <button onclick="selectYear('3rd')" class="p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-center font-bold text-lg">3rd Year</button>
+          <button onclick="selectYear('4th')" class="p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-center font-bold text-lg">4th Year</button>
+        </div>
+        <button onclick="backToStep('stepCourse')" class="text-xs font-mono text-neutral-500 hover:text-neutral-900 dark:hover:text-white pt-2">← Back to Course</button>
+      </div>
+
+      <!-- STEP 3: Identity & Password -->
+      <div id="stepAuth" class="space-y-4 hidden">
+        <span class="text-xs font-mono text-nothing-red font-semibold">03 // IDENTITY & SECURITY</span>
+        <h2 class="text-2xl font-bold tracking-tight" id="authHeading">Create your handle</h2>
+        <div class="space-y-3 pt-1">
+          <div>
+            <label class="text-[11px] font-mono uppercase text-neutral-400">Unique Nickname</label>
+            <input id="inputUser" type="text" placeholder="e.g. shadow_monarch" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:outline-none focus:border-neutral-500">
+          </div>
+          <div>
+            <label class="text-[11px] font-mono uppercase text-neutral-400">Password</label>
+            <input id="inputPass" type="password" placeholder="Used for future logins" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:outline-none focus:border-neutral-500">
+          </div>
+          <p id="authError" class="text-xs text-nothing-red font-mono hidden"></p>
+        </div>
+        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3.5 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-bold rounded-2xl transition hover:opacity-90 text-sm">
+          Initialize Account
+        </button>
+        <button onclick="backToStep('stepYear')" id="authBackBtn" class="text-xs font-mono text-neutral-500 hover:text-neutral-900 dark:hover:text-white">← Back to Year</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- SUPABASE CONFIGURATION ---
+    const SUPABASE_URL = "https://ueimmuwkscafwktvbmne.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_NzPNcjcgZMP2tzEKTYmaoA_IEWB3FuJ";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // State
+    let selectedCourse = "";
+    let selectedYear = "";
+    let isLoginMode = false;
+    let currentUser = null;
+    let clientIP = "";
+    let selectedWifi = "StudentOne";
+    let channel = null;
+
+    // Fetch Public IP on startup
+    fetch("https://api64.ipify.org?format=json")
+      .then(res => res.json())
+      .then(data => { clientIP = data.ip; })
+      .catch(() => { clientIP = "unknown-lan-ip"; });
+
+    // Step Navigation
+    function selectCourse(course) {
+      selectedCourse = course;
+      document.getElementById("stepCourse").classList.add("hidden");
+      document.getElementById("stepYear").classList.remove("hidden");
+    }
+
+    function selectYear(year) {
+      selectedYear = year;
+      document.getElementById("stepYear").classList.add("hidden");
+      document.getElementById("stepAuth").classList.remove("hidden");
+    }
+
+    function backToStep(stepId) {
+      document.getElementById("stepCourse").classList.add("hidden");
+      document.getElementById("stepYear").classList.add("hidden");
+      document.getElementById("stepAuth").classList.add("hidden");
+      document.getElementById(stepId).classList.remove("hidden");
+    }
+
+    function toggleToLogin() {
+      isLoginMode = true;
+      document.getElementById("stepCourse").classList.add("hidden");
+      document.getElementById("stepAuth").classList.remove("hidden");
+      document.getElementById("authHeading").innerText = "Welcome back";
+      document.getElementById("authActionBtn").innerText = "Authenticate & Enter";
+      document.getElementById("authBackBtn").classList.add("hidden");
+    }
+
+    // Authentication (Registration / Login)
+    async function submitAuth() {
+      const u = document.getElementById("inputUser").value.trim();
+      const p = document.getElementById("inputPass").value.trim();
+      const errBox = document.getElementById("authError");
+      errBox.classList.add("hidden");
+
+      if (!u || !p) {
+        errBox.innerText = "Please fill in both fields.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+
+      if (isLoginMode) {
+        // LOGIN
+        const { data, error } = await sb
+          .from("campus_users")
+          .select("*")
+          .eq("username", u)
+          .eq("password", p)
+          .maybeSingle();
+
+        if (error || !data) {
+          errBox.innerText = "Invalid username or password.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+        completeLogin(data);
+      } else {
+        // REGISTRATION: Check if IP already created an account
+        const { data: ipCheck } = await sb
+          .from("campus_users")
+          .select("username")
+          .eq("registration_ip", clientIP)
+          .maybeSingle();
+
+        if (ipCheck) {
+          errBox.innerText = "Account already registered from this IP. Please log in.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+
+        // Check if username is taken
+        const { data: userCheck } = await sb
+          .from("campus_users")
+          .select("username")
+          .eq("username", u)
+          .maybeSingle();
+
+        if (userCheck) {
+          errBox.innerText = "Handle already taken. Choose another.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+
+        // Insert new user
+        const { data: newUser, error: insertErr } = await sb
+          .from("campus_users")
+          .insert([{
+            username: u,
+            password: p,
+            course: selectedCourse,
+            year: selectedYear,
+            registration_ip: clientIP,
+            wifi_network: selectedWifi
+          }])
+          .select()
+          .single();
+
+        if (insertErr) {
+          errBox.innerText = "Registration failed. Try again.";
+          errBox.classList.remove("hidden");
+          return;
+        }
+        completeLogin(newUser);
+      }
+    }
+
+    function completeLogin(userData) {
+      currentUser = userData;
+      document.getElementById("authModal").classList.add("hidden");
+      document.getElementById("userStatusTag").innerText = `@${currentUser.username} [${currentUser.course} • ${currentUser.year}]`;
+      document.getElementById("messageInput").removeAttribute("disabled");
+      document.getElementById("sendBtn").removeAttribute("disabled");
+      connectToRealtime();
+    }
+
+    // Realtime Broadcast Channel
+    function connectToRealtime() {
+      channel = sb.channel("campus_global_feed", {
+        config: { broadcast: { self: false } }
+      });
+
+      channel
+        .on("broadcast", { event: "new_msg" }, ({ payload }) => {
+          renderBubble(payload, false);
+        })
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") {
+            renderSystemNotice(`Connected to campus mesh.`);
+          }
+        });
+    }
+
+    // Messaging UI
+    const chatArea = document.getElementById("chatArea");
+
+    function renderBubble(data, isSelf) {
+      const wrap = document.createElement("div");
+      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 animate-fade-in`;
+
+      const meta = document.createElement("div");
+      meta.className = "flex items-center gap-1.5 text-[10px] font-mono text-neutral-400 px-1";
+      meta.innerHTML = `<span>${data.user}</span> <span class="text-neutral-500">(${data.course} ${data.year})</span> <span class="text-nothing-red text-[8px]">● ${data.wifi}</span>`;
+
+      const bubble = document.createElement("div");
+      bubble.className = `max-w-[85%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+        isSelf 
+          ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-br-none shadow-sm" 
+          : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
+      }`;
+      bubble.textContent = data.text;
+
+      wrap.appendChild(meta);
+      wrap.appendChild(bubble);
+      chatArea.appendChild(wrap);
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    function renderSystemNotice(msg) {
+      const notice = document.createElement("div");
+      notice.className = "text-center text-[10px] font-mono text-neutral-400 py-1";
+      notice.textContent = `// ${msg}`;
+      chatArea.appendChild(notice);
+    }
+
+    document.getElementById("chatForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const inp = document.getElementById("messageInput");
+      const text = inp.value.trim();
+      if (!text || !channel) return;
+
+      const payload = {
+        user: currentUser.username,
+        course: currentUser.course,
+        year: currentUser.year,
+        wifi: selectedWifi,
+        text: text
+      };
+
+      inp.value = "";
+      renderBubble(payload, true);
+
+      channel.send({
+        type: "broadcast",
+        event: "new_msg",
+        payload: payload
+      });
+    });
+
+    // Wi-Fi Switcher Buttons
+    const wifiOneBtn = document.getElementById("wifiOneBtn");
+    const wifiTwoBtn = document.getElementById("wifiTwoBtn");
+
+    wifiOneBtn.addEventListener("click", () => {
+      selectedWifi = "StudentOne";
+      wifiOneBtn.className = "px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold";
+      wifiTwoBtn.className = "px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white";
+    });
+
+    wifiTwoBtn.addEventListener("click", () => {
+      selectedWifi = "StudentTwo";
+      wifiTwoBtn.className = "px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold";
+      wifiOneBtn.className = "px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white";
+    });
+
+    // Theme Toggle
+    const themeBtn = document.getElementById("themeToggle");
+    const htmlElem = document.documentElement;
+
+    themeBtn.addEventListener("click", () => {
+      if (htmlElem.classList.contains("dark")) {
+        htmlElem.classList.remove("dark");
+        document.getElementById("themeIcon").innerText = "☀️";
+      } else {
+        htmlElem.classList.add("dark");
+        document.getElementById("themeIcon").innerText = "🌓";
+      }
+    });
+  </script>
+</body>
+</html>
