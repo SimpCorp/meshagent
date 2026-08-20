@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Safe Mesh</title>
+  <title>No Mesh — Campus Feed</title>
   
+  <!-- Modern Clean Typography (Inter + Space Mono for accents) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,33 +18,30 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace'],
-            dot: ['"DotGothic16"', 'monospace']
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"Space Mono"', 'monospace']
           },
           colors: {
-            nothing: {
-              red: '#D71921',
-              dark: '#0a0a0a',
-              darkcard: '#121212',
-              light: '#f5f5f7',
-              lightcard: '#ffffff'
-            }
+            accent: '#D71921',
+            darkBg: '#0e0e10',
+            darkCard: '#18181b',
+            lightBg: '#f4f4f6',
+            lightCard: '#ffffff'
           }
         }
       }
     }
   </script>
   <style>
-    .glass {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    .dot-matrix {
-      font-family: 'DotGothic16', monospace;
+    .glass-nav {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
     .custom-scroll::-webkit-scrollbar {
       width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
       background: rgba(150, 150, 150, 0.2);
@@ -51,23 +49,23 @@
     }
   </style>
 </head>
-<body class="bg-nothing-light dark:bg-nothing-dark text-neutral-900 dark:text-neutral-100 transition-colors duration-300 font-sans min-h-screen flex flex-col justify-between select-none">
+<body class="bg-lightBg dark:bg-darkBg text-neutral-900 dark:text-neutral-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="w-full max-w-5xl mx-auto p-4 flex items-center justify-between z-30">
+  <!-- TOP APP BAR -->
+  <header class="w-full max-w-4xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-      <div class="w-3 h-3 rounded-full bg-nothing-red animate-pulse"></div>
-      <div>
-        <h1 class="text-sm font-mono font-bold tracking-widest uppercase">NO MESH (01)</h1>
-        <p class="text-[9px] text-neutral-500 font-mono tracking-tighter">SURVEILLANCE-RESISTANT LAN</p>
+      <div class="w-2.5 h-2.5 rounded-full bg-accent"></div>
+      <div class="flex flex-col">
+        <h1 class="text-sm font-semibold tracking-tight">No Mesh</h1>
+        <span class="text-[10px] text-neutral-400 font-mono">Campus Local Feed</span>
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3">
       <!-- Wi-Fi Toggle Pill -->
-      <div class="hidden sm:flex p-0.5 bg-neutral-200/60 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-full text-[10px] font-mono">
-        <button id="wifiOneBtn" class="px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold">StudentOne</button>
-        <button id="wifiTwoBtn" class="px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white">StudentTwo</button>
+      <div class="flex p-0.5 bg-neutral-200/70 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-full text-xs font-mono">
+        <button id="wifiOneBtn" class="px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium">StudentOne</button>
+        <button id="wifiTwoBtn" class="px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white">StudentTwo</button>
       </div>
 
       <!-- Theme Switcher -->
@@ -75,158 +73,156 @@
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
-      <!-- Launch Terminal CTA -->
-      <button id="navLaunchBtn" onclick="openAuthModal()" class="px-4 py-1.5 rounded-full bg-nothing-red text-white text-xs font-mono font-bold hover:opacity-90 transition">
-        SignUp/Login
+      <!-- Action Button -->
+      <button id="navLaunchBtn" onclick="openAuthModal()" class="px-4 py-1.5 rounded-full bg-accent text-white text-xs font-semibold hover:opacity-90 transition">
+        Join Chat
       </button>
     </div>
   </header>
 
-  <!-- ==================== VIEW 1: LANDING PAGE ==================== -->
-  <main id="landingView" class="w-full max-w-5xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-12">
+  <!-- ==================== LANDING VIEW ==================== -->
+  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-12">
     
     <!-- Hero Header -->
-    <div class="text-center space-y-4 max-w-2xl">
-      <div class="inline-block px-3 py-1 rounded-full border border-neutral-300 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900/80 text-[10px] font-mono text-neutral-500">
-        [ PROTOCOL // ZERO LOGS // E2EE ACTIVATED ]
+    <div class="text-center space-y-4 max-w-xl">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 text-xs font-medium text-neutral-500 shadow-sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        Direct Campus Communication
       </div>
-      <h2 class="text-4xl sm:text-6xl font-bold tracking-tight leading-none">
-        No Mesh.<br><span class="text-nothing-red dot-matrix">No Monitoring.</span>
+      <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-950 dark:text-white">
+        Simple. Secure.<br>Private Campus Chat.
       </h2>
-      <p class="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-sans leading-relaxed">
-        A private, zero-footprint campus chat designed to operate outside agent-level surveillance, deep packet inspection, and central logging.
+      <p class="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
+        A fast, lightweight space to chat with students across campus. End-to-end encrypted in your browser, no tracking, and no app installs needed.
       </p>
       
-      <div class="pt-4 flex flex-wrap gap-3 justify-center">
-        <button onclick="openAuthModal()" class="px-8 py-3 rounded-2xl bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-mono text-xs font-bold hover:scale-105 transition shadow-lg">
-          INITIALIZE CHAT NODE →
+      <div class="pt-2 flex flex-wrap gap-3 justify-center">
+        <button onclick="openAuthModal()" class="px-6 py-3 rounded-2xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold hover:opacity-90 transition shadow-md">
+          Start Chatting →
         </button>
-        <button onclick="openSourceNotice()" class="px-6 py-3 rounded-2xl border border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 font-mono text-xs text-neutral-600 dark:text-neutral-300 transition">
-          VIEW REPO AUDIT
+        <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-medium text-neutral-600 dark:text-neutral-300 transition">
+          Open Source Code
         </button>
       </div>
     </div>
 
-    <!-- Feature Bento Grid (Apple + Nothing UI) -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+    <!-- Feature Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
       
-      <!-- Card 1 -->
-      <div class="p-5 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur space-y-2">
-        <span class="text-[10px] font-mono text-nothing-red font-bold">01 // SECURITY</span>
-        <h3 class="text-base font-semibold">Client-Side E2EE</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Messages are scrambled with WebCrypto AES-GCM directly inside your browser before hitting any transmission layer.</p>
+      <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+        <span class="text-xs font-mono text-accent font-semibold">01</span>
+        <h3 class="text-sm font-semibold">Browser-Level Encryption</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">All messages are encrypted using the Web Crypto API on your device before transmission.</p>
       </div>
 
-      <!-- Card 2 -->
-      <div class="p-5 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur space-y-2">
-        <span class="text-[10px] font-mono text-nothing-red font-bold">02 // ANTI-MONITOR</span>
-        <h3 class="text-base font-semibold">Zero-Log Routing</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">No persistent chat logs or device telemetry recorded. Live packet relay vanishes immediately on terminal disconnect.</p>
+      <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+        <span class="text-xs font-mono text-accent font-semibold">02</span>
+        <h3 class="text-sm font-semibold">Zero Persistent Logs</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Real-time broadcast streams run in-memory. Transmissions leave no central cloud footprint.</p>
       </div>
 
-      <!-- Card 3: Clickable Open Source -->
-      <div onclick="openSourceNotice()" class="p-5 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 backdrop-blur space-y-2 cursor-pointer hover:border-neutral-900 dark:hover:border-neutral-100 transition group">
+      <div onclick="openSourceNotice()" class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 transition group">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-mono text-nothing-red font-bold">03 // TRANSPARENCY</span>
-          <span class="text-xs font-mono text-neutral-400 group-hover:translate-x-1 transition">↗</span>
+          <span class="text-xs font-mono text-accent font-semibold">03</span>
+          <span class="text-xs text-neutral-400 group-hover:translate-x-0.5 transition">↗</span>
         </div>
-        <h3 class="text-base font-semibold">Open Source Code</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Inspect our cryptographic implementation and peer mesh design. Click for audit requests & git access.</p>
+        <h3 class="text-sm font-semibold">Open Source & Auditable</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Transparent source code. Tap to request Git repository access or report bugs.</p>
       </div>
 
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: ACTIVE CHAT TERMINAL (Hidden by default) ==================== -->
-  <main id="chatView" class="hidden w-full max-w-lg mx-auto h-[82vh] flex flex-col bg-white dark:bg-neutral-900/60 sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-2xl relative overflow-hidden my-auto">
+  <!-- ==================== CHAT VIEW ==================== -->
+  <main id="chatView" class="hidden w-full max-w-lg mx-auto h-[84vh] flex flex-col bg-white dark:bg-darkCard sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl relative overflow-hidden my-auto">
     
     <!-- Chat Header -->
-    <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass">
+    <div class="p-4 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass-nav bg-white/50 dark:bg-darkCard/50">
       <div>
-        <p id="userStatusTag" class="text-xs font-mono font-bold text-nothing-red">@INITIALIZING</p>
-        <p class="text-[9px] text-neutral-400 font-mono">NODE ACTIVE // ISOLATED STREAM</p>
+        <p id="userStatusTag" class="text-xs font-semibold text-neutral-900 dark:text-neutral-100">@User</p>
+        <p class="text-[10px] text-neutral-400 font-mono">Live Session Active</p>
       </div>
-      <button onclick="disconnectSession()" class="text-[10px] font-mono text-neutral-400 hover:text-nothing-red transition">EXIT TERMINAL</button>
+      <button onclick="disconnectSession()" class="text-xs font-medium text-neutral-400 hover:text-accent transition">Leave</button>
     </div>
 
-    <!-- Chat Messages Scroll Area -->
+    <!-- Messages -->
     <div id="chatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
-      <div class="text-center py-4">
-        <div class="inline-block dot-matrix text-[10px] px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-400">
-          ● TRANSMISSIONS ARE EPHEMERAL ●
-        </div>
+      <div class="text-center py-3">
+        <span class="text-[11px] font-mono text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800">
+          🔒 End-to-end encrypted session
+        </span>
       </div>
     </div>
 
-    <!-- Message Form -->
-    <form id="chatForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex gap-2 glass">
-      <input id="messageInput" type="text" placeholder="Type a transmission..." autocomplete="off" class="flex-1 bg-neutral-100 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-nothing-red font-sans">
-      <button type="submit" class="bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-mono text-xs px-4 py-2.5 rounded-2xl transition hover:opacity-90">
-        SEND
+    <!-- Chat Input Form -->
+    <form id="chatForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex gap-2 glass-nav bg-white/50 dark:bg-darkCard/50">
+      <input id="messageInput" type="text" placeholder="Type a message..." autocomplete="off" class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent">
+      <button type="submit" class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90">
+        Send
       </button>
     </form>
   </main>
 
   <!-- ==================== ONBOARDING MODAL ==================== -->
-  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-5">
+  <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
-      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white font-mono text-sm">✕</button>
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm">✕</button>
 
       <!-- STEP 1: Course -->
       <div id="stepCourse" class="space-y-3">
-        <span class="text-[10px] font-mono text-nothing-red font-bold">01 // SELECT ACADEMIC STREAM</span>
-        <h3 class="text-xl font-bold">Choose Course</h3>
-        <div class="grid grid-cols-1 gap-1.5 pt-1">
-          <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-xs font-medium flex justify-between items-center">
-            <span>BCom (Hons)</span> <span class="font-mono text-neutral-400">→</span>
+        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 1 of 3</span>
+        <h3 class="text-lg font-bold">Select your course</h3>
+        <div class="grid grid-cols-1 gap-1.5">
+          <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
+            <span>BCom (Hons)</span> <span class="text-neutral-400">→</span>
           </button>
-          <button onclick="selectCourse('BBA')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-xs font-medium flex justify-between items-center">
-            <span>BBA</span> <span class="font-mono text-neutral-400">→</span>
+          <button onclick="selectCourse('BBA')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
+            <span>BBA</span> <span class="text-neutral-400">→</span>
           </button>
-          <button onclick="selectCourse('ADS')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-xs font-medium flex justify-between items-center">
-            <span>ADS</span> <span class="font-mono text-neutral-400">→</span>
+          <button onclick="selectCourse('ADS')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
+            <span>ADS</span> <span class="text-neutral-400">→</span>
           </button>
-          <button onclick="selectCourse('B.A ECO')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-xs font-medium flex justify-between items-center">
-            <span>B.A ECO</span> <span class="font-mono text-neutral-400">→</span>
+          <button onclick="selectCourse('B.A ECO')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
+            <span>B.A ECO</span> <span class="text-neutral-400">→</span>
           </button>
-          <button onclick="selectCourse('B.S F.E.D.A')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 transition text-xs font-medium flex justify-between items-center">
-            <span>B.S F.E.D.A</span> <span class="font-mono text-neutral-400">→</span>
+          <button onclick="selectCourse('B.S F.E.D.A')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
+            <span>B.S F.E.D.A</span> <span class="text-neutral-400">→</span>
           </button>
         </div>
-        <p class="text-center text-[11px] text-neutral-500 cursor-pointer hover:underline font-mono pt-1" onclick="toggleToLogin()">Existing account? Log In</p>
+        <p class="text-center text-xs text-neutral-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
       <!-- STEP 2: Year -->
-      <div id="stepYear" class="space-y-4 hidden">
-        <span class="text-[10px] font-mono text-nothing-red font-bold">02 // ACADEMIC YEAR</span>
-        <h3 class="text-xl font-bold">Select Year</h3>
-        <div class="grid grid-cols-2 gap-2.5">
-          <button onclick="selectYear('1st')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 font-bold text-sm">1st Year</button>
-          <button onclick="selectYear('2nd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 font-bold text-sm">2nd Year</button>
-          <button onclick="selectYear('3rd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 font-bold text-sm">3rd Year</button>
-          <button onclick="selectYear('4th')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:border-neutral-900 dark:hover:border-neutral-100 font-bold text-sm">4th Year</button>
+      <div id="stepYear" class="space-y-3 hidden">
+        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 2 of 3</span>
+        <h3 class="text-lg font-bold">Select your academic year</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="selectYear('1st')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">1st Year</button>
+          <button onclick="selectYear('2nd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">2nd Year</button>
+          <button onclick="selectYear('3rd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">3rd Year</button>
+          <button onclick="selectYear('4th')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">4th Year</button>
         </div>
-        <button onclick="backToStep('stepCourse')" class="text-xs font-mono text-neutral-500">← Back</button>
+        <button onclick="backToStep('stepCourse')" class="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
       <!-- STEP 3: Handle & Pass -->
       <div id="stepAuth" class="space-y-3 hidden">
-        <span class="text-[10px] font-mono text-nothing-red font-bold">03 // ACCESS KEYS</span>
-        <h3 class="text-xl font-bold" id="authHeading">Identity Setup</h3>
+        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 3 of 3</span>
+        <h3 class="text-lg font-bold" id="authHeading">Create your profile</h3>
         <div class="space-y-2">
           <div>
-            <label class="text-[10px] font-mono text-neutral-400">HANDLE</label>
-            <input id="inputUser" type="text" placeholder="e.g. ghost_operator" class="w-full mt-0.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
+            <label class="text-[11px] font-medium text-neutral-400">Username</label>
+            <input id="inputUser" type="text" placeholder="e.g. alex" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
           </div>
           <div>
-            <label class="text-[10px] font-mono text-neutral-400">KEY / PASSWORD</label>
-            <input id="inputPass" type="password" placeholder="Passkey" class="w-full mt-0.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
+            <label class="text-[11px] font-medium text-neutral-400">Password</label>
+            <input id="inputPass" type="password" placeholder="For future logins" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
           </div>
-          <p id="authError" class="text-[10px] text-nothing-red font-mono hidden"></p>
+          <p id="authError" class="text-xs text-accent font-medium hidden"></p>
         </div>
-        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 font-mono text-xs font-bold rounded-xl transition hover:opacity-90">
-          ENTER TERMINAL
+        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold rounded-xl transition hover:opacity-90">
+          Create Account & Join
         </button>
       </div>
 
@@ -234,31 +230,33 @@
   </div>
 
   <!-- Open Source Contact Modal -->
-  <div id="sourceModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-4">
-      <div class="w-10 h-10 mx-auto rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center text-xs font-mono">
-        //
-      </div>
-      <h3 class="text-lg font-bold">Open Source & Audits</h3>
+  <div id="sourceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-4">
+      <h3 class="text-base font-bold">Open Source & Audits</h3>
       <p class="text-xs text-neutral-500 leading-relaxed">
-        The cryptographic mesh engine, WebSocket routing, and IP isolation routines are available for security research.
+        The cryptographic implementation, peer relay protocols, and client code are available for review.
       </p>
-      <div class="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-mono select-all">
+      <div class="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-mono font-medium select-all">
         simpcorp@proton.me
       </div>
-      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 font-mono text-xs hover:bg-neutral-100 dark:hover:bg-neutral-900">
-        CLOSE WINDOW
+      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition">
+        Close
       </button>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="w-full max-w-5xl mx-auto p-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-[10px] font-mono text-neutral-500 border-t border-neutral-200 dark:border-neutral-800/80">
-    <div class="flex items-center gap-2">
-      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-      <span>SYSTEM STATUS: OPERATIONAL // ZERO AGENT HOOKS</span>
+  <!-- PROMINENT DEVELOPER FOOTER -->
+  <footer class="w-full max-w-4xl mx-auto p-4 border-t border-neutral-200 dark:border-neutral-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <div class="flex items-center gap-2 text-xs text-neutral-400 font-mono">
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span>Live Node: Operational</span>
     </div>
-    <span class="dot-matrix tracking-wider">Developed by a Jobless B.COM 1st year student (SimpCorp)</span>
+
+    <!-- Visible Framed Developer Badge -->
+    <div class="px-3.5 py-1.5 rounded-full bg-neutral-200/60 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-300 font-medium flex items-center gap-1.5 shadow-sm">
+      <span class="text-accent font-mono text-[11px]">●</span>
+      <span>Developed by a Jobless B.COM 1st year student <strong class="text-neutral-900 dark:text-white font-semibold">(SimpCorp)</strong></span>
+    </div>
   </footer>
 
   <script>
@@ -278,9 +276,8 @@
     fetch("https://api64.ipify.org?format=json")
       .then(res => res.json())
       .then(d => clientIP = d.ip)
-      .catch(() => clientIP = "lan_peer");
+      .catch(() => clientIP = "lan_client");
 
-    // View Switching
     function showLandingView() {
       document.getElementById("landingView").classList.remove("hidden");
       document.getElementById("chatView").classList.add("hidden");
@@ -307,7 +304,6 @@
       document.getElementById("sourceModal").classList.add("hidden");
     }
 
-    // Step Logic
     function selectCourse(c) {
       selectedCourse = c;
       document.getElementById("stepCourse").classList.add("hidden");
@@ -331,11 +327,10 @@
       isLoginMode = true;
       document.getElementById("stepCourse").classList.add("hidden");
       document.getElementById("stepAuth").classList.remove("hidden");
-      document.getElementById("authHeading").innerText = "Account Login";
-      document.getElementById("authActionBtn").innerText = "AUTHORIZE";
+      document.getElementById("authHeading").innerText = "Account Sign In";
+      document.getElementById("authActionBtn").innerText = "Sign In";
     }
 
-    // Authentication
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
@@ -343,7 +338,7 @@
       err.classList.add("hidden");
 
       if (!u || !p) {
-        err.innerText = "All fields required.";
+        err.innerText = "Please fill in all fields.";
         err.classList.remove("hidden");
         return;
       }
@@ -351,7 +346,7 @@
       if (isLoginMode) {
         const { data, error } = await sb.from("campus_users").select("*").eq("username", u).eq("password", p).maybeSingle();
         if (error || !data) {
-          err.innerText = "Invalid credentials.";
+          err.innerText = "Invalid username or password.";
           err.classList.remove("hidden");
           return;
         }
@@ -359,14 +354,14 @@
       } else {
         const { data: ipCheck } = await sb.from("campus_users").select("username").eq("registration_ip", clientIP).maybeSingle();
         if (ipCheck) {
-          err.innerText = "Account already exists for this IP. Please Log In.";
+          err.innerText = "An account is already linked to this network/device. Please Sign In.";
           err.classList.remove("hidden");
           return;
         }
 
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
         if (userCheck) {
-          err.innerText = "Handle taken. Choose another.";
+          err.innerText = "Username already taken. Please choose another.";
           err.classList.remove("hidden");
           return;
         }
@@ -381,7 +376,7 @@
         }]).select().single();
 
         if (insErr) {
-          err.innerText = "Registration failed.";
+          err.innerText = "Registration failed. Try again.";
           err.classList.remove("hidden");
           return;
         }
@@ -392,7 +387,7 @@
     function enterChat(userData) {
       currentUser = userData;
       closeAuthModal();
-      document.getElementById("userStatusTag").innerText = `@${currentUser.username} // [${currentUser.course} • ${currentUser.year}]`;
+      document.getElementById("userStatusTag").innerText = `@${currentUser.username} • ${currentUser.course} (${currentUser.year})`;
       showChatView();
 
       channel = sb.channel("nomesh_feed", { config: { broadcast: { self: false } } });
@@ -406,21 +401,20 @@
       showLandingView();
     }
 
-    // Chat rendering
     const chatArea = document.getElementById("chatArea");
     function renderMsg(data, isSelf) {
       const wrap = document.createElement("div");
-      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-0.5`;
+      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1`;
 
       const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[9px] font-mono text-neutral-400 px-1";
-      meta.innerHTML = `<span>${data.user}</span> <span class="text-neutral-500">(${data.course} ${data.year})</span> <span class="text-nothing-red">● ${data.wifi}</span>`;
+      meta.className = "flex items-center gap-1.5 text-[10px] text-neutral-400 px-1 font-mono";
+      meta.innerHTML = `<span>${data.user}</span> <span>(${data.course})</span> <span class="text-accent">• ${data.wifi}</span>`;
 
       const bubble = document.createElement("div");
-      bubble.className = `max-w-[85%] px-3.5 py-2 rounded-2xl text-xs ${
+      bubble.className = `max-w-[85%] px-3.5 py-2 rounded-2xl text-xs leading-relaxed ${
         isSelf 
-          ? "bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 rounded-br-none" 
-          : "bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
+          ? "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-br-none shadow-sm" 
+          : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
       }`;
       bubble.textContent = data.text;
 
@@ -449,23 +443,21 @@
       channel.send({ type: "broadcast", event: "msg", payload });
     });
 
-    // Wi-Fi Switcher
     const wifiOneBtn = document.getElementById("wifiOneBtn");
     const wifiTwoBtn = document.getElementById("wifiTwoBtn");
 
     wifiOneBtn.addEventListener("click", () => {
       selectedWifi = "StudentOne";
-      wifiOneBtn.className = "px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold";
-      wifiTwoBtn.className = "px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white";
+      wifiOneBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
+      wifiTwoBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
     });
 
     wifiTwoBtn.addEventListener("click", () => {
       selectedWifi = "StudentTwo";
-      wifiTwoBtn.className = "px-2.5 py-1 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-950 transition-all font-semibold";
-      wifiOneBtn.className = "px-2.5 py-1 rounded-full text-neutral-500 transition-all hover:text-neutral-900 dark:hover:text-white";
+      wifiTwoBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
+      wifiOneBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
     });
 
-    // Theme Toggle
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
