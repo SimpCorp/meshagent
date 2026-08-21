@@ -80,6 +80,16 @@
     }
     .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
 
+    /* 2-Second Smooth Fade for Spoilers */
+    .spoiler-overlay {
+      transition: opacity 2s ease, filter 2s ease, visibility 2s;
+    }
+    .spoiler-revealed {
+      opacity: 0 !important;
+      filter: blur(10px) !important;
+      pointer-events: none !important;
+    }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
@@ -159,7 +169,7 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, seekable self-destruct voice clips with custom play limits, and 24/7 background audio lounges.
+        Real-time direct messaging, 2-second fading spoiler shields, configurable burner countdowns, and seekable voice notes.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
@@ -180,8 +190,8 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full">
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">01</span>
-        <h3 class="text-sm font-bold">Direct 1-on-1 Chats</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Fast direct messaging and firewall-piercing WebRTC audio calling with active peers.</p>
+        <h3 class="text-sm font-bold">Spoiler & Burner Text</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Send shrouded 2s-fade spoiler alerts and self-destruct countdown text messages (5s–custom).</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
@@ -192,8 +202,8 @@
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">03</span>
-        <h3 class="text-sm font-bold">Theme & Grading Control</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Switch seamless visual color grading between sleek Red and Blue accents anytime.</p>
+        <h3 class="text-sm font-bold">Color Grading & WebRTC</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Switch between Red and Blue grade accents with firewall-piercing encrypted audio calling.</p>
       </div>
     </div>
   </main>
@@ -251,7 +261,7 @@
           </button>
         </div>
 
-        <!-- Global Master Volume Control (Full 100% by default) -->
+        <!-- Global Master Volume Control (100% by default) -->
         <div class="space-y-1 pt-1">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
@@ -319,9 +329,38 @@
       <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scroll relative"></div>
 
       <!-- Floating Unread New Messages Pill -->
-      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
+      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
         <span>↓</span> New messages
       </button>
+
+      <!-- Message Customization Sub-Bar (Spoiler & Burner) -->
+      <div class="px-4 py-1.5 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-3 text-[11px] z-10 select-none">
+        <!-- Spoiler Toggle -->
+        <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+          <span>⚠️</span> Spoiler
+        </button>
+
+        <!-- Burner Mode Toggle & Dropdown -->
+        <div class="relative flex items-center">
+          <button type="button" id="burnerToggleBtn" onclick="toggleBurnerOption()" class="flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+            <span>⏱️</span> <span id="burnerLabelDisplay">Burner Off</span>
+          </button>
+
+          <!-- Burner Time Selector Popover -->
+          <div id="burnerMenu" class="absolute bottom-8 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1 min-w-[150px] hidden z-30">
+            <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase">Self-Destruct in:</div>
+            <button type="button" onclick="selectBurnerDuration(0, 'Burner Off')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">Off (Normal)</button>
+            <button type="button" onclick="selectBurnerDuration(5, '5s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">5 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(10, '10s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">10 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(15, '15s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">15 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(30, '30s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">30 Seconds</button>
+            <div class="pt-1 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 px-1">
+              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-xs focus:outline-none">
+              <button type="button" onclick="applyCustomBurner()" class="px-2 py-0.5 bg-brand text-white text-[10px] font-bold rounded-lg hover:bg-brandDark">Set</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Message Form (Instagram/iMessage Style Rounded Bar) -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
@@ -356,7 +395,6 @@
             <span>RECORDING</span>
             <span id="recordingTimer" class="font-bold font-mono">0:00</span>
             
-            <!-- Limit Selector -->
             <div class="flex items-center bg-black/20 rounded-lg p-0.5 text-[10px] ml-1">
               <button type="button" onclick="setDestructLimit(1)" id="limBtn1" class="px-2 py-0.5 rounded bg-white text-brand font-bold">1x</button>
               <button type="button" onclick="setDestructLimit(2)" id="limBtn2" class="px-2 py-0.5 rounded text-white font-medium">2x</button>
@@ -708,9 +746,13 @@
     let inspectedPeerObj = null;
 
     // --- GLOBAL MASTER VOLUME & DESTRUCT LIMIT ---
-    let globalMasterVolume = 1.0; // 100% by default
-    let activeDestructLimit = 1;  // 1x by default (1, 2, or 3)
-    let audioPlayedCounts = new Map(); // tracks playback counts per msg id
+    let globalMasterVolume = 1.0;
+    let activeDestructLimit = 1;
+    let audioPlayedCounts = new Map();
+
+    // --- SPOILER & BURNER STATE ---
+    let isSpoilerActive = false;
+    let activeBurnerDuration = 0; // 0 = off, >0 = seconds
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -755,11 +797,7 @@
     function adjustMasterVolume(val) {
       globalMasterVolume = parseFloat(val) / 100;
       document.getElementById('volPercentLabel').innerText = `${val}%`;
-      
-      // Update all existing audio elements on the page in real-time
-      document.querySelectorAll('audio').forEach(a => {
-        a.volume = globalMasterVolume;
-      });
+      document.querySelectorAll('audio').forEach(a => { a.volume = globalMasterVolume; });
     }
 
     function checkVolumeAlert() {
@@ -771,16 +809,49 @@
       }
     }
 
-    // --- SELF DESTRUCT LIMIT SELECTOR ---
+    // --- SPOILER & BURNER TOGGLES ---
+    function toggleSpoilerOption() {
+      isSpoilerActive = !isSpoilerActive;
+      const btn = document.getElementById('spoilerToggleBtn');
+      if (isSpoilerActive) {
+        btn.className = "flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-500 border border-rose-500/40 font-bold transition shadow-sm";
+      } else {
+        btn.className = "flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition";
+      }
+    }
+
+    function toggleBurnerOption() {
+      const menu = document.getElementById('burnerMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    function selectBurnerDuration(secs, label) {
+      activeBurnerDuration = secs;
+      document.getElementById('burnerMenu').classList.add('hidden');
+      const btn = document.getElementById('burnerToggleBtn');
+      const disp = document.getElementById('burnerLabelDisplay');
+      disp.innerText = label;
+
+      if (secs > 0) {
+        btn.className = "flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-500 border border-amber-500/40 font-bold transition shadow-sm";
+      } else {
+        btn.className = "flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition";
+      }
+    }
+
+    function applyCustomBurner() {
+      const val = parseInt(document.getElementById('customBurnerInput').value, 10);
+      if (val && val > 0) {
+        selectBurnerDuration(val, `${val}s`);
+      }
+    }
+
     function setDestructLimit(lim) {
       activeDestructLimit = lim;
       [1, 2, 3].forEach(n => {
         const btn = document.getElementById(`limBtn${n}`);
-        if (n === lim) {
-          btn.className = "px-2 py-0.5 rounded bg-white text-brand font-bold";
-        } else {
-          btn.className = "px-2 py-0.5 rounded text-white font-medium";
-        }
+        if (n === lim) btn.className = "px-2 py-0.5 rounded bg-white text-brand font-bold";
+        else btn.className = "px-2 py-0.5 rounded text-white font-medium";
       });
     }
 
@@ -812,25 +883,22 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Startup Session Restore with 2-Hour Bio Session Check & Color Grade
+    // Startup Session Restore
     window.addEventListener("DOMContentLoaded", () => {
       const savedColor = localStorage.getItem('lan_color_grade') || 'blue';
       setColorGrading(savedColor);
-
       parseTwemoji(document.body);
 
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
         try {
           const user = JSON.parse(cached);
-          
           const bioExpiry = localStorage.getItem("bio_expiry");
           if (bioExpiry && Date.now() > parseInt(bioExpiry, 10)) {
             user.bio = "";
             localStorage.removeItem("bio_expiry");
             localStorage.setItem("nomesh_saved_user", JSON.stringify(user));
           }
-
           showQuickUnlock(user);
         } catch(e) {
           localStorage.removeItem("nomesh_saved_user");
@@ -1550,6 +1618,56 @@
       }
     }
 
+    // --- SPOILER REVEAL (2-Second Fade Animation) ---
+    function revealSpoiler(msgId) {
+      const overlay = document.getElementById(`spoiler-cover-${msgId}`);
+      if (overlay) {
+        overlay.classList.add('spoiler-revealed');
+        setTimeout(() => overlay.remove(), 2000);
+      }
+      // Start burner countdown if it was waiting for spoiler reveal
+      startBurnerCountdown(msgId);
+    }
+
+    // --- MESSAGE BURNER COUNTDOWN ---
+    const activeBurnerTimers = new Map();
+
+    function startBurnerCountdown(msgId) {
+      const badge = document.getElementById(`burner-timer-${msgId}`);
+      if (!badge || activeBurnerTimers.has(msgId)) return;
+
+      let remaining = parseInt(badge.getAttribute('data-duration'), 10);
+      if (!remaining || remaining <= 0) return;
+
+      badge.classList.remove('hidden');
+      badge.innerText = `⏱️ ${remaining}s`;
+
+      const interval = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          badge.innerText = `⏱️ ${remaining}s`;
+        } else {
+          clearInterval(interval);
+          activeBurnerTimers.delete(msgId);
+          handleMessageDestruct(msgId);
+        }
+      }, 1000);
+
+      activeBurnerTimers.set(msgId, interval);
+    }
+
+    function handleMessageDestruct(msgId) {
+      const wrap = document.getElementById(`msg-${msgId}`);
+      if (wrap) {
+        wrap.classList.add("destructing");
+        setTimeout(() => {
+          wrap.remove();
+          const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
+          removeMessageFromSession(targetKey, msgId);
+        }, 800);
+      }
+    }
+
     // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
@@ -1571,40 +1689,53 @@
           : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
       }`;
 
+      // Insert message content
+      let contentHtml = "";
       if (msg.text) {
-        bubble.className += " px-4 py-2.5";
-        bubble.textContent = msg.text;
+        contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
       } else if (msg.image) {
-        bubble.className += " p-1";
-        bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">`;
+        contentHtml = `<div class="p-1"><img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')"></div>`;
       } else if (msg.audio) {
         const limit = msg.destructLimit || 1;
         const currentCount = audioPlayedCounts.get(msg.id) || 0;
         
-        bubble.className += " p-3 flex flex-col gap-2 min-w-[240px] sm:min-w-[280px]";
-        bubble.innerHTML = `
-          <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
-            <span class="font-bold flex items-center gap-1">🔥 Voice Clip (<span id="burn-count-${msg.id}">${currentCount}/${limit} Plays</span>)</span>
-            <span id="time-${msg.id}" class="font-mono">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
-          </div>
-
-          <!-- Hidden Native Audio for playback -->
-          <audio id="native-aud-${msg.id}" src="${msg.audio}" preload="metadata" ontimeupdate="onAudioTimeUpdate('${msg.id}')" onended="handleAudioEnded('${msg.id}', '${msg.sender}', ${limit})" class="hidden"></audio>
-
-          <!-- Custom Seekable Controller Bar -->
-          <div class="flex items-center gap-2">
-            <button type="button" id="play-btn-${msg.id}" onclick="toggleAudioPlayback('${msg.id}')" class="w-8 h-8 rounded-full ${isSelf ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-brand text-white'} flex items-center justify-center text-xs font-bold transition shrink-0">
-              ▶
-            </button>
-            <button type="button" onclick="scrubAudioForward('${msg.id}', -5)" title="Rewind 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
-              ↺ 5s
-            </button>
-            <input id="seek-${msg.id}" type="range" min="0" max="100" value="0" oninput="onAudioSeekInput('${msg.id}', this.value)" class="flex-1 h-1.5 bg-black/20 rounded-lg appearance-none cursor-pointer">
-            <button type="button" onclick="scrubAudioForward('${msg.id}', 5)" title="Forward 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
-              5s ↻
-            </button>
+        contentHtml = `
+          <div class="p-3 flex flex-col gap-2 min-w-[240px] sm:min-w-[280px]">
+            <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
+              <span class="font-bold flex items-center gap-1">🔥 Voice Clip (<span id="burn-count-${msg.id}">${currentCount}/${limit} Plays</span>)</span>
+              <span id="time-${msg.id}" class="font-mono">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
+            </div>
+            <audio id="native-aud-${msg.id}" src="${msg.audio}" preload="metadata" ontimeupdate="onAudioTimeUpdate('${msg.id}')" onended="handleAudioEnded('${msg.id}', '${msg.sender}', ${limit})" class="hidden"></audio>
+            <div class="flex items-center gap-2">
+              <button type="button" id="play-btn-${msg.id}" onclick="toggleAudioPlayback('${msg.id}')" class="w-8 h-8 rounded-full ${isSelf ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-brand text-white'} flex items-center justify-center text-xs font-bold transition shrink-0">
+                ▶
+              </button>
+              <button type="button" onclick="scrubAudioForward('${msg.id}', -5)" title="Rewind 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
+                ↺ 5s
+              </button>
+              <input id="seek-${msg.id}" type="range" min="0" max="100" value="0" oninput="onAudioSeekInput('${msg.id}', this.value)" class="flex-1 h-1.5 bg-black/20 rounded-lg appearance-none cursor-pointer">
+              <button type="button" onclick="scrubAudioForward('${msg.id}', 5)" title="Forward 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
+                5s ↻
+              </button>
+            </div>
           </div>
         `;
+      }
+
+      // Wrap in spoiler cover if flagged
+      if (msg.isSpoiler) {
+        bubble.innerHTML = `
+          <div class="relative">
+            <div class="spoiler-content">${contentHtml}</div>
+            <!-- Red Glass Spoiler Overlay with 2-Second Fade -->
+            <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/90 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer p-4 text-center z-10 backdrop-blur-md rounded-2xl">
+              <span class="text-xs tracking-widest uppercase flex items-center gap-1">⚠️ SPOILER</span>
+              <span class="text-[10px] font-medium opacity-80 pt-0.5">Tap to reveal</span>
+            </div>
+          </div>
+        `;
+      } else {
+        bubble.innerHTML = contentHtml;
       }
 
       // Inline Emoji Reaction Pill
@@ -1629,10 +1760,17 @@
       reactionsContainer.id = `reactions-${msg.id}`;
       reactionsContainer.className = "flex gap-1 text-[10px] px-2 font-semibold";
 
+      // Time tag & Burner Countdown Badge
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("div");
-      timeTag.className = "flex items-center gap-1 text-[10px] text-slate-400 px-2 font-medium";
-      timeTag.innerHTML = `<span>${timeStr}</span> ${isSelf ? `<span id="ack-${msg.id}" class="text-[9px] font-mono">✓</span>` : ''}`;
+      timeTag.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-medium";
+      
+      let burnerBadge = "";
+      if (msg.burnerDuration && msg.burnerDuration > 0) {
+        burnerBadge = `<span id="burner-timer-${msg.id}" data-duration="${msg.burnerDuration}" class="px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20 font-mono font-bold">⏱️ ${msg.burnerDuration}s</span>`;
+      }
+
+      timeTag.innerHTML = `<span>${timeStr}</span> ${burnerBadge} ${isSelf ? `<span id="ack-${msg.id}" class="text-[9px] font-mono">✓</span>` : ''}`;
 
       wrap.appendChild(meta);
       wrap.appendChild(contentHolder);
@@ -1642,6 +1780,11 @@
 
       parseTwemoji(wrap);
       scrollChatToBottom();
+
+      // Trigger burner countdown immediately if not hidden behind a spoiler
+      if (msg.burnerDuration && msg.burnerDuration > 0 && !msg.isSpoiler) {
+        startBurnerCountdown(msg.id);
+      }
     }
 
     function sendReaction(msgId, emoji) {
@@ -1665,15 +1808,7 @@
     }
 
     function handleAudioDestruct(msgId, sender) {
-      const wrap = document.getElementById(`msg-${msgId}`);
-      if (wrap) {
-        wrap.classList.add("destructing");
-        setTimeout(() => {
-          wrap.remove();
-          const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
-          removeMessageFromSession(targetKey, msgId);
-        }, 800);
-      }
+      handleMessageDestruct(msgId);
     }
 
     // --- EPHEMERAL VOICE RECORDER (<30s) ---
@@ -1728,7 +1863,13 @@
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         const reader = new FileReader();
         reader.onloadend = () => {
-          dispatchPayload({ audio: reader.result, duration, destructLimit: activeDestructLimit });
+          dispatchPayload({ 
+            audio: reader.result, 
+            duration, 
+            destructLimit: activeDestructLimit,
+            isSpoiler: isSpoilerActive,
+            burnerDuration: activeBurnerDuration
+          });
         };
         reader.readAsDataURL(audioBlob);
         document.getElementById("recordingHUD").classList.add("hidden");
@@ -1764,7 +1905,11 @@
           else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
           canvas.width = w; canvas.height = h;
           canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-          dispatchPayload({ image: canvas.toDataURL("image/jpeg", 0.6) });
+          dispatchPayload({ 
+            image: canvas.toDataURL("image/jpeg", 0.6),
+            isSpoiler: isSpoilerActive,
+            burnerDuration: activeBurnerDuration
+          });
         };
         img.src = e.target.result;
       };
@@ -1772,7 +1917,7 @@
     }
 
     // --- PAYLOAD DISPATCH ---
-    function dispatchPayload({ text = null, image = null, audio = null, duration = null, destructLimit = 1 }) {
+    function dispatchPayload({ text = null, image = null, audio = null, duration = null, destructLimit = 1, isSpoiler = false, burnerDuration = 0 }) {
       if (!channel || (!text && !image && !audio)) return;
 
       const payload = {
@@ -1784,6 +1929,8 @@
         audio,
         duration,
         destructLimit,
+        isSpoiler,
+        burnerDuration,
         network: currentNetwork,
         timestamp: Date.now()
       };
@@ -1806,10 +1953,14 @@
       const text = inp.value.trim();
       if (!text) return;
       inp.value = "";
-      dispatchPayload({ text });
+      dispatchPayload({ 
+        text,
+        isSpoiler: isSpoilerActive,
+        burnerDuration: activeBurnerDuration
+      });
     });
 
-    // --- BULLETPROOF P2P WEBRTC CALL ENGINE (STUN + TURNS ON PORT 443 + ICE BUFFER) ---
+    // --- BULLETPROOF P2P WEBRTC CALL ENGINE ---
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
@@ -1887,7 +2038,6 @@
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
         
-        // Process buffered ICE candidates
         while (iceCandidateQueue.length > 0) {
           const cand = iceCandidateQueue.shift();
           try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
@@ -1940,7 +2090,6 @@
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
       
-      // Process buffered ICE candidates
       while (iceCandidateQueue.length > 0) {
         const cand = iceCandidateQueue.shift();
         try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
