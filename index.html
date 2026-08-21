@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>No Mesh — Direct Campus Wire</title>
+  <title>LAN CHAT — Campus Node</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,16 +36,15 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
-    .custom-scroll::-webkit-scrollbar {
-      width: 4px;
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 4px; }
+    @keyframes burn {
+      0% { opacity: 1; transform: scale(1); filter: blur(0); }
+      50% { opacity: 0.5; transform: scale(0.95); filter: blur(2px) contrast(200%); }
+      100% { opacity: 0; transform: scale(0.8); filter: blur(6px); height: 0; margin: 0; padding: 0; }
     }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: rgba(150, 150, 150, 0.2);
-      border-radius: 4px;
-    }
+    .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-neutral-900 dark:text-neutral-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
@@ -55,22 +54,17 @@
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div class="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></div>
       <div class="flex flex-col">
-        <h1 class="text-sm font-semibold tracking-tight">No Mesh</h1>
-        <span class="text-[10px] text-neutral-400 font-mono">Peer-to-Peer Campus Wire</span>
+        <h1 class="text-sm font-semibold tracking-tight">LAN CHAT</h1>
+        <span class="text-[10px] text-neutral-400 font-mono">Subnet Wire</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Wi-Fi Toggle -->
+      <!-- Wi-Fi Subnet Switcher -->
       <div class="flex p-0.5 bg-neutral-200/70 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-full text-xs font-mono">
-        <button id="wifiOneBtn" class="px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium">StudentOne</button>
-        <button id="wifiTwoBtn" class="px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white">StudentTwo</button>
+        <button id="wifiOneBtn" class="px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium">SSSIHL-STUDENT</button>
+        <button id="wifiTwoBtn" class="px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white">SSSIHL-STUDENT2</button>
       </div>
-
-      <!-- Panic Button -->
-      <button onclick="triggerPanic()" title="Quick Cloak (Double ESC)" class="w-8 h-8 rounded-full border border-neutral-300 dark:border-neutral-800 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-900 transition text-xs font-mono text-accent">
-        ⚡
-      </button>
 
       <!-- Theme Switcher -->
       <button id="themeToggle" class="w-8 h-8 rounded-full border border-neutral-300 dark:border-neutral-800 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-900 transition">
@@ -85,22 +79,27 @@
   </header>
 
   <!-- ==================== VIEW 1: LANDING ==================== -->
-  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-12">
+  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-10">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 text-xs font-medium text-neutral-500 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        Direct Campus Mesh • Panic Cloak Ready
+        Direct Campus Node Communication
       </div>
       <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-950 dark:text-white">
-        Direct Campus Messaging.<br>Gone on Tab Close.
+        LAN CHAT.<br>Fast, Direct & Encrypted.
       </h2>
-      <p class="text-sm sm:text-base text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
-        Chat privately in 1-on-1 DMs or the campus broadcast lounge. Double-tap <code class="px-1.5 py-0.5 rounded bg-neutral-200 dark:bg-neutral-800 text-xs font-mono">ESC</code> anytime for instant stealth cloaking.
+      <p class="text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
+        High-performance direct messaging, voice notes, and P2P calls designed for your campus network. Zero database footprint.
       </p>
+
+      <!-- Subnet Isolation Advisory Note -->
+      <div class="p-3.5 rounded-2xl border border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-400 text-xs font-mono leading-relaxed text-left">
+        <strong class="font-bold">⚠️ Subnet Isolation Notice:</strong> If you are connected to <strong>SSSIHL-STUDENT</strong>, you can chat with everyone on that network. Users connected to <strong>SSSIHL-STUDENT2</strong> are on a distinct subnet and cannot communicate with <strong>SSSIHL-STUDENT</strong> peers. Switch networks or the top badge accordingly.
+      </div>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
         <button onclick="handleNavAction()" class="px-6 py-3 rounded-2xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold hover:opacity-90 transition shadow-md">
-          Start Session →
+          Open Terminal →
         </button>
         <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-medium text-neutral-600 dark:text-neutral-300 transition">
           Open Source Code
@@ -112,14 +111,14 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
       <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs font-mono text-accent font-semibold">01</span>
-        <h3 class="text-sm font-semibold">Direct & Broadcast Modes</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Switch seamlessly between private direct messages and the live open campus lounge.</p>
+        <h3 class="text-sm font-semibold">Self-Destruct Audio Notes</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Record quick voice notes under 30s. Messages permanently vaporize once the listener finishes playback.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs font-mono text-accent font-semibold">02</span>
-        <h3 class="text-sm font-semibold">In-Memory Image Sharing</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Paste or drop photos directly into the stream without uploading files to central cloud buckets.</p>
+        <h3 class="text-sm font-semibold">Real-Time P2P Calling</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Direct WebRTC audio streams between active peers on the same campus LAN with low latency.</p>
       </div>
 
       <div onclick="openSourceNotice()" class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 transition group">
@@ -127,40 +126,36 @@
           <span class="text-xs font-mono text-accent font-semibold">03</span>
           <span class="text-xs text-neutral-400 group-hover:translate-x-0.5 transition">↗</span>
         </div>
-        <h3 class="text-sm font-semibold">Instant Panic Cloaking</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Press ESC twice to clear RAM and redirect the browser to Wikipedia instantly.</p>
+        <h3 class="text-sm font-semibold">Emoji Reactions & Media</h3>
+        <p class="text-xs text-neutral-500 leading-relaxed">Interactive emoji feedback on transmissions, image drops, and zero cloud log retention.</p>
       </div>
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: FULL DM & LOUNGE TERMINAL ==================== -->
+  <!-- ==================== VIEW 2: SPLIT DM & LOUNGE TERMINAL ==================== -->
   <main id="chatView" class="hidden w-full max-w-5xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
     <section id="sidebarPane" class="w-full sm:w-80 border-r border-neutral-200 dark:border-neutral-800 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30">
       
-      <!-- Search & Tabs -->
       <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 space-y-2.5">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-bold uppercase font-mono tracking-wide">Channels & Peers</span>
+          <span class="text-xs font-bold uppercase font-mono tracking-wide">LAN DIRECTORY</span>
           <span id="activeCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
         </div>
 
-        <!-- Mode Toggle: Lounge vs Direct -->
         <div class="flex p-1 bg-neutral-200/60 dark:bg-neutral-950 rounded-xl text-xs font-medium">
-          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition">Campus Lounge</button>
+          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold">Campus Lounge</button>
           <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition">Direct DMs</button>
         </div>
 
-        <input id="userSearchInput" type="text" placeholder="Search peers or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-neutral-400">
+        <input id="userSearchInput" type="text" placeholder="Search by handle or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-neutral-400">
       </div>
 
-      <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll">
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Profile Bar -->
       <div class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs glass-nav">
         <div class="flex items-center gap-2 truncate">
           <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
@@ -170,10 +165,10 @@
       </div>
     </section>
 
-    <!-- RIGHT SECTION: Chat Window -->
+    <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard relative">
       
-      <!-- DM / Lounge Header -->
+      <!-- DM Header -->
       <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass-nav">
         <div class="flex items-center gap-2.5">
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-neutral-400 hover:text-neutral-900 dark:hover:text-white font-mono p-1">← Back</button>
@@ -184,42 +179,91 @@
         </div>
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[10px] font-mono text-accent hidden animate-pulse">typing...</span>
+          
+          <!-- Audio Call Button (Visible in DMs) -->
+          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-mono flex items-center gap-1 transition">
+            <span>📞</span> Call
+          </button>
+          
           <span class="text-[10px] font-mono text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full border border-neutral-200 dark:border-neutral-800">
-            Ephemeral RAM
+            Ephemeral
           </span>
         </div>
       </div>
 
       <!-- Message History Scroll Area -->
       <div id="dmChatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
-        <!-- Rendered Messages -->
+        <!-- Messages -->
       </div>
 
-      <!-- Message Form & Image Upload -->
-      <form id="dmForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-2 glass-nav">
-        <!-- Hidden Image File Input -->
+      <!-- Message Form with Voice & Media Controls -->
+      <form id="dmForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-2 glass-nav relative">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
-        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Photo / Screenshot" class="w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-xs hover:bg-neutral-200 dark:hover:bg-neutral-800 transition">
+        
+        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Image" class="w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-xs hover:bg-neutral-200 dark:hover:bg-neutral-800 transition shrink-0">
           📎
+        </button>
+
+        <!-- Voice Note Record Button -->
+        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Note (<30s)" class="w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-xs hover:bg-neutral-200 dark:hover:bg-neutral-800 transition shrink-0">
+          <span id="voiceMicIcon">🎤</span>
         </button>
 
         <input id="dmInput" type="text" placeholder="Type message or paste image..." autocomplete="off" class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent">
         
-        <button id="dmSendBtn" type="submit" class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90">
+        <button id="dmSendBtn" type="submit" class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90 shrink-0">
           Send
         </button>
+
+        <!-- Recording HUD Overlay -->
+        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-accent/95 text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20">
+          <div class="flex items-center gap-2 font-mono text-xs">
+            <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+            <span>RECORDING AUDIO NOTE</span>
+            <span id="recordingTimer" class="font-bold">0:00</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[10px] font-mono hover:bg-black/40">CANCEL</button>
+            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-lg bg-white text-accent text-[10px] font-bold font-mono hover:bg-neutral-100">SEND</button>
+          </div>
+        </div>
       </form>
 
     </section>
   </main>
 
-  <!-- ==================== ONBOARDING & QUICK UNLOCK MODAL ==================== -->
+  <!-- ==================== WEBRTC CALL OVERLAY ==================== -->
+  <div id="callOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+      <div class="relative w-20 h-20 mx-auto">
+        <div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
+        <div class="relative w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-2xl font-mono border border-neutral-200 dark:border-neutral-700">
+          📞
+        </div>
+      </div>
+      <div>
+        <h3 id="callPeerName" class="text-base font-bold">@peer</h3>
+        <p id="callStatusLabel" class="text-xs text-neutral-400 font-mono pt-1">Connecting P2P Stream...</p>
+      </div>
+      <div class="flex justify-center gap-3">
+        <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-semibold text-xs hover:bg-emerald-600 transition hidden">
+          Accept
+        </button>
+        <button onclick="endAudioCall()" class="px-5 py-2.5 rounded-2xl bg-accent text-white font-semibold text-xs hover:opacity-90 transition">
+          End Call
+        </button>
+      </div>
+      <audio id="remoteAudioElement" autoplay class="hidden"></audio>
+    </div>
+  </div>
+
+  <!-- ==================== ONBOARDING & QUICK UNLOCK ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- VIEW A: Quick Unlock -->
+      <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[10px] font-mono text-accent font-semibold uppercase">Session Locked</span>
         
@@ -251,7 +295,7 @@
         </div>
       </div>
 
-      <!-- VIEW B: Step 1 Course -->
+      <!-- Step 1 Course -->
       <div id="stepCourse" class="space-y-3">
         <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 1 of 3</span>
         <h3 class="text-lg font-bold">Select your course</h3>
@@ -275,7 +319,7 @@
         <p class="text-center text-xs text-neutral-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
-      <!-- VIEW B: Step 2 Year -->
+      <!-- Step 2 Year -->
       <div id="stepYear" class="space-y-3 hidden">
         <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 2 of 3</span>
         <h3 class="text-lg font-bold">Select your academic year</h3>
@@ -288,7 +332,7 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- VIEW B: Step 3 Handle & Password -->
+      <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 3 of 3</span>
         <h3 class="text-lg font-bold" id="authHeading">Create your profile</h3>
@@ -331,7 +375,7 @@
   <footer class="w-full max-w-5xl mx-auto p-4 border-t border-neutral-200 dark:border-neutral-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-neutral-400 font-mono">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Double [ESC] to Panic Cloak</span>
+      <span>Session Active • <span class="text-neutral-500">[2× ESC to Cloak]</span></span>
     </div>
 
     <div class="px-3.5 py-1.5 rounded-full bg-neutral-200/60 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-300 font-medium flex items-center gap-1.5 shadow-sm">
@@ -350,15 +394,15 @@
     let selectedYear = "";
     let isLoginMode = false;
     let currentUser = null;
-    let activeChatUser = null; // null = Campus Lounge
+    let activeChatUser = null;
     let clientIP = "";
-    let selectedWifi = "StudentOne";
+    let selectedWifi = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
     let unreadMap = new Map();
     let typingTimeout = null;
 
-    // --- SYNTHESIZED WEB AUDIO SOUNDS ---
+    // --- Web Audio Synthesized SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = "sine", duration = 0.08) {
       if (audioCtx.state === "suspended") audioCtx.resume();
@@ -380,14 +424,12 @@
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
 
-    // --- PANIC / CLOAK BUTTON (Double ESC) ---
+    // --- Panic Cloak on 2x ESC ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         const now = Date.now();
-        if (now - lastEscPress < 500) {
-          triggerPanic();
-        }
+        if (now - lastEscPress < 500) triggerPanic();
         lastEscPress = now;
       }
     });
@@ -398,13 +440,13 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Fetch IP
+    // IP Check
     fetch("https://api64.ipify.org?format=json")
       .then(r => r.json())
       .then(d => clientIP = d.ip)
       .catch(() => clientIP = "lan_client");
 
-    // Startup Session Check
+    // Session Cache Startup Check
     window.addEventListener("DOMContentLoaded", () => {
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
@@ -434,11 +476,8 @@
     }
 
     function handleNavAction() {
-      if (currentUser) {
-        showChatView();
-      } else {
-        openAuthModal();
-      }
+      if (currentUser) showChatView();
+      else openAuthModal();
     }
 
     function showLandingView() {
@@ -495,13 +534,7 @@
         return;
       }
 
-      const { data, error } = await sb
-        .from("campus_users")
-        .select("*")
-        .eq("username", saved.username)
-        .eq("password", pass)
-        .maybeSingle();
-
+      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).eq("password", pass).maybeSingle();
       if (error || !data) {
         errBox.innerText = "Incorrect password.";
         errBox.classList.remove("hidden");
@@ -565,7 +598,7 @@
       }
     }
 
-    // --- REALTIME MESSAGING ENGINE ---
+    // --- REALTIME ENGINE & PRESENCE ---
     function initUserSession(userData) {
       currentUser = userData;
 
@@ -582,14 +615,14 @@
 
       selectLoungeChannel();
 
-      channel = sb.channel("nomesh_campus_mesh", {
+      // Channel keyed to current subnet to maintain isolation
+      channel = sb.channel(`lan_${selectedWifi.toLowerCase()}_mesh`, {
         config: {
           presence: { key: currentUser.username },
           broadcast: { self: false }
         }
       });
 
-      // Presence
       channel
         .on("presence", { event: "sync" }, () => {
           const state = channel.presenceState();
@@ -597,14 +630,11 @@
           onlineUsersMap.clear();
 
           Object.keys(state).forEach((key) => {
-            if (key !== currentUser.username) {
-              onlineUsersMap.set(key, state[key][0]);
-            }
+            if (key !== currentUser.username) onlineUsersMap.set(key, state[key][0]);
           });
           if (onlineUsersMap.size > prevCount) soundPeer();
           renderUsersList();
         })
-        // Broadcast Lounge Msg
         .on("broadcast", { event: "lounge_msg" }, ({ payload }) => {
           saveMessageToSession("GLOBAL_LOUNGE", payload);
           if (activeChatUser === null) {
@@ -612,7 +642,6 @@
             soundRecv();
           }
         })
-        // Direct DM Msg
         .on("broadcast", { event: "direct_msg" }, ({ payload }) => {
           if (payload.recipient === currentUser.username) {
             saveMessageToSession(payload.sender, payload);
@@ -626,12 +655,15 @@
             }
           }
         })
-        // Typing Broadcast
+        .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
+          applyReactionToDom(payload.id, payload.emoji, payload.by);
+        })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
           if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username) {
             showTypingVisual();
           }
         })
+        .on("broadcast", { event: "webrtc_signal" }, handleIncomingWebRTCSignal)
         .subscribe(async (status) => {
           if (status === "SUBSCRIBED") {
             await channel.track({
@@ -651,7 +683,6 @@
       typingTimeout = setTimeout(() => el.classList.add("hidden"), 1800);
     }
 
-    // Broadcast Typing Keypress
     document.getElementById("dmInput").addEventListener("input", () => {
       if (activeChatUser && channel) {
         channel.send({
@@ -662,7 +693,7 @@
       }
     });
 
-    // --- CHANNELS / TABS ---
+    // --- CHANNELS & DIRECT MESSAGING ---
     function selectLoungeChannel() {
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
@@ -671,9 +702,10 @@
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
       document.getElementById("chatPane").classList.remove("hidden");
       document.getElementById("chatPane").classList.add("flex");
+      document.getElementById("startCallBtn").classList.add("hidden");
 
       document.getElementById("activeChatPeerName").innerText = "Campus Public Lounge";
-      document.getElementById("activeChatPeerMeta").innerText = "Open Broadcast Channel";
+      document.getElementById("activeChatPeerMeta").innerText = `Subnet: ${selectedWifi}`;
       document.getElementById("dmInput").placeholder = "Broadcast to campus...";
       loadConversationFromSession("GLOBAL_LOUNGE");
       renderUsersList();
@@ -696,7 +728,7 @@
       badge.innerText = `${onlineUsersMap.size} Online`;
 
       if (peers.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-neutral-400 font-mono">No active peers online.</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-xs text-neutral-400 font-mono">No active peers on this subnet.</div>`;
         return;
       }
 
@@ -707,9 +739,7 @@
         
         const btn = document.createElement("button");
         btn.className = `w-full text-left p-2.5 rounded-2xl flex items-center justify-between transition ${
-          isSelected 
-            ? "bg-neutral-200 dark:bg-neutral-800" 
-            : "hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
+          isSelected ? "bg-neutral-200 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
         }`;
         
         btn.innerHTML = `
@@ -731,9 +761,7 @@
       });
     }
 
-    function filterUsers() {
-      renderUsersList();
-    }
+    function filterUsers() { renderUsersList(); }
 
     function selectPeerForChat(peer) {
       activeChatUser = peer;
@@ -744,10 +772,11 @@
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
       document.getElementById("chatPane").classList.remove("hidden");
       document.getElementById("chatPane").classList.add("flex");
+      document.getElementById("startCallBtn").classList.remove("hidden");
 
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
       document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${peer.wifi}]`;
-      document.getElementById("dmInput").placeholder = `Message @${peer.username}...`;
+      document.getElementById("dmInput").placeholder = `Direct transmission to @${peer.username}...`;
       document.getElementById("dmInput").focus();
 
       loadConversationFromSession(peer.username);
@@ -759,15 +788,20 @@
       document.getElementById("sidebarPane").classList.remove("hidden");
     }
 
-    // --- EPHEMERAL STORAGE HANDLERS ---
-    function getSessionKey(peerName) {
-      return `chat_${currentUser.username}_with_${peerName}`;
-    }
+    // --- EPHEMERAL STORAGE ---
+    function getSessionKey(peerName) { return `chat_${currentUser.username}_with_${peerName}`; }
 
     function saveMessageToSession(peerName, messageObj) {
       const key = getSessionKey(peerName);
       const history = JSON.parse(sessionStorage.getItem(key) || "[]");
       history.push(messageObj);
+      sessionStorage.setItem(key, JSON.stringify(history));
+    }
+
+    function removeMessageFromSession(peerName, id) {
+      const key = getSessionKey(peerName);
+      let history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      history = history.filter(m => m.id !== id);
       sessionStorage.setItem(key, JSON.stringify(history));
     }
 
@@ -788,34 +822,72 @@
         return;
       }
 
-      history.forEach(msg => {
-        renderBubble(msg, msg.sender === currentUser.username);
-      });
+      history.forEach(msg => renderBubble(msg, msg.sender === currentUser.username));
     }
 
-    // Render Message / Image Bubble
+    // --- MESSAGE RENDERING & REACTIONS ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
-      wrap.className = `flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-0.5`;
+      wrap.id = `msg-${msg.id}`;
+      wrap.className = `group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[9px] text-neutral-400 px-1 font-mono";
-      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-accent">• ${msg.wifi || 'LAN'}</span>`;
+      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-accent">• ${msg.wifi || selectedWifi}</span>`;
+
+      const contentHolder = document.createElement("div");
+      contentHolder.className = "relative flex items-center gap-1.5";
 
       const bubble = document.createElement("div");
-      bubble.className = `max-w-[80%] rounded-2xl text-xs leading-relaxed overflow-hidden ${
+      bubble.className = `max-w-[85%] rounded-2xl text-xs leading-relaxed overflow-hidden relative shadow-sm ${
         isSelf 
-          ? "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-br-none shadow-sm" 
+          ? "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-br-none" 
           : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
       }`;
 
-      if (msg.image) {
-        bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer" onclick="window.open('${msg.image}')">`;
-      } else {
+      // 1. Text Message
+      if (msg.text) {
         bubble.className += " px-3.5 py-2";
         bubble.textContent = msg.text;
+      } 
+      // 2. Image Message
+      else if (msg.image) {
+        bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer" onclick="window.open('${msg.image}')">`;
+      } 
+      // 3. Ephemeral Voice Note (<30s)
+      else if (msg.audio) {
+        bubble.className += " p-3 flex flex-col gap-2 min-w-[200px]";
+        bubble.innerHTML = `
+          <div class="flex items-center justify-between gap-2 font-mono text-[10px]">
+            <span class="text-accent flex items-center gap-1">🔥 Self-Destruct Audio</span>
+            <span class="text-neutral-400">${msg.duration}s</span>
+          </div>
+          <audio id="aud-${msg.id}" src="${msg.audio}" controls class="w-full h-8" onended="handleAudioDestruct('${msg.id}', '${msg.sender}')"></audio>
+        `;
       }
+
+      // Inline Emoji Reaction Bar
+      const reactionTrigger = document.createElement("div");
+      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs shadow-md";
+      reactionTrigger.innerHTML = `
+        <button onclick="sendReaction('${msg.id}', '🔥')">🔥</button>
+        <button onclick="sendReaction('${msg.id}', '💀')">💀</button>
+        <button onclick="sendReaction('${msg.id}', '👍')">👍</button>
+        <button onclick="sendReaction('${msg.id}', '❤️')">❤️</button>
+      `;
+
+      if (isSelf) {
+        contentHolder.appendChild(reactionTrigger);
+        contentHolder.appendChild(bubble);
+      } else {
+        contentHolder.appendChild(bubble);
+        contentHolder.appendChild(reactionTrigger);
+      }
+
+      const reactionsContainer = document.createElement("div");
+      reactionsContainer.id = `reactions-${msg.id}`;
+      reactionsContainer.className = "flex gap-1 text-[10px] font-mono px-1";
 
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("span");
@@ -823,20 +895,113 @@
       timeTag.textContent = timeStr;
 
       wrap.appendChild(meta);
-      wrap.appendChild(bubble);
+      wrap.appendChild(contentHolder);
+      wrap.appendChild(reactionsContainer);
       wrap.appendChild(timeTag);
       area.appendChild(wrap);
       area.scrollTop = area.scrollHeight;
     }
 
-    // --- IN-MEMORY IMAGE COMPRESSION & SENDING ---
+    // Reaction Broadcaster
+    function sendReaction(msgId, emoji) {
+      if (!channel) return;
+      applyReactionToDom(msgId, emoji, currentUser.username);
+      channel.send({
+        type: "broadcast",
+        event: "reaction_msg",
+        payload: { id: msgId, emoji: emoji, by: currentUser.username }
+      });
+    }
+
+    function applyReactionToDom(msgId, emoji, by) {
+      const container = document.getElementById(`reactions-${msgId}`);
+      if (!container) return;
+      const tag = document.createElement("span");
+      tag.className = "px-1.5 py-0.5 rounded-full bg-neutral-200/50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 animate-pulse";
+      tag.textContent = `${emoji} ${by}`;
+      container.appendChild(tag);
+    }
+
+    // Voice Note Self-Destruction on Completion
+    function handleAudioDestruct(msgId, sender) {
+      const wrap = document.getElementById(`msg-${msgId}`);
+      if (wrap) {
+        wrap.classList.add("destructing");
+        setTimeout(() => {
+          wrap.remove();
+          const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
+          removeMessageFromSession(targetKey, msgId);
+        }, 800);
+      }
+    }
+
+    // --- EPHEMERAL VOICE NOTE RECORDING (<30s) ---
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordStartTime = 0;
+    let recordTimerInterval = null;
+
+    async function toggleVoiceRecording() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        stopAndSendVoiceRecording();
+      } else {
+        startVoiceRecording();
+      }
+    }
+
+    async function startVoiceRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+        mediaRecorder.start();
+        recordStartTime = Date.now();
+
+        document.getElementById("recordingHUD").classList.remove("hidden");
+        recordTimerInterval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+          document.getElementById("recordingTimer").innerText = `0:${elapsed < 10 ? '0' : ''}${elapsed}`;
+          if (elapsed >= 30) stopAndSendVoiceRecording(); // Cap at 30 seconds
+        }, 1000);
+      } catch(e) {
+        alert("Microphone permission required for audio notes.");
+      }
+    }
+
+    function cancelVoiceRecording() {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        clearInterval(recordTimerInterval);
+        document.getElementById("recordingHUD").classList.add("hidden");
+      }
+    }
+
+    function stopAndSendVoiceRecording() {
+      if (!mediaRecorder) return;
+      clearInterval(recordTimerInterval);
+      const duration = Math.min(30, Math.max(1, Math.floor((Date.now() - recordStartTime) / 1000)));
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          dispatchPayload({ audio: reader.result, duration });
+        };
+        reader.readAsDataURL(audioBlob);
+        document.getElementById("recordingHUD").classList.add("hidden");
+      };
+      mediaRecorder.stop();
+    }
+
+    // --- IMAGE ATTACHMENTS ---
     function handleImageSelection(event) {
       const file = event.target.files[0];
       if (!file) return;
       processAndSendImage(file);
     }
 
-    // Paste Image Handler
     window.addEventListener("paste", (e) => {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
@@ -858,22 +1023,25 @@
           else if (h > maxDim) { w *= maxDim / h; h = maxDim; }
           canvas.width = w; canvas.height = h;
           canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-          const compressed = canvas.toDataURL("image/jpeg", 0.6);
-          dispatchPayload({ image: compressed });
+          dispatchPayload({ image: canvas.toDataURL("image/jpeg", 0.6) });
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    function dispatchPayload({ text = null, image = null }) {
-      if (!channel || (!text && !image)) return;
+    // --- PAYLOAD DISPATCH ---
+    function dispatchPayload({ text = null, image = null, audio = null, duration = null }) {
+      if (!channel || (!text && !image && !audio)) return;
 
       const payload = {
+        id: "msg_" + Math.random().toString(36).substr(2, 9),
         sender: currentUser.username,
         recipient: activeChatUser ? activeChatUser.username : null,
         text,
         image,
+        audio,
+        duration,
         wifi: selectedWifi,
         timestamp: Date.now()
       };
@@ -899,6 +1067,124 @@
       dispatchPayload({ text });
     });
 
+    // --- WEBRTC P2P AUDIO CALL ENGINE ---
+    let peerConnection = null;
+    let localStream = null;
+    let pendingOffer = null;
+
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+    async function initiateAudioCall() {
+      if (!activeChatUser || !channel) return;
+      document.getElementById("callOverlay").classList.remove("hidden");
+      document.getElementById("callPeerName").innerText = `@${activeChatUser.username}`;
+      document.getElementById("callStatusLabel").innerText = "Ringing peer...";
+
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      peerConnection = new RTCPeerConnection(rtcConfig);
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      peerConnection.ontrack = (e) => {
+        document.getElementById("remoteAudioElement").srcObject = e.streams[0];
+        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
+      };
+
+      peerConnection.onicecandidate = (e) => {
+        if (e.candidate) {
+          channel.send({
+            type: "broadcast",
+            event: "webrtc_signal",
+            payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: activeChatUser.username }
+          });
+        }
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      channel.send({
+        type: "broadcast",
+        event: "webrtc_signal",
+        payload: { type: "offer", offer: offer, from: currentUser.username, to: activeChatUser.username }
+      });
+    }
+
+    async function handleIncomingWebRTCSignal({ payload }) {
+      if (payload.to !== currentUser.username) return;
+
+      if (payload.type === "offer") {
+        pendingOffer = payload;
+        document.getElementById("callOverlay").classList.remove("hidden");
+        document.getElementById("callPeerName").innerText = `@${payload.from}`;
+        document.getElementById("callStatusLabel").innerText = "Incoming P2P Audio Call...";
+        document.getElementById("acceptCallBtn").classList.remove("hidden");
+      } else if (payload.type === "answer" && peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
+        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
+      } else if (payload.type === "candidate" && peerConnection) {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
+      } else if (payload.type === "end_call") {
+        endAudioCall(false);
+      }
+    }
+
+    async function acceptIncomingCall() {
+      document.getElementById("acceptCallBtn").classList.add("hidden");
+      document.getElementById("callStatusLabel").innerText = "Connecting...";
+
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      peerConnection = new RTCPeerConnection(rtcConfig);
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      peerConnection.ontrack = (e) => {
+        document.getElementById("remoteAudioElement").srcObject = e.streams[0];
+        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
+      };
+
+      peerConnection.onicecandidate = (e) => {
+        if (e.candidate) {
+          channel.send({
+            type: "broadcast",
+            event: "webrtc_signal",
+            payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: pendingOffer.from }
+          });
+        }
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      channel.send({
+        type: "broadcast",
+        event: "webrtc_signal",
+        payload: { type: "answer", answer: answer, from: currentUser.username, to: pendingOffer.from }
+      });
+    }
+
+    function endAudioCall(notify = true) {
+      if (notify && channel && (activeChatUser || pendingOffer)) {
+        const target = activeChatUser ? activeChatUser.username : pendingOffer.from;
+        channel.send({
+          type: "broadcast",
+          event: "webrtc_signal",
+          payload: { type: "end_call", from: currentUser.username, to: target }
+        });
+      }
+
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
+      pendingOffer = null;
+      document.getElementById("callOverlay").classList.add("hidden");
+      document.getElementById("acceptCallBtn").classList.add("hidden");
+    }
+
     function disconnectSession() {
       if (channel) sb.removeChannel(channel);
       sessionStorage.clear();
@@ -908,25 +1194,29 @@
       showLandingView();
     }
 
-    // Wi-Fi Switchers
+    // --- SUBNET SWITCHER ---
     const wifiOneBtn = document.getElementById("wifiOneBtn");
     const wifiTwoBtn = document.getElementById("wifiTwoBtn");
 
-    wifiOneBtn.addEventListener("click", () => {
-      selectedWifi = "StudentOne";
-      wifiOneBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
-      wifiTwoBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
-      if (channel && currentUser) channel.track({ ...currentUser, wifi: selectedWifi });
-    });
+    function switchSubnet(newWifi) {
+      selectedWifi = newWifi;
+      if (newWifi === "SSSIHL-STUDENT") {
+        wifiOneBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
+        wifiTwoBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
+      } else {
+        wifiTwoBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
+        wifiOneBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
+      }
+      if (currentUser) {
+        if (channel) sb.removeChannel(channel);
+        initUserSession(currentUser);
+      }
+    }
 
-    wifiTwoBtn.addEventListener("click", () => {
-      selectedWifi = "StudentTwo";
-      wifiTwoBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
-      wifiOneBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
-      if (channel && currentUser) channel.track({ ...currentUser, wifi: selectedWifi });
-    });
+    wifiOneBtn.addEventListener("click", () => switchSubnet("SSSIHL-STUDENT"));
+    wifiTwoBtn.addEventListener("click", () => switchSubnet("SSSIHL-STUDENT2"));
 
-    // Theme Toggle
+    // --- THEME SWITCHER ---
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
