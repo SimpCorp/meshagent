@@ -59,7 +59,6 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
-  <!-- TOP BAR -->
   <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div id="statusDot" class="w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
@@ -73,7 +72,6 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Network Switcher (Student vs Devs) -->
       <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
         <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1">
@@ -81,19 +79,16 @@
         </button>
       </div>
 
-      <!-- Theme Switcher -->
       <button id="themeToggle" class="w-8 h-8 rounded-full border border-slate-300 dark:border-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-darkMuted transition">
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
-      <!-- Nav Action Button -->
       <button id="navLaunchBtn" onclick="handleNavAction()" class="px-4 py-1.5 rounded-full bg-brand text-white text-xs font-semibold hover:bg-brandDark transition shadow-sm shadow-brand/30">
         Enter Terminal
       </button>
     </div>
   </header>
 
-  <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-10">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
@@ -121,7 +116,6 @@
       </div>
     </div>
 
-    <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full">
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">01</span>
@@ -143,10 +137,8 @@
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: SPLIT DM (DEFAULT) & LOUNGE ==================== -->
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
-    <!-- LEFT SIDEBAR -->
     <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/40">
       
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
@@ -166,12 +158,9 @@
         </div>
       </div>
 
-      <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
 
-      <!-- CAMPUS RADIO SIDE-BAR PLAYER -->
       <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
@@ -197,28 +186,40 @@
         </div>
       </div>
 
-      <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
         <div class="flex items-center gap-2 truncate">
-          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
-          <span id="myUsernameDisplay" class="font-semibold truncate">@me</span>
+          <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-darkBg flex items-center justify-center font-bold text-xs shrink-0 border border-slate-300 dark:border-slate-700">
+            <span id="myAvatarLetter">U</span>
+          </div>
+          <div class="truncate">
+            <div class="flex items-center gap-1.5">
+              <span id="myUsernameDisplay" class="font-bold truncate">@me</span>
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
+            </div>
+            <p id="myBioDisplay" class="text-[10px] text-slate-400 truncate">Tap to edit status...</p>
+          </div>
         </div>
-        <span class="text-[11px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium">Profile ⚙</span>
+        <span class="text-[11px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium">Settings ⚙</span>
       </div>
     </section>
 
-    <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard relative">
       
-      <!-- Chat Header -->
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-nav">
         <div class="flex items-center gap-2.5">
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
-          <div>
-            <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white">Select a peer</p>
-            <p id="activeChatPeerMeta" class="text-[11px] text-slate-400">No active session</p>
+          
+          <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition">
+            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-darkMuted flex items-center justify-center font-bold text-xs border border-slate-300 dark:border-slate-700">
+              ?
+            </div>
+            <div>
+              <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white">Select a peer</p>
+              <p id="activeChatPeerMeta" class="text-[11px] text-slate-400">No active session</p>
+            </div>
           </div>
         </div>
+
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
@@ -232,15 +233,12 @@
         </div>
       </div>
 
-      <!-- Message History Scroll Area -->
       <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll relative"></div>
 
-      <!-- Floating Unread New Messages Pill -->
       <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3 py-1.5 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-lg backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
         <span>↓</span> New messages
       </button>
 
-      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 glass-nav relative">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
@@ -258,7 +256,6 @@
           Send
         </button>
 
-        <!-- Recording HUD Overlay -->
         <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -275,7 +272,102 @@
     </section>
   </main>
 
-  <!-- ==================== DEV ACCESS PASSWORD MODAL ==================== -->
+  <div id="peerProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
+      <button onclick="closePeerProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+
+      <div class="text-center space-y-2 pt-2">
+        <div id="inspectAvatarBox" class="w-16 h-16 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-xl font-extrabold mx-auto border-2 border-slate-200 dark:border-slate-700 text-brand shadow-sm">
+          ?
+        </div>
+        <div>
+          <h3 id="inspectUsername" class="text-base font-extrabold text-slate-900 dark:text-white">@username</h3>
+          <div class="flex items-center justify-center gap-2 pt-1">
+            <span id="inspectStreamBadge" class="px-2.5 py-0.5 rounded-full bg-brand/10 text-brand text-[11px] font-bold border border-brand/20">Stream</span>
+            <span id="inspectYearBadge" class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-darkMuted text-slate-500 text-[11px] font-semibold border border-slate-200 dark:border-slate-800">Year</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-1">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status / Bio</span>
+        <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+          "No bio provided yet."
+        </p>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button id="inspectCallBtn" onclick="inspectPeerCallAction()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm">
+          <span>📞</span> Call Peer
+        </button>
+        <button onclick="closePeerProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition">
+          Message
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
+      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+
+      <div class="text-center space-y-1 pt-1">
+        <div class="w-14 h-14 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-lg font-bold mx-auto border-2 border-slate-200 dark:border-slate-700 text-brand">
+          <span id="profileAvatarInitial">U</span>
+        </div>
+        <h3 id="profileUsername" class="text-base font-bold">@username</h3>
+        <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
+        <div class="flex justify-between items-center">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Bio / Status</label>
+          <span id="bioSavedNotice" class="text-[10px] text-emerald-500 font-bold hidden">Saved ✓</span>
+        </div>
+        <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Prep for Sem 2" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+        <button onclick="saveMyBio()" class="w-full py-1.5 rounded-lg bg-brand text-white text-[11px] font-bold hover:bg-brandDark transition">
+          Update Status
+        </button>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold">Account Verification</span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
+        </div>
+        <button onclick="openVerificationNotice()" class="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition">
+          Get Verified
+        </button>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-brand/40 text-brand hover:bg-brand/10 text-xs font-bold transition">
+          Log Out
+        </button>
+        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="verifyNoticeModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl mx-auto">
+        🚧
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-base font-bold">Feature Under Development</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Institutional identity verification is currently undergoing testing. Stay tuned for updates.
+        </p>
+      </div>
+      <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition">
+        Understood
+      </button>
+    </div>
+  </div>
+
   <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -307,7 +399,6 @@
     </div>
   </div>
 
-  <!-- ==================== CAMPUS RADIO EARPHONES MODAL ==================== -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
       <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
@@ -338,63 +429,6 @@
     </div>
   </div>
 
-  <!-- ==================== USER PROFILE MODAL ==================== -->
-  <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
-      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
-
-      <div class="text-center space-y-1 pt-1">
-        <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold mx-auto border border-slate-200 dark:border-slate-700">
-          <span id="profileAvatarInitial">U</span>
-        </div>
-        <h3 id="profileUsername" class="text-base font-bold">@username</h3>
-        <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
-      </div>
-
-      <!-- Verification Section -->
-      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-3">
-        <div class="flex justify-between items-center">
-          <span class="text-xs font-bold">Account Verification</span>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
-        </div>
-        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-          Verify your student identity to prevent handle spoofing across campus.
-        </p>
-        <button onclick="openVerificationNotice()" class="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition">
-          Get Verified
-        </button>
-      </div>
-
-      <div class="flex gap-2">
-        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-brand/40 text-brand hover:bg-brand/10 text-xs font-bold transition">
-          Log Out
-        </button>
-        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition">
-          Done
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Verification Notice Modal -->
-  <div id="verifyNoticeModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
-      <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl mx-auto">
-        🚧
-      </div>
-      <div class="space-y-1">
-        <h3 class="text-base font-bold">Feature Under Development</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Institutional identity verification is currently undergoing testing. Stay tuned for updates.
-        </p>
-      </div>
-      <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition">
-        Understood
-      </button>
-    </div>
-  </div>
-
-  <!-- ==================== WEBRTC CALL OVERLAY ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
       <div class="relative w-20 h-20 mx-auto">
@@ -419,13 +453,11 @@
     </div>
   </div>
 
-  <!-- ==================== ONBOARDING & AUTH MODAL ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -457,10 +489,9 @@
         </div>
       </div>
 
-      <!-- Step 1 Course -->
       <div id="stepCourse" class="space-y-3">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
-        <h3 class="text-lg font-bold">Select your course</h3>
+        <h3 class="text-lg font-bold">Select your stream</h3>
         <div class="grid grid-cols-1 gap-1.5">
           <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
             <span>BCom (Hons)</span> <span class="text-slate-400">→</span>
@@ -481,7 +512,6 @@
         <p class="text-center text-xs text-slate-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
-      <!-- Step 2 Year -->
       <div id="stepYear" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 2 of 3</span>
         <h3 class="text-lg font-bold">Select your academic year</h3>
@@ -494,7 +524,6 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
         <h3 class="text-lg font-bold" id="authHeading">Create your profile</h3>
@@ -517,7 +546,6 @@
     </div>
   </div>
 
-  <!-- Open Source Contact Modal -->
   <div id="sourceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold">Open Source & Audits</h3>
@@ -533,7 +561,6 @@
     </div>
   </div>
 
-  <!-- PROMINENT DEVELOPER FOOTER -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -563,6 +590,7 @@
     let unreadMap = new Map();
     let typingTimeout = null;
     let radioCountdownInterval = null;
+    let inspectedPeerObj = null;
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -586,7 +614,7 @@
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
 
-    // --- Keyboard Shortcuts (Ctrl+K Search, 2x ESC Cloak) ---
+    // --- Keyboard Shortcuts ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -619,7 +647,6 @@
         }
       }
 
-      // Check if Dev authorization flag exists in session
       if (sessionStorage.getItem("dev_authenticated") === "true") {
         currentNetwork = "DEVS";
         updateNetworkUI();
@@ -761,7 +788,7 @@
       }
     }
 
-    // --- NETWORK SWITCHER & DEV AUTH GATE ("SaiAgent01") ---
+    // --- NETWORK SWITCHER & DEV AUTH GATE ---
     function promptDevsAccess() {
       if (sessionStorage.getItem("dev_authenticated") === "true") {
         switchToDevNetwork();
@@ -783,7 +810,6 @@
       const card = document.getElementById("devModalCard");
       err.classList.add("hidden");
 
-      // Verifies password: "SaiAgent01"
       if (input === "SaiAgent01") {
         sessionStorage.setItem("dev_authenticated", "true");
         closeDevModal();
@@ -792,7 +818,7 @@
         err.innerText = "Invalid Developer Key. Access Denied.";
         err.classList.remove("hidden");
         card.classList.remove("shake");
-        void card.offsetWidth; // trigger reflow
+        void card.offsetWidth;
         card.classList.add("shake");
       }
     }
@@ -837,7 +863,7 @@
       }
     }
 
-    // --- REALTIME ENGINE & PRESENCE (Isolated per network) ---
+    // --- REALTIME ENGINE & PRESENCE ---
     function initUserSession(userData) {
       currentUser = userData;
 
@@ -852,7 +878,6 @@
       updateProfileUI();
       selectDirectTab();
 
-      // Channel isolation based on student vs devs
       const channelName = currentNetwork === "DEVS" ? "lan_devs_private" : "lan_sssihl_student_mesh";
 
       channel = sb.channel(channelName, {
@@ -886,7 +911,6 @@
             saveMessageToSession(payload.sender, payload);
             soundRecv();
             
-            // Send back delivery acknowledgment
             channel.send({
               type: "broadcast",
               event: "msg_ack",
@@ -905,7 +929,7 @@
         .on("broadcast", { event: "msg_ack" }, ({ payload }) => {
           if (payload.to === currentUser.username) {
             const checkEl = document.getElementById(`ack-${payload.id}`);
-            if (checkEl) checkEl.innerText = "✓✓"; // Double check delivered
+            if (checkEl) checkEl.innerText = "✓✓";
           }
         })
         .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
@@ -930,7 +954,8 @@
           username: currentUser.username,
           course: currentUser.course,
           year: currentUser.year,
-          network: currentNetwork
+          network: currentNetwork,
+          bio: currentUser.bio || ""
         });
       }
     }
@@ -960,6 +985,7 @@
       if (!activeChatUser) {
         document.getElementById("activeChatPeerName").innerText = "Select a Peer";
         document.getElementById("activeChatPeerMeta").innerText = "Choose an active student to message";
+        document.getElementById("activeChatPeerAvatar").innerText = "?";
         document.getElementById("startCallBtn").classList.add("hidden");
         document.getElementById("dmInput").setAttribute("disabled", "true");
         document.getElementById("dmSendBtn").setAttribute("disabled", "true");
@@ -967,7 +993,7 @@
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
             <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the left directory to start a direct 1-on-1 private chat.</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the left directory to inspect their stream/bio and message directly.</p>
           </div>
         `;
       } else {
@@ -989,6 +1015,7 @@
       document.getElementById("dmInput").removeAttribute("disabled");
       document.getElementById("dmSendBtn").removeAttribute("disabled");
 
+      document.getElementById("activeChatPeerAvatar").innerText = "👥";
       document.getElementById("activeChatPeerName").innerText = currentNetwork === "DEVS" ? "Developer Mesh Lounge" : "Campus Public Lounge";
       document.getElementById("activeChatPeerMeta").innerText = `Subnet Relay: ${currentNetwork}`;
       document.getElementById("dmInput").placeholder = "Broadcast to room...";
@@ -1016,16 +1043,19 @@
       peers.forEach(peer => {
         const isSelected = activeChatUser && activeChatUser.username === peer.username;
         const unreadCount = unreadMap.get(peer.username) || 0;
+        const initial = peer.username.charAt(0).toUpperCase();
         
-        const btn = document.createElement("button");
-        btn.className = `w-full text-left p-2.5 rounded-2xl flex items-center justify-between transition ${
+        const row = document.createElement("div");
+        row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer ${
           isSelected ? "bg-slate-200 dark:bg-darkMuted" : "hover:bg-slate-100 dark:hover:bg-darkMuted/60"
         }`;
         
-        btn.innerHTML = `
-          <div class="flex items-center gap-2.5 truncate">
-            <div class="w-2.5 h-2.5 rounded-full ${currentNetwork === 'DEVS' ? 'bg-devGreen' : 'bg-emerald-500'} shrink-0"></div>
-            <div class="truncate">
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5 truncate" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
+            <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-darkBg flex items-center justify-center font-bold text-xs shrink-0 border border-slate-300 dark:border-slate-700 text-brand">
+              ${initial}
+            </div>
+            <div class="truncate text-left">
               <div class="flex items-center gap-1">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
                 ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>` : ''}
@@ -1033,17 +1063,20 @@
               <p class="text-[11px] text-slate-400 font-medium truncate">${peer.course} • ${peer.year}</p>
             </div>
           </div>
-          <span class="text-[10px] font-semibold text-slate-400 bg-slate-200/60 dark:bg-darkBg px-2 py-0.5 rounded-md font-mono">${currentNetwork}</span>
+          
+          <button onclick="event.stopPropagation(); inspectPeerProfile('${peer.username}')" title="View Profile & Stream" class="p-1.5 text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
+            👁️
+          </button>
         `;
 
-        btn.onclick = () => selectPeerForChat(peer);
-        container.appendChild(btn);
+        container.appendChild(row);
       });
     }
 
     function filterUsers() { renderUsersList(); }
 
     function selectPeerForChat(peer) {
+      if (!peer) return;
       activeChatUser = peer;
       unreadMap.delete(peer.username);
       
@@ -1056,6 +1089,7 @@
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.remove("hidden");
 
+      document.getElementById("activeChatPeerAvatar").innerText = peer.username.charAt(0).toUpperCase();
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
       document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${currentNetwork}]`;
       
@@ -1075,7 +1109,93 @@
       document.getElementById("sidebarPane").classList.remove("hidden");
     }
 
-    // --- CAMPUS RADIO SYSTEM (<30s Warning & Signal Check) ---
+    // --- PEER PROFILE INSPECTOR MODAL ---
+    function inspectPeerProfile(peerUsername) {
+      const peer = onlineUsersMap.get(peerUsername);
+      if (!peer) return;
+      inspectedPeerObj = peer;
+
+      document.getElementById("inspectAvatarBox").innerText = peer.username.charAt(0).toUpperCase();
+      document.getElementById("inspectUsername").innerText = `@${peer.username}`;
+      document.getElementById("inspectStreamBadge").innerText = peer.course || "General";
+      document.getElementById("inspectYearBadge").innerText = `${peer.year || '1st'} Year`;
+      
+      const bioText = peer.bio && peer.bio.trim().length > 0 ? `"${peer.bio}"` : "No status/bio provided yet.";
+      document.getElementById("inspectBioText").innerText = bioText;
+
+      document.getElementById("peerProfileModal").classList.remove("hidden");
+    }
+
+    function openActivePeerProfileModal() {
+      if (activeChatUser) {
+        inspectPeerProfile(activeChatUser.username);
+      }
+    }
+
+    function closePeerProfileModal() {
+      document.getElementById("peerProfileModal").classList.add("hidden");
+    }
+
+    function inspectPeerCallAction() {
+      if (inspectedPeerObj) {
+        selectPeerForChat(inspectedPeerObj);
+        closePeerProfileModal();
+        initiateAudioCall();
+      }
+    }
+
+    // --- USER PROFILE & BIO CONFIGURATION ---
+    function openProfileModal() {
+      if (!currentUser) return;
+      document.getElementById("profileModal").classList.remove("hidden");
+      document.getElementById("profileAvatarInitial").innerText = currentUser.username.charAt(0).toUpperCase();
+      document.getElementById("profileUsername").innerText = `@${currentUser.username}`;
+      document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
+      document.getElementById("myBioInput").value = currentUser.bio || "";
+    }
+
+    function closeProfileModal() {
+      document.getElementById("profileModal").classList.add("hidden");
+      document.getElementById("bioSavedNotice").classList.add("hidden");
+    }
+
+    async function saveMyBio() {
+      const newBio = document.getElementById("myBioInput").value.trim();
+      currentUser.bio = newBio;
+      
+      const notice = document.getElementById("bioSavedNotice");
+      notice.classList.remove("hidden");
+
+      document.getElementById("myBioDisplay").innerText = newBio || "Tap to edit status...";
+      
+      // Update locally in cache & broadcast live across presence
+      localStorage.setItem("nomesh_saved_user", JSON.stringify({
+        username: currentUser.username,
+        course: currentUser.course,
+        year: currentUser.year,
+        bio: newBio
+      }));
+
+      await broadcastPresence();
+      setTimeout(() => notice.classList.add("hidden"), 2000);
+    }
+
+    function openVerificationNotice() {
+      document.getElementById("verifyNoticeModal").classList.remove("hidden");
+    }
+
+    function closeVerificationNotice() {
+      document.getElementById("verifyNoticeModal").classList.add("hidden");
+    }
+
+    function updateProfileUI() {
+      document.getElementById("myUsernameDisplay").innerText = `@${currentUser.username} (${currentUser.course})`;
+      document.getElementById("myAvatarLetter").innerText = currentUser.username.charAt(0).toUpperCase();
+      document.getElementById("myBioDisplay").innerText = currentUser.bio || "Tap to edit status...";
+      document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
+    }
+
+    // --- CAMPUS RADIO SYSTEM ---
     function requestRadioChannel(lang) {
       clearInterval(radioCountdownInterval);
       
@@ -1156,7 +1276,7 @@
       else pill.classList.add("hidden");
     }
 
-    // --- MESSAGE RENDERING (With Checks & Reactions) ---
+    // --- MESSAGE RENDERING ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -1258,32 +1378,6 @@
           removeMessageFromSession(targetKey, msgId);
         }, 800);
       }
-    }
-
-    // --- PROFILE & NOTICES ---
-    function openProfileModal() {
-      if (!currentUser) return;
-      document.getElementById("profileModal").classList.remove("hidden");
-      document.getElementById("profileAvatarInitial").innerText = currentUser.username.charAt(0).toUpperCase();
-      document.getElementById("profileUsername").innerText = `@${currentUser.username}`;
-      document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
-    }
-
-    function closeProfileModal() {
-      document.getElementById("profileModal").classList.add("hidden");
-    }
-
-    function openVerificationNotice() {
-      document.getElementById("verifyNoticeModal").classList.remove("hidden");
-    }
-
-    function closeVerificationNotice() {
-      document.getElementById("verifyNoticeModal").classList.add("hidden");
-    }
-
-    function updateProfileUI() {
-      document.getElementById("myUsernameDisplay").innerText = `@${currentUser.username} (${currentUser.course})`;
-      document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
     }
 
     // --- EPHEMERAL VOICE RECORDER (<30s) ---
@@ -1418,12 +1512,18 @@
       dispatchPayload({ text });
     });
 
-    // --- WEBRTC CALL ENGINE ---
+    // --- WEBRTC RELIABLE CALL ENGINE (STUN + TURN RELAYS) ---
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
 
-    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
+        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelay', credential: 'openrelay' }
+      ]
+    };
 
     async function initiateAudioCall() {
       if (!activeChatUser || !channel) return;
@@ -1467,7 +1567,7 @@
         pendingOffer = payload;
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
-        document.getElementById("callStatusLabel").innerText = "Incoming P2P Audio Call...";
+        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
         document.getElementById("acceptCallBtn").classList.remove("hidden");
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
