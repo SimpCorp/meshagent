@@ -55,10 +55,21 @@
       40%, 80% { transform: translateX(6px); }
     }
     .shake { animation: shake 0.4s ease-in-out; }
+    
+    /* Range slider custom styling */
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 12px;
+      width: 12px;
+      border-radius: 9999px;
+      background: #E11D48;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
+  <!-- TOP BAR -->
   <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div id="statusDot" class="w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
@@ -72,6 +83,7 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Network Switcher -->
       <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
         <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1">
@@ -79,16 +91,19 @@
         </button>
       </div>
 
+      <!-- Theme Switcher -->
       <button id="themeToggle" class="w-8 h-8 rounded-full border border-slate-300 dark:border-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-darkMuted transition">
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
+      <!-- Nav Action Button -->
       <button id="navLaunchBtn" onclick="handleNavAction()" class="px-4 py-1.5 rounded-full bg-brand text-white text-xs font-semibold hover:bg-brandDark transition shadow-sm shadow-brand/30">
         Enter Terminal
       </button>
     </div>
   </header>
 
+  <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-10">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
@@ -116,6 +131,7 @@
       </div>
     </div>
 
+    <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full">
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">01</span>
@@ -132,13 +148,15 @@
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">03</span>
         <h3 class="text-sm font-bold">Campus Radio Hub</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Stream background music streams across English, Hindi, and regional languages while texting.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Stream background music streams across English, Hindi, and regional languages with dedicated volume control.</p>
       </div>
     </div>
   </main>
 
+  <!-- ==================== VIEW 2: SPLIT DM (DEFAULT) & LOUNGE ==================== -->
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
+    <!-- LEFT SIDEBAR -->
     <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/40">
       
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
@@ -158,11 +176,14 @@
         </div>
       </div>
 
+      <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll">
-        </div>
+        <!-- Rendered dynamically -->
+      </div>
 
-      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40">
-        <div class="flex items-center justify-between mb-2">
+      <!-- CAMPUS RADIO SIDE-BAR PLAYER (With Volume Control) -->
+      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
+        <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
             <span class="text-[11px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Radio</span>
@@ -184,8 +205,16 @@
             OTH
           </button>
         </div>
+
+        <!-- Volume Control Slider -->
+        <div class="flex items-center gap-2 pt-0.5 px-1">
+          <span class="text-[10px] text-slate-400">🔈</span>
+          <input id="radioVolumeSlider" type="range" min="0" max="100" value="80" oninput="adjustRadioVolume(this.value)" class="w-full h-1 bg-slate-200 dark:bg-darkBg rounded-lg appearance-none cursor-pointer">
+          <span class="text-[10px] text-slate-400">🔊</span>
+        </div>
       </div>
 
+      <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
         <div class="flex items-center gap-2 truncate">
           <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-darkBg flex items-center justify-center font-bold text-xs shrink-0 border border-slate-300 dark:border-slate-700">
@@ -203,8 +232,10 @@
       </div>
     </section>
 
+    <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard relative">
       
+      <!-- Chat Header -->
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-nav">
         <div class="flex items-center gap-2.5">
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
@@ -233,12 +264,15 @@
         </div>
       </div>
 
+      <!-- Message History Scroll Area -->
       <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll relative"></div>
 
+      <!-- Floating Unread New Messages Pill -->
       <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3 py-1.5 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-lg backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
         <span>↓</span> New messages
       </button>
 
+      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 glass-nav relative">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
@@ -256,6 +290,7 @@
           Send
         </button>
 
+        <!-- Recording HUD Overlay -->
         <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -272,6 +307,7 @@
     </section>
   </main>
 
+  <!-- ==================== PEER PROFILE VIEW MODAL ==================== -->
   <div id="peerProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closePeerProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -289,6 +325,7 @@
         </div>
       </div>
 
+      <!-- Peer Bio Card -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-1">
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status / Bio</span>
         <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
@@ -307,6 +344,7 @@
     </div>
   </div>
 
+  <!-- ==================== USER PROFILE & BIO SETTINGS MODAL ==================== -->
   <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -319,9 +357,10 @@
         <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
       </div>
 
+      <!-- Bio Input Option (With 2-hour session notice) -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Bio / Status</label>
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Status (Active 2 Hours)</label>
           <span id="bioSavedNotice" class="text-[10px] text-emerald-500 font-bold hidden">Saved ✓</span>
         </div>
         <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Prep for Sem 2" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
@@ -330,6 +369,7 @@
         </button>
       </div>
 
+      <!-- Verification Section -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold">Account Verification</span>
@@ -351,6 +391,7 @@
     </div>
   </div>
 
+  <!-- Verification Notice Modal -->
   <div id="verifyNoticeModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
       <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl mx-auto">
@@ -368,6 +409,7 @@
     </div>
   </div>
 
+  <!-- ==================== DEV ACCESS PASSWORD MODAL ==================== -->
   <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -399,6 +441,7 @@
     </div>
   </div>
 
+  <!-- ==================== CAMPUS RADIO EARPHONES MODAL ==================== -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
       <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
@@ -429,6 +472,7 @@
     </div>
   </div>
 
+  <!-- ==================== WEBRTC CALL OVERLAY ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
       <div class="relative w-20 h-20 mx-auto">
@@ -453,11 +497,13 @@
     </div>
   </div>
 
+  <!-- ==================== ONBOARDING & AUTH MODAL ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
+      <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -489,6 +535,7 @@
         </div>
       </div>
 
+      <!-- Step 1 Course -->
       <div id="stepCourse" class="space-y-3">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
         <h3 class="text-lg font-bold">Select your stream</h3>
@@ -512,6 +559,7 @@
         <p class="text-center text-xs text-slate-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
+      <!-- Step 2 Year -->
       <div id="stepYear" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 2 of 3</span>
         <h3 class="text-lg font-bold">Select your academic year</h3>
@@ -524,6 +572,7 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
+      <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
         <h3 class="text-lg font-bold" id="authHeading">Create your profile</h3>
@@ -546,6 +595,7 @@
     </div>
   </div>
 
+  <!-- Open Source Contact Modal -->
   <div id="sourceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold">Open Source & Audits</h3>
@@ -561,6 +611,7 @@
     </div>
   </div>
 
+  <!-- FOOTER -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -584,13 +635,14 @@
     let isLoginMode = false;
     let currentUser = null;
     let activeChatUser = null;
-    let currentNetwork = "SSSIHL-STUDENT"; // 'SSSIHL-STUDENT' or 'DEVS'
+    let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
     let unreadMap = new Map();
     let typingTimeout = null;
     let radioCountdownInterval = null;
     let inspectedPeerObj = null;
+    let radioAudioVolume = 0.8;
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -635,12 +687,21 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Startup Session Restore
+    // Startup Session Restore with 2-Hour Bio Session Check
     window.addEventListener("DOMContentLoaded", () => {
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
         try {
           const user = JSON.parse(cached);
+          
+          // Check 2-hour bio expiry
+          const bioExpiry = localStorage.getItem("bio_expiry");
+          if (bioExpiry && Date.now() > parseInt(bioExpiry, 10)) {
+            user.bio = "";
+            localStorage.removeItem("bio_expiry");
+            localStorage.setItem("nomesh_saved_user", JSON.stringify(user));
+          }
+
           showQuickUnlock(user);
         } catch(e) {
           localStorage.removeItem("nomesh_saved_user");
@@ -733,6 +794,14 @@
         errBox.innerText = "Incorrect password.";
         errBox.classList.remove("hidden");
         return;
+      }
+
+      // Restore active unexpired bio to session
+      const bioExpiry = localStorage.getItem("bio_expiry");
+      if (bioExpiry && Date.now() <= parseInt(bioExpiry, 10)) {
+        data.bio = saved.bio || "";
+      } else {
+        data.bio = "";
       }
 
       document.getElementById("stepQuickUnlock").classList.add("hidden");
@@ -870,7 +939,8 @@
       localStorage.setItem("nomesh_saved_user", JSON.stringify({
         username: userData.username,
         course: userData.course,
-        year: userData.year
+        year: userData.year,
+        bio: userData.bio || ""
       }));
 
       closeAuthModal();
@@ -1144,7 +1214,7 @@
       }
     }
 
-    // --- USER PROFILE & BIO CONFIGURATION ---
+    // --- USER PROFILE & BIO CONFIGURATION (2-Hour Expiring Session) ---
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileModal").classList.remove("hidden");
@@ -1168,7 +1238,10 @@
 
       document.getElementById("myBioDisplay").innerText = newBio || "Tap to edit status...";
       
-      // Update locally in cache & broadcast live across presence
+      // Save bio with 2-hour expiration timestamp (2 * 60 * 60 * 1000 ms)
+      const expiryTimestamp = Date.now() + 2 * 60 * 60 * 1000;
+      localStorage.setItem("bio_expiry", expiryTimestamp.toString());
+
       localStorage.setItem("nomesh_saved_user", JSON.stringify({
         username: currentUser.username,
         course: currentUser.course,
@@ -1195,7 +1268,11 @@
       document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
     }
 
-    // --- CAMPUS RADIO SYSTEM ---
+    // --- CAMPUS RADIO SYSTEM WITH VOLUME CONTROL ---
+    function adjustRadioVolume(volPercent) {
+      radioAudioVolume = volPercent / 100;
+    }
+
     function requestRadioChannel(lang) {
       clearInterval(radioCountdownInterval);
       
@@ -1512,7 +1589,7 @@
       dispatchPayload({ text });
     });
 
-    // --- WEBRTC RELIABLE CALL ENGINE (STUN + TURN RELAYS) ---
+    // --- WEBRTC RELIABLE CALL ENGINE ---
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
