@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAN CHAT — Direct Campus Network</title>
+  <title>LAN CHAT — Campus Network</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,16 +17,17 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            mono: ['"Space Mono"', 'monospace']
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
           },
           colors: {
-            accent: '#D71921',
-            verified: '#0A66C2',
-            darkBg: '#0e0e10',
-            darkCard: '#18181b',
-            lightBg: '#f4f4f6',
-            lightCard: '#ffffff'
+            brand: '#E11D48',
+            brandDark: '#BE123C',
+            darkBg: '#090A0F',
+            darkCard: '#12141C',
+            darkMuted: '#1A1D27',
+            lightBg: '#F8FAFC',
+            lightCard: '#FFFFFF',
+            lightMuted: '#F1F5F9'
           }
         }
       }
@@ -34,46 +35,46 @@
   </script>
   <style>
     .glass-nav {
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
     .custom-scroll::-webkit-scrollbar { width: 4px; }
     .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 4px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(140, 140, 160, 0.2); border-radius: 9999px; }
     @keyframes burn {
       0% { opacity: 1; transform: scale(1); filter: blur(0); }
-      50% { opacity: 0.5; transform: scale(0.95); filter: blur(2px) contrast(200%); }
-      100% { opacity: 0; transform: scale(0.8); filter: blur(6px); height: 0; margin: 0; padding: 0; }
+      50% { opacity: 0.5; transform: scale(0.96); filter: blur(2px) contrast(150%); }
+      100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
     .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
   </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-neutral-900 dark:text-neutral-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
+<body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
   <!-- TOP BAR -->
-  <header class="w-full max-w-5xl mx-auto p-4 flex items-center justify-between z-30">
+  <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-      <div class="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></div>
+      <div class="w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
       <div class="flex flex-col">
-        <h1 class="text-sm font-semibold tracking-tight">LAN CHAT</h1>
-        <span class="text-[10px] text-neutral-400 font-mono">Local Network Wire</span>
+        <h1 class="text-sm font-bold tracking-tight">LAN CHAT</h1>
+        <span class="text-[11px] text-slate-400 font-medium">Campus Local Messenger</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- Wi-Fi Subnet Switcher -->
-      <div class="flex p-0.5 bg-neutral-200/70 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 rounded-full text-xs font-mono">
-        <button id="wifiOneBtn" class="px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium">SSSIHL-STUDENT</button>
-        <button id="wifiTwoBtn" class="px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white">SSSIHL-STUDENT2</button>
+      <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
+        <button id="wifiOneBtn" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
+        <button id="wifiTwoBtn" class="px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium">SSSIHL-STUDENT2</button>
       </div>
 
       <!-- Theme Switcher -->
-      <button id="themeToggle" class="w-8 h-8 rounded-full border border-neutral-300 dark:border-neutral-800 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-900 transition">
+      <button id="themeToggle" class="w-8 h-8 rounded-full border border-slate-300 dark:border-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-darkMuted transition">
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
-      <!-- Dynamic Nav Action Button -->
-      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-4 py-1.5 rounded-full bg-accent text-white text-xs font-semibold hover:opacity-90 transition shadow-sm">
+      <!-- Nav Action Button -->
+      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-4 py-1.5 rounded-full bg-brand text-white text-xs font-semibold hover:bg-brandDark transition shadow-sm shadow-brand/30">
         Enter Terminal
       </button>
     </div>
@@ -82,76 +83,73 @@
   <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-10">
     <div class="text-center space-y-4 max-w-xl">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 text-xs font-medium text-neutral-500 shadow-sm">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
         Direct Campus Communication
       </div>
-      <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-950 dark:text-white">
-        Simple. Secure.<br>Direct Campus Messaging.
+      <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+        Simple. Private.<br>Direct Campus Messaging.
       </h2>
-      <p class="text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
-        Connect directly with students across the campus network. Real-time direct messaging, ephemeral audio notes, and LinkedIn-verified identity authentication.
+      <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
+        Real-time direct messaging, ephemeral audio clips, and 24/7 background audio lounges for students across the local campus network.
       </p>
 
-      <!-- Subnet Isolation Advisory Note -->
-      <div class="p-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 text-xs font-mono leading-relaxed text-left text-neutral-600 dark:text-neutral-400">
-        <span class="text-accent font-bold">● Network Notice:</span> Peers on <strong>SSSIHL-STUDENT</strong> communicate within their isolated network segment. If a peer is connected to <strong>SSSIHL-STUDENT2</strong>, ensure both parties select the matching network above.
+      <!-- Subnet Advisory -->
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
+        <span class="text-brand font-bold">● Network Segment Notice:</span> Peers on <strong>SSSIHL-STUDENT</strong> communicate within their isolated network segment. If a friend is on <strong>SSSIHL-STUDENT2</strong>, both should toggle to the matching network badge above.
       </div>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
-        <button onclick="handleNavAction()" class="px-6 py-3 rounded-2xl bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold hover:opacity-90 transition shadow-md">
-          Open Terminal →
+        <button onclick="handleNavAction()" class="px-7 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:opacity-90 transition shadow-md">
+          Open Messages →
         </button>
-        <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-neutral-300 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-xs font-medium text-neutral-600 dark:text-neutral-300 transition">
+        <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold text-slate-600 dark:text-slate-300 transition">
           Open Source Code
         </button>
       </div>
     </div>
 
     <!-- Feature Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-      <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
-        <span class="text-xs font-mono text-accent font-semibold">01</span>
-        <h3 class="text-sm font-semibold">Direct 1-on-1 Chats</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Fast direct messaging and audio calling with live active peers on your local network.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full">
+      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+        <span class="text-xs text-brand font-bold">01</span>
+        <h3 class="text-sm font-bold">Direct 1-on-1 Chats</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Fast direct messaging and voice calling with live active peers on your local network.</p>
       </div>
 
-      <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
-        <span class="text-xs font-mono text-accent font-semibold">02</span>
-        <h3 class="text-sm font-semibold">Self-Destruct Voice Notes</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Send voice clips under 30s that permanently erase the moment playback finishes.</p>
+      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+        <span class="text-xs text-brand font-bold">02</span>
+        <h3 class="text-sm font-bold">Self-Destruct Audio Notes</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Send voice clips under 30s that permanently erase the moment playback finishes.</p>
       </div>
 
-      <div onclick="openSourceNotice()" class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 transition group">
-        <div class="flex justify-between items-center">
-          <span class="text-xs font-mono text-accent font-semibold">03</span>
-          <span class="text-xs text-neutral-400 group-hover:translate-x-0.5 transition">↗</span>
-        </div>
-        <h3 class="text-sm font-semibold">LinkedIn Verification</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Keep your custom pseudonym while linking your verified student identity to prevent spoofing.</p>
+      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+        <span class="text-xs text-brand font-bold">03</span>
+        <h3 class="text-sm font-bold">Campus Radio Hub</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Stream background music streams across English, Hindi, and regional languages while texting.</p>
       </div>
     </div>
   </main>
 
   <!-- ==================== VIEW 2: SPLIT DM (DEFAULT) & LOUNGE ==================== -->
-  <main id="chatView" class="hidden w-full max-w-5xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl relative overflow-hidden my-auto">
+  <main id="chatView" class="hidden w-full max-w-6xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="w-full sm:w-80 border-r border-neutral-200 dark:border-neutral-800 flex flex-col bg-neutral-50/50 dark:bg-neutral-900/30">
+    <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/40">
       
-      <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 space-y-2.5">
+      <!-- Top Channels/Tabs Header -->
+      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-bold uppercase font-mono tracking-wide">Conversations</span>
-          <span id="activeCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
+          <span id="activeCountBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
         </div>
 
-        <!-- Mode Toggle: Direct DMs First (Default), Lounge Secondary -->
-        <div class="flex p-1 bg-neutral-200/60 dark:bg-neutral-950 rounded-xl text-xs font-medium">
+        <div class="flex p-1 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
           <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold">Direct Messages</button>
-          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition">Campus Lounge</button>
+          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition">Campus Lounge</button>
         </div>
 
-        <input id="userSearchInput" type="text" placeholder="Search peers or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-neutral-400">
+        <input id="userSearchInput" type="text" placeholder="Search by name or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-slate-400">
       </div>
 
       <!-- Peers List Area -->
@@ -159,16 +157,39 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Profile Bar -->
-      <div onclick="openProfileModal()" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800/60 transition group">
-        <div class="flex items-center gap-2 truncate">
-          <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
-          <div class="truncate flex items-center gap-1">
-            <span id="myUsernameDisplay" class="font-semibold truncate">@me</span>
-            <span id="myVerifiedBadge" class="hidden text-verified text-[11px]" title="Verified with LinkedIn">✓</span>
+      <!-- CAMPUS RADIO SIDE-BAR PLAYER -->
+      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+            <span class="text-[11px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Radio</span>
           </div>
+          <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">Idle</span>
         </div>
-        <span class="text-[10px] text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white font-mono">Profile ⚙</span>
+        
+        <div class="grid grid-cols-4 gap-1">
+          <button onclick="requestRadioChannel('English')" class="py-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[11px] font-semibold transition text-center">
+            ENG
+          </button>
+          <button onclick="requestRadioChannel('Hindi')" class="py-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[11px] font-semibold transition text-center">
+            HIN
+          </button>
+          <button onclick="requestRadioChannel('South')" class="py-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[11px] font-semibold transition text-center">
+            S.IND
+          </button>
+          <button onclick="requestRadioChannel('Other')" class="py-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[11px] font-semibold transition text-center">
+            OTH
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Profile Bar -->
+      <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
+        <div class="flex items-center gap-2 truncate">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
+          <span id="myUsernameDisplay" class="font-semibold truncate">@me</span>
+        </div>
+        <span class="text-[11px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium">Profile ⚙</span>
       </div>
     </section>
 
@@ -176,63 +197,58 @@
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard relative">
       
       <!-- Chat Header -->
-      <div class="p-3.5 border-b border-neutral-200 dark:border-neutral-800 flex justify-between items-center glass-nav">
+      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-nav">
         <div class="flex items-center gap-2.5">
-          <button onclick="closeChatMobile()" class="sm:hidden text-xs text-neutral-400 hover:text-neutral-900 dark:hover:text-white font-mono p-1">← Back</button>
+          <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
           <div>
-            <div class="flex items-center gap-1.5">
-              <p id="activeChatPeerName" class="text-xs font-bold text-neutral-900 dark:text-white">Select a peer</p>
-              <a id="activeChatPeerVerified" href="#" target="_blank" class="hidden text-verified text-xs font-bold hover:underline" title="View LinkedIn Profile">✓</a>
-            </div>
-            <p id="activeChatPeerMeta" class="text-[10px] text-neutral-400 font-mono">No active session</p>
+            <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white">Select a peer</p>
+            <p id="activeChatPeerMeta" class="text-[11px] text-slate-400">No active session</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span id="typingIndicator" class="text-[10px] font-mono text-accent hidden animate-pulse">typing...</span>
+          <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
-          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-mono flex items-center gap-1 transition">
+          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1 transition">
             <span>📞</span> Call
           </button>
           
-          <span class="text-[10px] font-mono text-neutral-400 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full border border-neutral-200 dark:border-neutral-800">
-            Ephemeral
+          <span class="text-[11px] text-slate-400 bg-slate-100 dark:bg-darkBg px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 font-medium">
+            Ephemeral RAM
           </span>
         </div>
       </div>
 
       <!-- Message History Scroll Area -->
-      <div id="dmChatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll">
-        <!-- Rendered Messages -->
-      </div>
+      <div id="dmChatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll"></div>
 
       <!-- Message Form with Voice & Media Controls -->
-      <form id="dmForm" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center gap-2 glass-nav relative">
+      <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 glass-nav relative">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
-        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Image" class="w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-xs hover:bg-neutral-200 dark:hover:bg-neutral-800 transition shrink-0">
+        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Image" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs hover:bg-slate-200 dark:hover:bg-slate-800 transition shrink-0">
           📎
         </button>
 
-        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Note (<30s)" class="w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center text-xs hover:bg-neutral-200 dark:hover:bg-neutral-800 transition shrink-0">
+        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Note (<30s)" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs hover:bg-slate-200 dark:hover:bg-slate-800 transition shrink-0">
           <span id="voiceMicIcon">🎤</span>
         </button>
 
-        <input id="dmInput" type="text" placeholder="Select a peer to start messaging..." autocomplete="off" disabled class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-accent disabled:opacity-50">
+        <input id="dmInput" type="text" placeholder="Select a peer to start messaging..." autocomplete="off" disabled class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand disabled:opacity-50">
         
-        <button id="dmSendBtn" type="submit" disabled class="bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold px-4 py-2.5 rounded-2xl transition hover:opacity-90 shrink-0 disabled:opacity-40">
+        <button id="dmSendBtn" type="submit" disabled class="bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold px-4 py-2.5 rounded-2xl transition hover:opacity-90 shrink-0 disabled:opacity-40 shadow-sm">
           Send
         </button>
 
         <!-- Recording HUD Overlay -->
-        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-accent/95 text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20">
-          <div class="flex items-center gap-2 font-mono text-xs">
+        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
+          <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
             <span>RECORDING VOICE NOTE</span>
             <span id="recordingTimer" class="font-bold">0:00</span>
           </div>
           <div class="flex items-center gap-2">
-            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[10px] font-mono hover:bg-black/40">CANCEL</button>
-            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-lg bg-white text-accent text-[10px] font-bold font-mono hover:bg-neutral-100">SEND</button>
+            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-semibold hover:bg-black/40">Cancel</button>
+            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-lg bg-white text-brand text-[11px] font-bold hover:bg-slate-100">Send</button>
           </div>
         </div>
       </form>
@@ -240,112 +256,111 @@
     </section>
   </main>
 
+  <!-- ==================== CAMPUS RADIO EARPHONES MODAL ==================== -->
+  <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
+      <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
+        🎧
+      </div>
+      
+      <div class="space-y-1.5">
+        <h3 class="text-base font-extrabold tracking-tight text-brand">PLEASE PLEASE USE EARPHONES</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Campus Wi-Fi radio channels are high gain. Respect the study environment around you.
+        </p>
+      </div>
+
+      <div id="radioTimerBox" class="p-3 bg-slate-100 dark:bg-darkMuted rounded-2xl border border-slate-200 dark:border-slate-800">
+        <span class="text-xs font-medium text-slate-400">Tuning stream in </span>
+        <span id="radioCountdown" class="text-sm font-bold text-brand">5</span>
+      </div>
+
+      <div id="radioResultBox" class="p-3 bg-slate-100 dark:bg-darkMuted rounded-2xl border border-slate-200 dark:border-slate-800 hidden">
+        <p class="text-xs font-bold text-amber-500 flex items-center justify-center gap-1">
+          <span>📡</span> Signal N/A (Stream Offline)
+        </p>
+      </div>
+
+      <button onclick="closeRadioModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold transition">
+        Close
+      </button>
+    </div>
+  </div>
+
   <!-- ==================== USER PROFILE & VERIFICATION MODAL ==================== -->
   <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
-      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm font-mono">✕</button>
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
+      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-1 pt-1">
-        <div class="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-base font-bold mx-auto border border-neutral-200 dark:border-neutral-700">
+        <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold mx-auto border border-slate-200 dark:border-slate-700">
           <span id="profileAvatarInitial">U</span>
         </div>
-        <div class="flex items-center justify-center gap-1 pt-1">
-          <h3 id="profileUsername" class="text-base font-bold">@username</h3>
-          <span id="profileVerifiedCheck" class="hidden text-verified font-bold text-sm">✓</span>
-        </div>
-        <p id="profileMeta" class="text-xs text-neutral-400 font-mono">Course • Year</p>
+        <h3 id="profileUsername" class="text-base font-bold">@username</h3>
+        <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
       </div>
 
       <!-- Verification Section -->
-      <div class="p-3.5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 space-y-3">
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-3">
         <div class="flex justify-between items-center">
-          <span class="text-xs font-semibold">LinkedIn Verification</span>
-          <span id="verificationStatusBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500">Unverified</span>
+          <span class="text-xs font-bold">Account Verification</span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
         </div>
-        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
-          Link your LinkedIn profile to earn a verified checkmark (✓) next to your handle to prevent impersonation.
+        <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+          Verify your student identity to prevent handle spoofing across campus.
         </p>
-        <button onclick="openVerificationDetails()" class="w-full py-2 rounded-xl bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-xs font-semibold transition">
-          Verify Account
+        <button onclick="openVerificationNotice()" class="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition">
+          Get Verified
         </button>
       </div>
 
       <div class="flex gap-2">
-        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-accent/40 text-accent hover:bg-accent/10 text-xs font-semibold transition">
+        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-brand/40 text-brand hover:bg-brand/10 text-xs font-bold transition">
           Log Out
         </button>
-        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-semibold transition">
+        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition">
           Done
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== VERIFICATION PROS & CONS MODAL ==================== -->
-  <div id="verifyDetailsModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-md bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
-      <button onclick="closeVerificationDetails()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm font-mono">✕</button>
-
+  <!-- Verification Notice Modal -->
+  <div id="verifyNoticeModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl mx-auto">
+        🚧
+      </div>
       <div class="space-y-1">
-        <span class="text-[10px] font-mono text-verified font-bold uppercase">Identity & Integrity</span>
-        <h3 class="text-lg font-bold">Account Verification</h3>
+        <h3 class="text-base font-bold">Feature Under Development</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Institutional identity verification is currently undergoing review. Stay tuned for future rollouts.
+        </p>
       </div>
-
-      <!-- Pros & Cons Breakdown -->
-      <div class="space-y-3 pt-1">
-        <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs space-y-1">
-          <p class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-            <span>✓</span> Advantages (Pros)
-          </p>
-          <ul class="text-neutral-600 dark:text-neutral-300 space-y-1 text-[11px] list-disc list-inside">
-            <li><strong>Zero Impersonation:</strong> Peers know it is authentically you.</li>
-            <li><strong>Keep Your Pseudonym:</strong> Your handle remains unchanged (e.g., <code class="font-mono">@dp</code>).</li>
-            <li><strong>Direct Link:</strong> Tapping your checkmark lets classmates connect with your real LinkedIn profile.</li>
-          </ul>
-        </div>
-
-        <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
-          <p class="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
-            <span>⚠️</span> Considerations (Cons)
-          </p>
-          <ul class="text-neutral-600 dark:text-neutral-300 space-y-1 text-[11px] list-disc list-inside">
-            <li><strong>Reduced Anonymity:</strong> Your messages will be publicly attributable to your real professional identity.</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- LinkedIn Profile URL Input -->
-      <div class="space-y-2 pt-1">
-        <label class="text-[11px] font-medium text-neutral-400">LinkedIn Profile URL</label>
-        <input id="inputLinkedinUrl" type="url" placeholder="https://www.linkedin.com/in/username" class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-verified font-mono">
-      </div>
-
-      <div class="flex gap-2 pt-2">
-        <button onclick="saveLinkedInVerification()" class="flex-1 py-3 bg-verified text-white font-semibold text-xs rounded-xl hover:opacity-90 transition">
-          Confirm & Link Profile
-        </button>
-      </div>
+      <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition">
+        Understood
+      </button>
     </div>
   </div>
 
   <!-- ==================== WEBRTC CALL OVERLAY ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
       <div class="relative w-20 h-20 mx-auto">
         <div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-        <div class="relative w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-2xl font-mono border border-neutral-200 dark:border-neutral-700">
+        <div class="relative w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl border border-slate-200 dark:border-slate-700">
           📞
         </div>
       </div>
       <div>
         <h3 id="callPeerName" class="text-base font-bold">@peer</h3>
-        <p id="callStatusLabel" class="text-xs text-neutral-400 font-mono pt-1">Connecting P2P Stream...</p>
+        <p id="callStatusLabel" class="text-xs text-slate-400 pt-1">Connecting P2P Stream...</p>
       </div>
       <div class="flex justify-center gap-3">
-        <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-semibold text-xs hover:bg-emerald-600 transition hidden">
+        <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden">
           Accept
         </button>
-        <button onclick="endAudioCall()" class="px-5 py-2.5 rounded-2xl bg-accent text-white font-semibold text-xs hover:opacity-90 transition">
+        <button onclick="endAudioCall()" class="px-5 py-2.5 rounded-2xl bg-brand text-white font-bold text-xs hover:opacity-90 transition">
           End Call
         </button>
       </div>
@@ -355,37 +370,37 @@
 
   <!-- ==================== ONBOARDING & QUICK UNLOCK ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
-      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white text-sm font-mono">✕</button>
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
-        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Session Locked</span>
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
-        <div class="p-3.5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+        <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-2.5 h-2.5 rounded-full bg-accent"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-brand"></div>
             <div class="truncate">
               <p id="unlockUserLabel" class="text-xs font-bold truncate">@username</p>
-              <p id="unlockMetaLabel" class="text-[10px] text-neutral-400 font-mono truncate">Course • Year</p>
+              <p id="unlockMetaLabel" class="text-[11px] text-slate-400 truncate">Course • Year</p>
             </div>
           </div>
-          <span class="text-[9px] font-mono text-neutral-400">CACHED</span>
+          <span class="text-[10px] font-semibold text-slate-400">SAVED</span>
         </div>
 
         <div class="space-y-2">
-          <label class="text-[11px] font-medium text-neutral-400">Enter Password</label>
-          <input id="unlockPassInput" type="password" placeholder="Passkey" class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-accent">
-          <p id="unlockError" class="text-xs text-accent font-medium hidden"></p>
+          <label class="text-[11px] font-medium text-slate-400">Enter Password</label>
+          <input id="unlockPassInput" type="password" placeholder="Passkey" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+          <p id="unlockError" class="text-xs text-brand font-medium hidden"></p>
         </div>
 
-        <button onclick="submitQuickUnlock()" class="w-full py-3 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold rounded-xl transition hover:opacity-90">
+        <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md">
           Unlock Terminal
         </button>
 
         <div class="text-center pt-1">
-          <button onclick="switchUserSession()" class="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition">
+          <button onclick="switchUserSession()" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
             Different person? Switch account
           </button>
         </div>
@@ -393,57 +408,57 @@
 
       <!-- Step 1 Course -->
       <div id="stepCourse" class="space-y-3">
-        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 1 of 3</span>
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
         <h3 class="text-lg font-bold">Select your course</h3>
         <div class="grid grid-cols-1 gap-1.5">
-          <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
-            <span>BCom (Hons)</span> <span class="text-neutral-400">→</span>
+          <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
+            <span>BCom (Hons)</span> <span class="text-slate-400">→</span>
           </button>
-          <button onclick="selectCourse('BBA')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
-            <span>BBA</span> <span class="text-neutral-400">→</span>
+          <button onclick="selectCourse('BBA')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
+            <span>BBA</span> <span class="text-slate-400">→</span>
           </button>
-          <button onclick="selectCourse('ADS')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
-            <span>ADS</span> <span class="text-neutral-400">→</span>
+          <button onclick="selectCourse('ADS')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
+            <span>ADS</span> <span class="text-slate-400">→</span>
           </button>
-          <button onclick="selectCourse('B.A ECO')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
-            <span>B.A ECO</span> <span class="text-neutral-400">→</span>
+          <button onclick="selectCourse('B.A ECO')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
+            <span>B.A ECO</span> <span class="text-slate-400">→</span>
           </button>
-          <button onclick="selectCourse('B.S F.E.D.A')" class="w-full text-left p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition text-xs font-medium flex justify-between items-center">
-            <span>B.S F.E.D.A</span> <span class="text-neutral-400">→</span>
+          <button onclick="selectCourse('B.S F.E.D.A')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
+            <span>B.S F.E.D.A</span> <span class="text-slate-400">→</span>
           </button>
         </div>
-        <p class="text-center text-xs text-neutral-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
+        <p class="text-center text-xs text-slate-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
       <!-- Step 2 Year -->
       <div id="stepYear" class="space-y-3 hidden">
-        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 2 of 3</span>
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 2 of 3</span>
         <h3 class="text-lg font-bold">Select your academic year</h3>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="selectYear('1st')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">1st Year</button>
-          <button onclick="selectYear('2nd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">2nd Year</button>
-          <button onclick="selectYear('3rd')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">3rd Year</button>
-          <button onclick="selectYear('4th')" class="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 font-semibold text-xs text-center">4th Year</button>
+          <button onclick="selectYear('1st')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">1st Year</button>
+          <button onclick="selectYear('2nd')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">2nd Year</button>
+          <button onclick="selectYear('3rd')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">3rd Year</button>
+          <button onclick="selectYear('4th')" class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">4th Year</button>
         </div>
-        <button onclick="backToStep('stepCourse')" class="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white pt-1">← Back</button>
+        <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
       <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
-        <span class="text-[10px] font-mono text-accent font-semibold uppercase">Step 3 of 3</span>
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
         <h3 class="text-lg font-bold" id="authHeading">Create your profile</h3>
         <div class="space-y-2">
           <div>
-            <label class="text-[11px] font-medium text-neutral-400">Username</label>
-            <input id="inputUser" type="text" placeholder="e.g. dp" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
+            <label class="text-[11px] font-medium text-slate-400">Username</label>
+            <input id="inputUser" type="text" placeholder="e.g. alex" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
           <div>
-            <label class="text-[11px] font-medium text-neutral-400">Password</label>
-            <input id="inputPass" type="password" placeholder="For future logins" class="w-full mt-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-neutral-500">
+            <label class="text-[11px] font-medium text-slate-400">Password</label>
+            <input id="inputPass" type="password" placeholder="Passkey for future logins" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
-          <p id="authError" class="text-xs text-accent font-medium hidden"></p>
+          <p id="authError" class="text-xs text-brand font-medium hidden"></p>
         </div>
-        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 text-xs font-semibold rounded-xl transition hover:opacity-90">
+        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md">
           Create Account & Join
         </button>
       </div>
@@ -453,30 +468,30 @@
 
   <!-- Open Source Contact Modal -->
   <div id="sourceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 text-center space-y-4">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold">Open Source & Audits</h3>
-      <p class="text-xs text-neutral-500 leading-relaxed">
-        The cryptographic implementation, peer relay protocols, and client code are available for review.
+      <p class="text-xs text-slate-500 leading-relaxed">
+        LAN CHAT client code and routing algorithms are available for student auditing.
       </p>
-      <div class="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-mono font-medium select-all">
+      <div class="p-3 bg-slate-100 dark:bg-darkMuted rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono select-all">
         simpcorp@proton.me
       </div>
-      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition">
+      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
         Close
       </button>
     </div>
   </div>
 
   <!-- PROMINENT DEVELOPER FOOTER -->
-  <footer class="w-full max-w-5xl mx-auto p-4 border-t border-neutral-200 dark:border-neutral-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
-    <div class="flex items-center gap-2 text-xs text-neutral-400 font-mono">
+  <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <div class="flex items-center gap-2 text-xs text-slate-400">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Session Active • <span class="text-neutral-500">[2× ESC to Cloak]</span></span>
+      <span>Session Active • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
     </div>
 
-    <div class="px-3.5 py-1.5 rounded-full bg-neutral-200/60 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-800 text-xs text-neutral-600 dark:text-neutral-300 font-medium flex items-center gap-1.5 shadow-sm">
-      <span class="text-accent font-mono text-[11px]">●</span>
-      <span>Developed by a Jobless B.COM 1st year student <strong class="text-neutral-900 dark:text-white font-semibold">(SimpCorp)</strong></span>
+    <div class="px-3.5 py-1.5 rounded-full bg-slate-200/70 dark:bg-darkMuted border border-slate-300 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-sm">
+      <span class="text-brand font-bold">●</span>
+      <span>Developed by a Jobless B.COM 1st year student <strong class="text-slate-900 dark:text-white font-bold">(SimpCorp)</strong></span>
     </div>
   </footer>
 
@@ -496,8 +511,9 @@
     let onlineUsersMap = new Map();
     let unreadMap = new Map();
     let typingTimeout = null;
+    let radioCountdownInterval = null;
 
-    // --- Web Audio Synthesized SFX ---
+    // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = "sine", duration = 0.08) {
       if (audioCtx.state === "suspended") audioCtx.resume();
@@ -519,7 +535,7 @@
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
 
-    // --- Panic Cloak on 2x ESC ---
+    // --- Cloak on 2x ESC ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -535,7 +551,7 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Session Cache Startup Check
+    // Startup session restore
     window.addEventListener("DOMContentLoaded", () => {
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
@@ -634,7 +650,7 @@
       initUserSession(data);
     }
 
-    // --- BULLETPROOF AUTHENTICATION ---
+    // --- REGISTRATION & AUTHENTICATION ---
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
@@ -656,7 +672,6 @@
         }
         initUserSession(data);
       } else {
-        // Multi-user registration allowed (IP restriction removed completely)
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
         if (userCheck) {
           err.innerText = "Handle taken. Choose another.";
@@ -667,17 +682,16 @@
         const payload = {
           username: u,
           password: p,
-          course: selectedCourse,
-          year: selectedYear,
-          wifi_network: selectedWifi,
-          linkedin_url: null
+          course: selectedCourse || "BCom (Hons)",
+          year: selectedYear || "1st",
+          wifi_network: selectedWifi || "SSSIHL-STUDENT"
         };
 
         const { data: newUser, error: insErr } = await sb.from("campus_users").insert([payload]).select().single();
 
         if (insErr) {
           console.error("Supabase insert error:", insErr);
-          err.innerText = "Registration failed. Please try again.";
+          err.innerText = `${insErr.message || 'Registration failed'}`;
           err.classList.remove("hidden");
           return;
         }
@@ -699,10 +713,8 @@
       showChatView();
       updateProfileUI();
 
-      // Default to DMs View on startup
       selectDirectTab();
 
-      // Open Realtime channel for current subnet
       channel = sb.channel(`lan_${selectedWifi.toLowerCase()}_mesh`, {
         config: {
           presence: { key: currentUser.username },
@@ -764,8 +776,7 @@
           username: currentUser.username,
           course: currentUser.course,
           year: currentUser.year,
-          wifi: selectedWifi,
-          linkedin_url: currentUser.linkedin_url || null
+          wifi: selectedWifi
         });
       }
     }
@@ -790,20 +801,19 @@
     // --- VIEW / CHANNEL HANDLING (DMs First) ---
     function selectDirectTab() {
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
 
       if (!activeChatUser) {
         document.getElementById("activeChatPeerName").innerText = "Select a Peer";
         document.getElementById("activeChatPeerMeta").innerText = "Choose an active student to message";
-        document.getElementById("activeChatPeerVerified").classList.add("hidden");
         document.getElementById("startCallBtn").classList.add("hidden");
         document.getElementById("dmInput").setAttribute("disabled", "true");
         document.getElementById("dmSendBtn").setAttribute("disabled", "true");
         document.getElementById("dmInput").placeholder = "Select a peer from directory...";
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
-            <div class="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-mono text-neutral-400">DM</div>
-            <p class="text-xs text-neutral-400 max-w-xs">Select any active student from the left directory to start a direct 1-on-1 private chat.</p>
+            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold text-slate-400">💬</div>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active student from the left directory to start a direct 1-on-1 private chat.</p>
           </div>
         `;
       } else {
@@ -815,13 +825,12 @@
     function selectLoungeChannel() {
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition";
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
 
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
       document.getElementById("chatPane").classList.remove("hidden");
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.add("hidden");
-      document.getElementById("activeChatPeerVerified").classList.add("hidden");
 
       document.getElementById("dmInput").removeAttribute("disabled");
       document.getElementById("dmSendBtn").removeAttribute("disabled");
@@ -845,7 +854,7 @@
       badge.innerText = `${onlineUsersMap.size} Online`;
 
       if (peers.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-neutral-400 font-mono">No active peers online.</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 font-medium">No active peers online.</div>`;
         return;
       }
 
@@ -853,26 +862,24 @@
       peers.forEach(peer => {
         const isSelected = activeChatUser && activeChatUser.username === peer.username;
         const unreadCount = unreadMap.get(peer.username) || 0;
-        const isVerified = Boolean(peer.linkedin_url);
         
         const btn = document.createElement("button");
         btn.className = `w-full text-left p-2.5 rounded-2xl flex items-center justify-between transition ${
-          isSelected ? "bg-neutral-200 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
+          isSelected ? "bg-slate-200 dark:bg-darkMuted" : "hover:bg-slate-100 dark:hover:bg-darkMuted/60"
         }`;
         
         btn.innerHTML = `
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
             <div class="truncate">
               <div class="flex items-center gap-1">
-                <p class="text-xs font-semibold text-neutral-900 dark:text-white truncate">@${peer.username}</p>
-                ${isVerified ? `<span class="text-verified text-[11px] font-bold" title="Verified LinkedIn Peer">✓</span>` : ''}
-                ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-accent shrink-0"></span>` : ''}
+                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
+                ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>` : ''}
               </div>
-              <p class="text-[10px] text-neutral-400 font-mono truncate">${peer.course} • ${peer.year}</p>
+              <p class="text-[11px] text-slate-400 font-medium truncate">${peer.course} • ${peer.year}</p>
             </div>
           </div>
-          <span class="text-[9px] font-mono text-neutral-400 bg-neutral-200/50 dark:bg-neutral-800 px-1.5 py-0.5 rounded">${peer.wifi}</span>
+          <span class="text-[10px] font-semibold text-slate-400 bg-slate-200/60 dark:bg-darkBg px-2 py-0.5 rounded-md">${peer.wifi}</span>
         `;
 
         btn.onclick = () => selectPeerForChat(peer);
@@ -887,7 +894,7 @@
       unreadMap.delete(peer.username);
       
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
       renderUsersList();
 
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
@@ -896,15 +903,6 @@
       document.getElementById("startCallBtn").classList.remove("hidden");
 
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
-      
-      const verifiedEl = document.getElementById("activeChatPeerVerified");
-      if (peer.linkedin_url) {
-        verifiedEl.classList.remove("hidden");
-        verifiedEl.href = peer.linkedin_url;
-      } else {
-        verifiedEl.classList.add("hidden");
-      }
-
       document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${peer.wifi}]`;
       
       const input = document.getElementById("dmInput");
@@ -921,6 +919,35 @@
       document.getElementById("chatPane").classList.add("hidden");
       document.getElementById("chatPane").classList.remove("flex");
       document.getElementById("sidebarPane").classList.remove("hidden");
+    }
+
+    // --- CAMPUS RADIO SYSTEM (<30s Warning & Signal Check) ---
+    function requestRadioChannel(lang) {
+      clearInterval(radioCountdownInterval);
+      
+      document.getElementById("radioWarningModal").classList.remove("hidden");
+      document.getElementById("radioTimerBox").classList.remove("hidden");
+      document.getElementById("radioResultBox").classList.add("hidden");
+      
+      let count = 5;
+      document.getElementById("radioCountdown").innerText = count;
+      document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+
+      radioCountdownInterval = setInterval(() => {
+        count--;
+        document.getElementById("radioCountdown").innerText = count;
+        if (count <= 0) {
+          clearInterval(radioCountdownInterval);
+          document.getElementById("radioTimerBox").classList.add("hidden");
+          document.getElementById("radioResultBox").classList.remove("hidden");
+          document.getElementById("radioStatusTag").innerText = `Offline`;
+        }
+      }, 1000);
+    }
+
+    function closeRadioModal() {
+      clearInterval(radioCountdownInterval);
+      document.getElementById("radioWarningModal").classList.add("hidden");
     }
 
     // --- EPHEMERAL STORAGE ---
@@ -950,8 +977,8 @@
       if (history.length === 0) {
         area.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-1">
-            <span class="text-xs font-semibold">Active Session Started</span>
-            <p class="text-[10px] text-neutral-400 font-mono">Chats remain intact until tab close.</p>
+            <span class="text-xs font-bold">Active Session Started</span>
+            <p class="text-[11px] text-slate-400 font-medium">Messages remain in RAM until tab is closed.</p>
           </div>
         `;
         return;
@@ -968,8 +995,8 @@
       wrap.className = `group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
       const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[9px] text-neutral-400 px-1 font-mono";
-      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-accent">• ${msg.wifi || selectedWifi}</span>`;
+      meta.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-1 font-semibold";
+      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.wifi || selectedWifi}</span>`;
 
       const contentHolder = document.createElement("div");
       contentHolder.className = "relative flex items-center gap-1.5";
@@ -977,29 +1004,29 @@
       const bubble = document.createElement("div");
       bubble.className = `max-w-[85%] rounded-2xl text-xs leading-relaxed overflow-hidden relative shadow-sm ${
         isSelf 
-          ? "bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 rounded-br-none" 
-          : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-bl-none border border-neutral-200 dark:border-neutral-800"
+          ? "bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-br-none font-medium" 
+          : "bg-slate-100 dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-bl-none border border-slate-200 dark:border-slate-800/80 font-medium"
       }`;
 
       if (msg.text) {
-        bubble.className += " px-3.5 py-2";
+        bubble.className += " px-4 py-2.5";
         bubble.textContent = msg.text;
       } else if (msg.image) {
         bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer" onclick="window.open('${msg.image}')">`;
       } else if (msg.audio) {
         bubble.className += " p-3 flex flex-col gap-2 min-w-[200px]";
         bubble.innerHTML = `
-          <div class="flex items-center justify-between gap-2 font-mono text-[10px]">
-            <span class="text-accent flex items-center gap-1">🔥 Self-Destruct Audio</span>
-            <span class="text-neutral-400">${msg.duration}s</span>
+          <div class="flex items-center justify-between gap-2 text-[10px]">
+            <span class="text-brand font-bold flex items-center gap-1">🔥 Audio Note</span>
+            <span class="text-slate-400 font-semibold">${msg.duration}s</span>
           </div>
           <audio id="aud-${msg.id}" src="${msg.audio}" controls class="w-full h-8" onended="handleAudioDestruct('${msg.id}', '${msg.sender}')"></audio>
         `;
       }
 
-      // Inline Emoji Reactions Bar
+      // Inline Reactions Bar
       const reactionTrigger = document.createElement("div");
-      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs shadow-md";
+      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md";
       reactionTrigger.innerHTML = `
         <button onclick="sendReaction('${msg.id}', '🔥')">🔥</button>
         <button onclick="sendReaction('${msg.id}', '💀')">💀</button>
@@ -1017,11 +1044,11 @@
 
       const reactionsContainer = document.createElement("div");
       reactionsContainer.id = `reactions-${msg.id}`;
-      reactionsContainer.className = "flex gap-1 text-[10px] font-mono px-1";
+      reactionsContainer.className = "flex gap-1 text-[10px] px-1 font-semibold";
 
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("span");
-      timeTag.className = "text-[9px] text-neutral-400 px-1 font-mono";
+      timeTag.className = "text-[10px] text-slate-400 px-1 font-medium";
       timeTag.textContent = timeStr;
 
       wrap.appendChild(meta);
@@ -1046,7 +1073,7 @@
       const container = document.getElementById(`reactions-${msgId}`);
       if (!container) return;
       const tag = document.createElement("span");
-      tag.className = "px-1.5 py-0.5 rounded-full bg-neutral-200/50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 animate-pulse";
+      tag.className = "px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-darkMuted border border-slate-300 dark:border-slate-700 animate-pulse text-[10px] font-bold";
       tag.textContent = `${emoji} ${by}`;
       container.appendChild(tag);
     }
@@ -1063,76 +1090,33 @@
       }
     }
 
-    // --- PROFILE & LINKEDIN VERIFICATION MODAL ---
+    // --- PROFILE & NOTICES ---
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileModal").classList.remove("hidden");
       document.getElementById("profileAvatarInitial").innerText = currentUser.username.charAt(0).toUpperCase();
       document.getElementById("profileUsername").innerText = `@${currentUser.username}`;
       document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
-      
-      const badge = document.getElementById("verificationStatusBadge");
-      const check = document.getElementById("profileVerifiedCheck");
-      if (currentUser.linkedin_url) {
-        badge.innerText = "Verified ✓";
-        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-verified/10 text-verified border border-verified/30 font-bold";
-        check.classList.remove("hidden");
-      } else {
-        badge.innerText = "Unverified";
-        badge.className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500";
-        check.classList.add("hidden");
-      }
     }
 
     function closeProfileModal() {
       document.getElementById("profileModal").classList.add("hidden");
     }
 
-    function openVerificationDetails() {
-      document.getElementById("verifyDetailsModal").classList.remove("hidden");
-      if (currentUser.linkedin_url) {
-        document.getElementById("inputLinkedinUrl").value = currentUser.linkedin_url;
-      }
+    function openVerificationNotice() {
+      document.getElementById("verifyNoticeModal").classList.remove("hidden");
     }
 
-    function closeVerificationDetails() {
-      document.getElementById("verifyDetailsModal").classList.add("hidden");
-    }
-
-    async function saveLinkedInVerification() {
-      const url = document.getElementById("inputLinkedinUrl").value.trim();
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        alert("Please enter a valid LinkedIn URL starting with https://");
-        return;
-      }
-
-      const { error } = await sb
-        .from("campus_users")
-        .update({ linkedin_url: url })
-        .eq("username", currentUser.username);
-
-      if (error) {
-        alert("Could not link LinkedIn profile. Try again.");
-        return;
-      }
-
-      currentUser.linkedin_url = url;
-      updateProfileUI();
-      broadcastPresence();
-      closeVerificationDetails();
-      openProfileModal();
+    function closeVerificationNotice() {
+      document.getElementById("verifyNoticeModal").classList.add("hidden");
     }
 
     function updateProfileUI() {
       document.getElementById("myUsernameDisplay").innerText = `@${currentUser.username} (${currentUser.course})`;
       document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
-      
-      const badge = document.getElementById("myVerifiedBadge");
-      if (currentUser.linkedin_url) badge.classList.remove("hidden");
-      else badge.classList.add("hidden");
     }
 
-    // --- EPHEMERAL VOICE NOTE RECORDING (<30s) ---
+    // --- EPHEMERAL VOICE RECORDER (<30s) ---
     let mediaRecorder = null;
     let audioChunks = [];
     let recordStartTime = 0;
@@ -1163,7 +1147,7 @@
           if (elapsed >= 30) stopAndSendVoiceRecording();
         }, 1000);
       } catch(e) {
-        alert("Microphone permission required for audio notes.");
+        alert("Microphone permission required for voice notes.");
       }
     }
 
@@ -1264,7 +1248,7 @@
       dispatchPayload({ text });
     });
 
-    // --- WEBRTC P2P AUDIO CALL ENGINE ---
+    // --- WEBRTC CALL ENGINE ---
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
@@ -1399,11 +1383,11 @@
     function switchSubnet(newWifi) {
       selectedWifi = newWifi;
       if (newWifi === "SSSIHL-STUDENT") {
-        wifiOneBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
-        wifiTwoBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
+        wifiOneBtn.className = "px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm";
+        wifiTwoBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium";
       } else {
-        wifiTwoBtn.className = "px-3 py-1 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 transition font-medium";
-        wifiOneBtn.className = "px-3 py-1 rounded-full text-neutral-500 transition hover:text-neutral-900 dark:hover:text-white";
+        wifiTwoBtn.className = "px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm";
+        wifiOneBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium";
       }
       if (currentUser) {
         if (channel) sb.removeChannel(channel);
