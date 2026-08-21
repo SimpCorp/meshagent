@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAN CHAT — Campus Network</title>
+  <title>LAN CHAT — Direct Campus Network</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,25 +11,34 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            sans: [
+              '"Plus Jakarta Sans"',
+              '-apple-system',
+              'BlinkMacSystemFont',
+              '"Segoe UI"',
+              'Roboto',
+              'sans-serif'
+            ],
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
-            brand: '#E11D48',
-            brandDark: '#BE123C',
+            brand: '#3B82F6',
+            brandDark: '#1D4ED8',
             devGreen: '#10B981',
-            darkBg: '#090A0F',
-            darkCard: '#12141C',
-            darkMuted: '#1A1D27',
-            lightBg: '#F8FAFC',
+            darkBg: '#0B0D14',
+            darkCard: '#131722',
+            darkMuted: '#1E2333',
+            lightBg: '#F3F4F6',
             lightCard: '#FFFFFF',
-            lightMuted: '#F1F5F9'
+            lightMuted: '#E5E7EB'
           }
         }
       }
@@ -37,18 +46,28 @@
   </script>
   <style>
     .glass-nav {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
     }
-    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
     .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(140, 140, 160, 0.2); border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.3); border-radius: 9999px; }
+    
+    img.emoji {
+      display: inline-block;
+      width: 1.25em;
+      height: 1.25em;
+      margin: 0 0.1em;
+      vertical-align: -0.2em;
+    }
+
     @keyframes burn {
       0% { opacity: 1; transform: scale(1); filter: blur(0); }
       50% { opacity: 0.5; transform: scale(0.96); filter: blur(2px) contrast(150%); }
       100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
     .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       20%, 60% { transform: translateX(-6px); }
@@ -56,13 +75,12 @@
     }
     .shake { animation: shake 0.4s ease-in-out; }
     
-    /* Range slider custom styling */
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       height: 12px;
       width: 12px;
       border-radius: 9999px;
-      background: #E11D48;
+      background: #3B82F6;
       cursor: pointer;
     }
   </style>
@@ -114,7 +132,7 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, self-destruct audio notes, and 24/7 background audio lounges for students across the local network.
+        Real-time direct messaging, self-destruct voice clips, and 24/7 background audio lounges for students across the local network.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
@@ -157,7 +175,7 @@
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto h-[84vh] flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/40">
+    <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30">
       
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
         <div class="flex justify-between items-center">
@@ -181,7 +199,7 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- CAMPUS RADIO SIDE-BAR PLAYER (With Volume Control) -->
+      <!-- CAMPUS RADIO SIDE-BAR PLAYER -->
       <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
@@ -206,7 +224,6 @@
           </button>
         </div>
 
-        <!-- Volume Control Slider -->
         <div class="flex items-center gap-2 pt-0.5 px-1">
           <span class="text-[10px] text-slate-400">🔈</span>
           <input id="radioVolumeSlider" type="range" min="0" max="100" value="80" oninput="adjustRadioVolume(this.value)" class="w-full h-1 bg-slate-200 dark:bg-darkBg rounded-lg appearance-none cursor-pointer">
@@ -216,13 +233,13 @@
 
       <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
-        <div class="flex items-center gap-2 truncate">
-          <div class="w-7 h-7 rounded-full bg-slate-200 dark:bg-darkBg flex items-center justify-center font-bold text-xs shrink-0 border border-slate-300 dark:border-slate-700">
+        <div class="flex items-center gap-2.5 truncate">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
             <span id="myAvatarLetter">U</span>
           </div>
           <div class="truncate">
             <div class="flex items-center gap-1.5">
-              <span id="myUsernameDisplay" class="font-bold truncate">@me</span>
+              <span id="myUsernameDisplay" class="font-bold text-slate-900 dark:text-white truncate">@me</span>
               <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
             </div>
             <p id="myBioDisplay" class="text-[10px] text-slate-400 truncate">Tap to edit status...</p>
@@ -233,15 +250,15 @@
     </section>
 
     <!-- RIGHT SECTION: Chat Pane -->
-    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-white dark:bg-darkCard relative">
+    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative">
       
       <!-- Chat Header -->
-      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center glass-nav">
+      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10">
         <div class="flex items-center gap-2.5">
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
           
           <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition">
-            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-darkMuted flex items-center justify-center font-bold text-xs border border-slate-300 dark:border-slate-700">
+            <div id="activeChatPeerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
               ?
             </div>
             <div>
@@ -254,52 +271,60 @@
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
-          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1 transition">
+          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
             <span>📞</span> Call
           </button>
           
-          <span id="activeNetIndicatorPill" class="text-[11px] text-slate-400 bg-slate-100 dark:bg-darkBg px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 font-medium">
+          <span id="activeNetIndicatorPill" class="text-[11px] text-slate-400 bg-slate-100 dark:bg-darkMuted px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 font-medium">
             SSSIHL-STUDENT
           </span>
         </div>
       </div>
 
       <!-- Message History Scroll Area -->
-      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll relative"></div>
+      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scroll relative"></div>
 
       <!-- Floating Unread New Messages Pill -->
-      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3 py-1.5 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-lg backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
+      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
         <span>↓</span> New messages
       </button>
 
-      <!-- Message Form -->
-      <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 glass-nav relative">
+      <!-- Message Form (Instagram/iMessage Style Rounded Bar) -->
+      <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
-        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Image" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs hover:bg-slate-200 dark:hover:bg-slate-800 transition shrink-0">
-          📎
+        <!-- Instagram Plus Button -->
+        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Media" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
         </button>
 
-        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Note (<30s)" class="w-9 h-9 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs hover:bg-slate-200 dark:hover:bg-slate-800 transition shrink-0">
-          <span id="voiceMicIcon">🎤</span>
+        <!-- Voice Clip Button -->
+        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
+          <span id="voiceMicIcon" class="text-sm">🎤</span>
         </button>
 
-        <input id="dmInput" type="text" placeholder="Select a peer to start messaging..." autocomplete="off" disabled class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand disabled:opacity-50">
+        <!-- Message Capsule Input -->
+        <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
+          <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-1">
+        </div>
         
-        <button id="dmSendBtn" type="submit" disabled class="bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold px-4 py-2.5 rounded-2xl transition hover:opacity-90 shrink-0 disabled:opacity-40 shadow-sm">
+        <button id="dmSendBtn" type="submit" disabled class="bg-brand text-white text-xs font-bold px-4 py-2 rounded-full transition hover:bg-brandDark shrink-0 disabled:opacity-30 shadow-md shadow-brand/20 active:scale-95">
           Send
         </button>
 
         <!-- Recording HUD Overlay -->
-        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
+        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-gradient-to-r from-brand to-indigo-600 text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-            <span>RECORDING VOICE NOTE</span>
-            <span id="recordingTimer" class="font-bold">0:00</span>
+            <span>RECORDING VOICE CLIP</span>
+            <span id="recordingTimer" class="font-bold font-mono">0:00</span>
           </div>
           <div class="flex items-center gap-2">
-            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-semibold hover:bg-black/40">Cancel</button>
-            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-lg bg-white text-brand text-[11px] font-bold hover:bg-slate-100">Send</button>
+            <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-semibold hover:bg-black/40 transition">Cancel</button>
+            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-lg bg-white text-brand text-[11px] font-bold hover:bg-slate-100 transition shadow-sm">Send</button>
           </div>
         </div>
       </form>
@@ -313,7 +338,7 @@
       <button onclick="closePeerProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-2 pt-2">
-        <div id="inspectAvatarBox" class="w-16 h-16 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-xl font-extrabold mx-auto border-2 border-slate-200 dark:border-slate-700 text-brand shadow-sm">
+        <div id="inspectAvatarBox" class="w-16 h-16 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center text-xl font-extrabold mx-auto shadow-md">
           ?
         </div>
         <div>
@@ -325,7 +350,6 @@
         </div>
       </div>
 
-      <!-- Peer Bio Card -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-1">
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status / Bio</span>
         <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
@@ -350,26 +374,25 @@
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-1 pt-1">
-        <div class="w-14 h-14 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-lg font-bold mx-auto border-2 border-slate-200 dark:border-slate-700 text-brand">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center text-lg font-bold mx-auto shadow-md">
           <span id="profileAvatarInitial">U</span>
         </div>
-        <h3 id="profileUsername" class="text-base font-bold">@username</h3>
+        <h3 id="profileUsername" class="text-base font-bold text-slate-900 dark:text-white">@username</h3>
         <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
       </div>
 
-      <!-- Bio Input Option (With 2-hour session notice) -->
+      <!-- Bio Input Option (With 2-Hour Expiry) -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Status (Active 2 Hours)</label>
           <span id="bioSavedNotice" class="text-[10px] text-emerald-500 font-bold hidden">Saved ✓</span>
         </div>
-        <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Prep for Sem 2" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
-        <button onclick="saveMyBio()" class="w-full py-1.5 rounded-lg bg-brand text-white text-[11px] font-bold hover:bg-brandDark transition">
+        <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Coding Lab 💻" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+        <button onclick="saveMyBio()" class="w-full py-2 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brandDark transition shadow-sm">
           Update Status
         </button>
       </div>
 
-      <!-- Verification Section -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold">Account Verification</span>
@@ -400,7 +423,7 @@
       <div class="space-y-1">
         <h3 class="text-base font-bold">Feature Under Development</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Institutional identity verification is currently undergoing testing. Stay tuned for updates.
+          Institutional student identity verification is currently undergoing testing.
         </p>
       </div>
       <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition">
@@ -477,7 +500,7 @@
     <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
       <div class="relative w-20 h-20 mx-auto">
         <div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-        <div class="relative w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl border border-slate-200 dark:border-slate-700">
+        <div class="relative w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center text-3xl shadow-lg">
           📞
         </div>
       </div>
@@ -486,10 +509,10 @@
         <p id="callStatusLabel" class="text-xs text-slate-400 pt-1">Connecting P2P Stream...</p>
       </div>
       <div class="flex justify-center gap-3">
-        <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden">
+        <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-sm">
           Accept
         </button>
-        <button onclick="endAudioCall()" class="px-5 py-2.5 rounded-2xl bg-brand text-white font-bold text-xs hover:opacity-90 transition">
+        <button onclick="endAudioCall()" class="px-5 py-2.5 rounded-2xl bg-brand text-white font-bold text-xs hover:bg-brandDark transition shadow-sm">
           End Call
         </button>
       </div>
@@ -666,6 +689,13 @@
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
 
+    // --- Twemoji Helper ---
+    function parseTwemoji(element) {
+      if (window.twemoji && element) {
+        twemoji.parse(element, { folder: 'svg', ext: '.svg' });
+      }
+    }
+
     // --- Keyboard Shortcuts ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
@@ -689,12 +719,13 @@
 
     // Startup Session Restore with 2-Hour Bio Session Check
     window.addEventListener("DOMContentLoaded", () => {
+      parseTwemoji(document.body);
+
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
         try {
           const user = JSON.parse(cached);
           
-          // Check 2-hour bio expiry
           const bioExpiry = localStorage.getItem("bio_expiry");
           if (bioExpiry && Date.now() > parseInt(bioExpiry, 10)) {
             user.bio = "";
@@ -796,7 +827,6 @@
         return;
       }
 
-      // Restore active unexpired bio to session
       const bioExpiry = localStorage.getItem("bio_expiry");
       if (bioExpiry && Date.now() <= parseInt(bioExpiry, 10)) {
         data.bio = saved.bio || "";
@@ -930,6 +960,7 @@
         statusDot.className = "w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse";
         if (netPill) netPill.innerText = "SSSIHL-STUDENT";
       }
+      parseTwemoji(document.header);
     }
 
     // --- REALTIME ENGINE & PRESENCE ---
@@ -1062,10 +1093,11 @@
         document.getElementById("dmInput").placeholder = "Select a peer from directory...";
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
-            <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the left directory to inspect their stream/bio and message directly.</p>
+            <div class="w-12 h-12 rounded-full bg-slate-200/60 dark:bg-darkMuted flex items-center justify-center text-lg font-bold text-slate-400">💬</div>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory to start a direct message thread.</p>
           </div>
         `;
+        parseTwemoji(document.getElementById("dmChatArea"));
       } else {
         selectPeerForChat(activeChatUser);
       }
@@ -1088,7 +1120,7 @@
       document.getElementById("activeChatPeerAvatar").innerText = "👥";
       document.getElementById("activeChatPeerName").innerText = currentNetwork === "DEVS" ? "Developer Mesh Lounge" : "Campus Public Lounge";
       document.getElementById("activeChatPeerMeta").innerText = `Subnet Relay: ${currentNetwork}`;
-      document.getElementById("dmInput").placeholder = "Broadcast to room...";
+      document.getElementById("dmInput").placeholder = "Message in campus lounge...";
       loadConversationFromSession("GLOBAL_LOUNGE");
       renderUsersList();
     }
@@ -1117,12 +1149,12 @@
         
         const row = document.createElement("div");
         row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer ${
-          isSelected ? "bg-slate-200 dark:bg-darkMuted" : "hover:bg-slate-100 dark:hover:bg-darkMuted/60"
+          isSelected ? "bg-slate-200/80 dark:bg-darkMuted" : "hover:bg-slate-100 dark:hover:bg-darkMuted/60"
         }`;
         
         row.innerHTML = `
           <div class="flex items-center gap-2.5 truncate" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
-            <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-darkBg flex items-center justify-center font-bold text-xs shrink-0 border border-slate-300 dark:border-slate-700 text-brand">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
               ${initial}
             </div>
             <div class="truncate text-left">
@@ -1141,6 +1173,7 @@
 
         container.appendChild(row);
       });
+      parseTwemoji(container);
     }
 
     function filterUsers() { renderUsersList(); }
@@ -1167,7 +1200,7 @@
       const btn = document.getElementById("dmSendBtn");
       input.removeAttribute("disabled");
       btn.removeAttribute("disabled");
-      input.placeholder = `Direct message to @${peer.username}...`;
+      input.placeholder = `Message @${peer.username}...`;
       input.focus();
 
       loadConversationFromSession(peer.username);
@@ -1194,6 +1227,7 @@
       document.getElementById("inspectBioText").innerText = bioText;
 
       document.getElementById("peerProfileModal").classList.remove("hidden");
+      parseTwemoji(document.getElementById("peerProfileModal"));
     }
 
     function openActivePeerProfileModal() {
@@ -1214,7 +1248,7 @@
       }
     }
 
-    // --- USER PROFILE & BIO CONFIGURATION (2-Hour Expiring Session) ---
+    // --- USER PROFILE & BIO CONFIGURATION (2-Hour Session) ---
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileModal").classList.remove("hidden");
@@ -1222,6 +1256,7 @@
       document.getElementById("profileUsername").innerText = `@${currentUser.username}`;
       document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
       document.getElementById("myBioInput").value = currentUser.bio || "";
+      parseTwemoji(document.getElementById("profileModal"));
     }
 
     function closeProfileModal() {
@@ -1238,7 +1273,6 @@
 
       document.getElementById("myBioDisplay").innerText = newBio || "Tap to edit status...";
       
-      // Save bio with 2-hour expiration timestamp (2 * 60 * 60 * 1000 ms)
       const expiryTimestamp = Date.now() + 2 * 60 * 60 * 1000;
       localStorage.setItem("bio_expiry", expiryTimestamp.toString());
 
@@ -1250,6 +1284,7 @@
       }));
 
       await broadcastPresence();
+      parseTwemoji(document.getElementById("myBioDisplay"));
       setTimeout(() => notice.classList.add("hidden"), 2000);
     }
 
@@ -1266,6 +1301,7 @@
       document.getElementById("myAvatarLetter").innerText = currentUser.username.charAt(0).toUpperCase();
       document.getElementById("myBioDisplay").innerText = currentUser.bio || "Tap to edit status...";
       document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
+      parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
     // --- CAMPUS RADIO SYSTEM WITH VOLUME CONTROL ---
@@ -1294,6 +1330,7 @@
           document.getElementById("radioStatusTag").innerText = `Offline`;
         }
       }, 1000);
+      parseTwemoji(document.getElementById("radioWarningModal"));
     }
 
     function closeRadioModal() {
@@ -1328,8 +1365,8 @@
       if (history.length === 0) {
         area.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-1">
-            <span class="text-xs font-bold">Active Session Started</span>
-            <p class="text-[11px] text-slate-400 font-medium">Messages remain in RAM until tab is closed.</p>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Active Direct Session</span>
+            <p class="text-[11px] text-slate-400 font-medium">Messages remain encrypted in RAM until tab is closed.</p>
           </div>
         `;
         return;
@@ -1353,7 +1390,7 @@
       else pill.classList.add("hidden");
     }
 
-    // --- MESSAGE RENDERING ---
+    // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -1361,43 +1398,44 @@
       wrap.className = `group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
       const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-1 font-semibold";
+      meta.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-semibold";
       meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.network || currentNetwork}</span>`;
 
       const contentHolder = document.createElement("div");
-      contentHolder.className = "relative flex items-center gap-1.5";
+      contentHolder.className = "relative flex items-center gap-1.5 max-w-[85%] sm:max-w-[70%]";
 
       const bubble = document.createElement("div");
-      bubble.className = `max-w-[85%] rounded-2xl text-xs leading-relaxed overflow-hidden relative shadow-sm ${
+      bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words ${
         isSelf 
-          ? "bg-slate-950 dark:bg-white text-white dark:text-slate-950 rounded-br-none font-medium" 
-          : "bg-slate-100 dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-bl-none border border-slate-200 dark:border-slate-800/80 font-medium"
+          ? "bg-brand text-white rounded-2xl rounded-br-sm font-medium" 
+          : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
       }`;
 
       if (msg.text) {
         bubble.className += " px-4 py-2.5";
         bubble.textContent = msg.text;
       } else if (msg.image) {
-        bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer" onclick="window.open('${msg.image}')">`;
+        bubble.className += " p-1";
+        bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">`;
       } else if (msg.audio) {
-        bubble.className += " p-3 flex flex-col gap-2 min-w-[200px]";
+        bubble.className += " p-3 flex flex-col gap-2 min-w-[210px]";
         bubble.innerHTML = `
-          <div class="flex items-center justify-between gap-2 text-[10px]">
-            <span class="text-brand font-bold flex items-center gap-1">🔥 Audio Note</span>
-            <span class="text-slate-400 font-semibold">${msg.duration}s</span>
+          <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
+            <span class="font-bold flex items-center gap-1">🔥 Voice Clip</span>
+            <span class="font-semibold">${msg.duration}s</span>
           </div>
           <audio id="aud-${msg.id}" src="${msg.audio}" controls class="w-full h-8" onended="handleAudioDestruct('${msg.id}', '${msg.sender}')"></audio>
         `;
       }
 
-      // Inline Reactions Bar
+      // Inline Emoji Reaction Pill
       const reactionTrigger = document.createElement("div");
-      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md";
+      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
       reactionTrigger.innerHTML = `
-        <button onclick="sendReaction('${msg.id}', '🔥')">🔥</button>
-        <button onclick="sendReaction('${msg.id}', '💀')">💀</button>
-        <button onclick="sendReaction('${msg.id}', '👍')">👍</button>
-        <button onclick="sendReaction('${msg.id}', '❤️')">❤️</button>
+        <button onclick="sendReaction('${msg.id}', '🔥')" class="hover:scale-125 transition">🔥</button>
+        <button onclick="sendReaction('${msg.id}', '❤️')" class="hover:scale-125 transition">❤️</button>
+        <button onclick="sendReaction('${msg.id}', '😂')" class="hover:scale-125 transition">😂</button>
+        <button onclick="sendReaction('${msg.id}', '👍')" class="hover:scale-125 transition">👍</button>
       `;
 
       if (isSelf) {
@@ -1410,11 +1448,11 @@
 
       const reactionsContainer = document.createElement("div");
       reactionsContainer.id = `reactions-${msg.id}`;
-      reactionsContainer.className = "flex gap-1 text-[10px] px-1 font-semibold";
+      reactionsContainer.className = "flex gap-1 text-[10px] px-2 font-semibold";
 
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("div");
-      timeTag.className = "flex items-center gap-1 text-[10px] text-slate-400 px-1 font-medium";
+      timeTag.className = "flex items-center gap-1 text-[10px] text-slate-400 px-2 font-medium";
       timeTag.innerHTML = `<span>${timeStr}</span> ${isSelf ? `<span id="ack-${msg.id}" class="text-[9px] font-mono">✓</span>` : ''}`;
 
       wrap.appendChild(meta);
@@ -1423,6 +1461,7 @@
       wrap.appendChild(timeTag);
       area.appendChild(wrap);
 
+      parseTwemoji(wrap);
       scrollChatToBottom();
     }
 
@@ -1443,6 +1482,7 @@
       tag.className = "px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-darkMuted border border-slate-300 dark:border-slate-700 animate-pulse text-[10px] font-bold";
       tag.textContent = `${emoji} ${by}`;
       container.appendChild(tag);
+      parseTwemoji(tag);
     }
 
     function handleAudioDestruct(msgId, sender) {
@@ -1635,6 +1675,7 @@
         event: "webrtc_signal",
         payload: { type: "offer", offer: offer, from: currentUser.username, to: activeChatUser.username }
       });
+      parseTwemoji(document.getElementById("callOverlay"));
     }
 
     async function handleIncomingWebRTCSignal({ payload }) {
@@ -1646,6 +1687,7 @@
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
         document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
         document.getElementById("acceptCallBtn").classList.remove("hidden");
+        parseTwemoji(document.getElementById("callOverlay"));
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
         document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
@@ -1729,6 +1771,7 @@
     themeBtn.addEventListener("click", () => {
       htmlElem.classList.toggle("dark");
       document.getElementById("themeIcon").innerText = htmlElem.classList.contains("dark") ? "🌓" : "☀️";
+      parseTwemoji(document.getElementById("themeToggle"));
     });
   </script>
 </body>
