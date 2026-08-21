@@ -7,7 +7,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,11 +17,13 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
             brand: '#E11D48',
             brandDark: '#BE123C',
+            devGreen: '#10B981',
             darkBg: '#090A0F',
             darkCard: '#12141C',
             darkMuted: '#1A1D27',
@@ -47,6 +49,12 @@
       100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
     .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .shake { animation: shake 0.4s ease-in-out; }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
@@ -54,18 +62,23 @@
   <!-- TOP BAR -->
   <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-      <div class="w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
+      <div id="statusDot" class="w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
       <div class="flex flex-col">
-        <h1 class="text-sm font-bold tracking-tight">LAN CHAT</h1>
+        <div class="flex items-center gap-1.5">
+          <h1 class="text-sm font-bold tracking-tight">LAN CHAT</h1>
+          <span id="devModeBadge" class="hidden text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-devGreen/10 text-devGreen border border-devGreen/30">DEV ISOLATED</span>
+        </div>
         <span class="text-[11px] text-slate-400 font-medium">Campus Local Messenger</span>
       </div>
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Wi-Fi Subnet Switcher -->
+      <!-- Network Switcher (Student vs Devs) -->
       <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
-        <button id="wifiOneBtn" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
-        <button id="wifiTwoBtn" class="px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium">SSSIHL-STUDENT2</button>
+        <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
+        <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1">
+          <span>🔒</span> DEVS
+        </button>
       </div>
 
       <!-- Theme Switcher -->
@@ -91,12 +104,11 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, ephemeral audio clips, and 24/7 background audio lounges for students across the local campus network.
+        Real-time direct messaging, self-destruct audio notes, and 24/7 background audio lounges for students across the local network.
       </p>
 
-      <!-- Subnet Advisory -->
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
-        <span class="text-brand font-bold">● Network Segment Notice:</span> Peers on <strong>SSSIHL-STUDENT</strong> communicate within their isolated network segment. If a friend is on <strong>SSSIHL-STUDENT2</strong>, both should toggle to the matching network badge above.
+        <span class="text-brand font-bold">● Network Notice:</span> All students on campus communicate on the unified <strong>SSSIHL-STUDENT</strong> channel. Developers with access credentials can switch to the isolated <strong>DEVS</strong> network above.
       </div>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
@@ -137,7 +149,6 @@
     <!-- LEFT SIDEBAR -->
     <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/40">
       
-      <!-- Top Channels/Tabs Header -->
       <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
@@ -146,10 +157,13 @@
 
         <div class="flex p-1 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
           <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold">Direct Messages</button>
-          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition">Campus Lounge</button>
+          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium">Campus Lounge</button>
         </div>
 
-        <input id="userSearchInput" type="text" placeholder="Search by name or course..." oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-slate-400">
+        <div class="relative">
+          <input id="userSearchInput" type="text" placeholder="Search peers... (Ctrl+K)" oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand pr-8">
+          <span class="absolute right-2.5 top-2 text-[10px] text-slate-400 font-mono hidden sm:inline">⌘K</span>
+        </div>
       </div>
 
       <!-- Peers List Area -->
@@ -212,16 +226,21 @@
             <span>📞</span> Call
           </button>
           
-          <span class="text-[11px] text-slate-400 bg-slate-100 dark:bg-darkBg px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 font-medium">
-            Ephemeral RAM
+          <span id="activeNetIndicatorPill" class="text-[11px] text-slate-400 bg-slate-100 dark:bg-darkBg px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 font-medium">
+            SSSIHL-STUDENT
           </span>
         </div>
       </div>
 
       <!-- Message History Scroll Area -->
-      <div id="dmChatArea" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll"></div>
+      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll relative"></div>
 
-      <!-- Message Form with Voice & Media Controls -->
+      <!-- Floating Unread New Messages Pill -->
+      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-6 px-3 py-1.5 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-lg backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
+        <span>↓</span> New messages
+      </button>
+
+      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 glass-nav relative">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
@@ -256,6 +275,38 @@
     </section>
   </main>
 
+  <!-- ==================== DEV ACCESS PASSWORD MODAL ==================== -->
+  <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
+      <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-devGreen animate-ping"></span>
+          <span class="text-[11px] font-mono font-bold text-devGreen uppercase">Isolated Dev Channel</span>
+        </div>
+        <h3 class="text-base font-bold">Enter Developer Key</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Switching to DEVS disconnects you from the public student room and enters the developer relay.
+        </p>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <input id="devPassInput" type="password" placeholder="Developer Passkey" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-devGreen">
+        <p id="devPassError" class="text-xs text-brand font-medium hidden"></p>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeDevModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
+          Cancel
+        </button>
+        <button onclick="verifyDevAccess()" class="flex-1 py-2.5 rounded-xl bg-devGreen text-white text-xs font-bold hover:opacity-90 transition shadow-md shadow-devGreen/20">
+          Unlock DEVS
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== CAMPUS RADIO EARPHONES MODAL ==================== -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
@@ -287,7 +338,7 @@
     </div>
   </div>
 
-  <!-- ==================== USER PROFILE & VERIFICATION MODAL ==================== -->
+  <!-- ==================== USER PROFILE MODAL ==================== -->
   <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -334,7 +385,7 @@
       <div class="space-y-1">
         <h3 class="text-base font-bold">Feature Under Development</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Institutional identity verification is currently undergoing review. Stay tuned for future rollouts.
+          Institutional identity verification is currently undergoing testing. Stay tuned for updates.
         </p>
       </div>
       <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition">
@@ -368,7 +419,7 @@
     </div>
   </div>
 
-  <!-- ==================== ONBOARDING & QUICK UNLOCK ==================== -->
+  <!-- ==================== ONBOARDING & AUTH MODAL ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
@@ -386,7 +437,7 @@
               <p id="unlockMetaLabel" class="text-[11px] text-slate-400 truncate">Course • Year</p>
             </div>
           </div>
-          <span class="text-[10px] font-semibold text-slate-400">SAVED</span>
+          <span class="text-[10px] font-semibold text-slate-400">CACHED</span>
         </div>
 
         <div class="space-y-2">
@@ -471,7 +522,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold">Open Source & Audits</h3>
       <p class="text-xs text-slate-500 leading-relaxed">
-        LAN CHAT client code and routing algorithms are available for student auditing.
+        LAN CHAT client code and relay protocol are open for campus review.
       </p>
       <div class="p-3 bg-slate-100 dark:bg-darkMuted rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono select-all">
         simpcorp@proton.me
@@ -486,7 +537,7 @@
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Session Active • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
+      <span>Session Active • <span id="pingMeter" class="font-mono text-emerald-500">⚡ 18ms</span> • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
     </div>
 
     <div class="px-3.5 py-1.5 rounded-full bg-slate-200/70 dark:bg-darkMuted border border-slate-300 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-sm">
@@ -506,7 +557,7 @@
     let isLoginMode = false;
     let currentUser = null;
     let activeChatUser = null;
-    let selectedWifi = "SSSIHL-STUDENT";
+    let currentNetwork = "SSSIHL-STUDENT"; // 'SSSIHL-STUDENT' or 'DEVS'
     let channel = null;
     let onlineUsersMap = new Map();
     let unreadMap = new Map();
@@ -535,13 +586,18 @@
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
 
-    // --- Cloak on 2x ESC ---
+    // --- Keyboard Shortcuts (Ctrl+K Search, 2x ESC Cloak) ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         const now = Date.now();
         if (now - lastEscPress < 500) triggerPanic();
         lastEscPress = now;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        const searchInp = document.getElementById("userSearchInput");
+        if (searchInp) searchInp.focus();
       }
     });
 
@@ -551,7 +607,7 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Startup session restore
+    // Startup Session Restore
     window.addEventListener("DOMContentLoaded", () => {
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
@@ -561,6 +617,12 @@
         } catch(e) {
           localStorage.removeItem("nomesh_saved_user");
         }
+      }
+
+      // Check if Dev authorization flag exists in session
+      if (sessionStorage.getItem("dev_authenticated") === "true") {
+        currentNetwork = "DEVS";
+        updateNetworkUI();
       }
     });
 
@@ -684,7 +746,7 @@
           password: p,
           course: selectedCourse || "BCom (Hons)",
           year: selectedYear || "1st",
-          wifi_network: selectedWifi || "SSSIHL-STUDENT"
+          wifi_network: currentNetwork
         };
 
         const { data: newUser, error: insErr } = await sb.from("campus_users").insert([payload]).select().single();
@@ -699,7 +761,83 @@
       }
     }
 
-    // --- REALTIME ENGINE & PRESENCE ---
+    // --- NETWORK SWITCHER & DEV AUTH GATE ("SaiAgent01") ---
+    function promptDevsAccess() {
+      if (sessionStorage.getItem("dev_authenticated") === "true") {
+        switchToDevNetwork();
+      } else {
+        document.getElementById("devPassInput").value = "";
+        document.getElementById("devPassError").classList.add("hidden");
+        document.getElementById("devAccessModal").classList.remove("hidden");
+        document.getElementById("devPassInput").focus();
+      }
+    }
+
+    function closeDevModal() {
+      document.getElementById("devAccessModal").classList.add("hidden");
+    }
+
+    async function verifyDevAccess() {
+      const input = document.getElementById("devPassInput").value.trim();
+      const err = document.getElementById("devPassError");
+      const card = document.getElementById("devModalCard");
+      err.classList.add("hidden");
+
+      // Verifies password: "SaiAgent01"
+      if (input === "SaiAgent01") {
+        sessionStorage.setItem("dev_authenticated", "true");
+        closeDevModal();
+        switchToDevNetwork();
+      } else {
+        err.innerText = "Invalid Developer Key. Access Denied.";
+        err.classList.remove("hidden");
+        card.classList.remove("shake");
+        void card.offsetWidth; // trigger reflow
+        card.classList.add("shake");
+      }
+    }
+
+    function switchToStudentNetwork() {
+      currentNetwork = "SSSIHL-STUDENT";
+      updateNetworkUI();
+      if (currentUser) {
+        if (channel) sb.removeChannel(channel);
+        initUserSession(currentUser);
+      }
+    }
+
+    function switchToDevNetwork() {
+      currentNetwork = "DEVS";
+      updateNetworkUI();
+      if (currentUser) {
+        if (channel) sb.removeChannel(channel);
+        initUserSession(currentUser);
+      }
+    }
+
+    function updateNetworkUI() {
+      const netStudentBtn = document.getElementById("netStudentBtn");
+      const netDevsBtn = document.getElementById("netDevsBtn");
+      const devBadge = document.getElementById("devModeBadge");
+      const statusDot = document.getElementById("statusDot");
+      const netPill = document.getElementById("activeNetIndicatorPill");
+
+      if (currentNetwork === "DEVS") {
+        netDevsBtn.className = "px-3.5 py-1.5 rounded-full bg-devGreen text-white transition font-bold shadow-sm flex items-center gap-1";
+        netStudentBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium";
+        devBadge.classList.remove("hidden");
+        statusDot.className = "w-3 h-3 rounded-full bg-devGreen shadow-sm shadow-devGreen/50 animate-pulse";
+        if (netPill) netPill.innerText = "DEVS PRIVATE MESH";
+      } else {
+        netStudentBtn.className = "px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm";
+        netDevsBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1";
+        devBadge.classList.add("hidden");
+        statusDot.className = "w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse";
+        if (netPill) netPill.innerText = "SSSIHL-STUDENT";
+      }
+    }
+
+    // --- REALTIME ENGINE & PRESENCE (Isolated per network) ---
     function initUserSession(userData) {
       currentUser = userData;
 
@@ -712,10 +850,12 @@
       closeAuthModal();
       showChatView();
       updateProfileUI();
-
       selectDirectTab();
 
-      channel = sb.channel(`lan_${selectedWifi.toLowerCase()}_mesh`, {
+      // Channel isolation based on student vs devs
+      const channelName = currentNetwork === "DEVS" ? "lan_devs_private" : "lan_sssihl_student_mesh";
+
+      channel = sb.channel(channelName, {
         config: {
           presence: { key: currentUser.username },
           broadcast: { self: false }
@@ -745,6 +885,14 @@
           if (payload.recipient === currentUser.username) {
             saveMessageToSession(payload.sender, payload);
             soundRecv();
+            
+            // Send back delivery acknowledgment
+            channel.send({
+              type: "broadcast",
+              event: "msg_ack",
+              payload: { id: payload.id, from: currentUser.username, to: payload.sender }
+            });
+
             if (activeChatUser && activeChatUser.username === payload.sender) {
               renderBubble(payload, false);
             } else {
@@ -752,6 +900,12 @@
               unreadMap.set(payload.sender, currentUnread + 1);
               renderUsersList();
             }
+          }
+        })
+        .on("broadcast", { event: "msg_ack" }, ({ payload }) => {
+          if (payload.to === currentUser.username) {
+            const checkEl = document.getElementById(`ack-${payload.id}`);
+            if (checkEl) checkEl.innerText = "✓✓"; // Double check delivered
           }
         })
         .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
@@ -776,7 +930,7 @@
           username: currentUser.username,
           course: currentUser.course,
           year: currentUser.year,
-          wifi: selectedWifi
+          network: currentNetwork
         });
       }
     }
@@ -813,7 +967,7 @@
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
             <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-darkMuted flex items-center justify-center text-base font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active student from the left directory to start a direct 1-on-1 private chat.</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the left directory to start a direct 1-on-1 private chat.</p>
           </div>
         `;
       } else {
@@ -835,9 +989,9 @@
       document.getElementById("dmInput").removeAttribute("disabled");
       document.getElementById("dmSendBtn").removeAttribute("disabled");
 
-      document.getElementById("activeChatPeerName").innerText = "Campus Public Lounge";
-      document.getElementById("activeChatPeerMeta").innerText = `Subnet Broadcast: ${selectedWifi}`;
-      document.getElementById("dmInput").placeholder = "Broadcast to campus...";
+      document.getElementById("activeChatPeerName").innerText = currentNetwork === "DEVS" ? "Developer Mesh Lounge" : "Campus Public Lounge";
+      document.getElementById("activeChatPeerMeta").innerText = `Subnet Relay: ${currentNetwork}`;
+      document.getElementById("dmInput").placeholder = "Broadcast to room...";
       loadConversationFromSession("GLOBAL_LOUNGE");
       renderUsersList();
     }
@@ -854,7 +1008,7 @@
       badge.innerText = `${onlineUsersMap.size} Online`;
 
       if (peers.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 font-medium">No active peers online.</div>`;
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 font-medium">No active peers in this network.</div>`;
         return;
       }
 
@@ -870,7 +1024,7 @@
         
         btn.innerHTML = `
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
+            <div class="w-2.5 h-2.5 rounded-full ${currentNetwork === 'DEVS' ? 'bg-devGreen' : 'bg-emerald-500'} shrink-0"></div>
             <div class="truncate">
               <div class="flex items-center gap-1">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
@@ -879,7 +1033,7 @@
               <p class="text-[11px] text-slate-400 font-medium truncate">${peer.course} • ${peer.year}</p>
             </div>
           </div>
-          <span class="text-[10px] font-semibold text-slate-400 bg-slate-200/60 dark:bg-darkBg px-2 py-0.5 rounded-md">${peer.wifi}</span>
+          <span class="text-[10px] font-semibold text-slate-400 bg-slate-200/60 dark:bg-darkBg px-2 py-0.5 rounded-md font-mono">${currentNetwork}</span>
         `;
 
         btn.onclick = () => selectPeerForChat(peer);
@@ -903,7 +1057,7 @@
       document.getElementById("startCallBtn").classList.remove("hidden");
 
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
-      document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${peer.wifi}]`;
+      document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${currentNetwork}]`;
       
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
@@ -950,7 +1104,7 @@
       document.getElementById("radioWarningModal").classList.add("hidden");
     }
 
-    // --- EPHEMERAL STORAGE ---
+    // --- EPHEMERAL STORAGE & AUTO-SCROLL ---
     function getSessionKey(peerName) { return `chat_${currentUser.username}_with_${peerName}`; }
 
     function saveMessageToSession(peerName, messageObj) {
@@ -985,9 +1139,24 @@
       }
 
       history.forEach(msg => renderBubble(msg, msg.sender === currentUser.username));
+      scrollChatToBottom();
     }
 
-    // --- MESSAGE RENDERING ---
+    function scrollChatToBottom(force = false) {
+      const area = document.getElementById("dmChatArea");
+      area.scrollTop = area.scrollHeight;
+      document.getElementById("scrollDownPill").classList.add("hidden");
+    }
+
+    function handleChatScroll() {
+      const area = document.getElementById("dmChatArea");
+      const isScrolledUp = area.scrollHeight - area.scrollTop - area.clientHeight > 120;
+      const pill = document.getElementById("scrollDownPill");
+      if (isScrolledUp) pill.classList.remove("hidden");
+      else pill.classList.add("hidden");
+    }
+
+    // --- MESSAGE RENDERING (With Checks & Reactions) ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -996,7 +1165,7 @@
 
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-1 font-semibold";
-      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.wifi || selectedWifi}</span>`;
+      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.network || currentNetwork}</span>`;
 
       const contentHolder = document.createElement("div");
       contentHolder.className = "relative flex items-center gap-1.5";
@@ -1047,16 +1216,17 @@
       reactionsContainer.className = "flex gap-1 text-[10px] px-1 font-semibold";
 
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
-      const timeTag = document.createElement("span");
-      timeTag.className = "text-[10px] text-slate-400 px-1 font-medium";
-      timeTag.textContent = timeStr;
+      const timeTag = document.createElement("div");
+      timeTag.className = "flex items-center gap-1 text-[10px] text-slate-400 px-1 font-medium";
+      timeTag.innerHTML = `<span>${timeStr}</span> ${isSelf ? `<span id="ack-${msg.id}" class="text-[9px] font-mono">✓</span>` : ''}`;
 
       wrap.appendChild(meta);
       wrap.appendChild(contentHolder);
       wrap.appendChild(reactionsContainer);
       wrap.appendChild(timeTag);
       area.appendChild(wrap);
-      area.scrollTop = area.scrollHeight;
+
+      scrollChatToBottom();
     }
 
     function sendReaction(msgId, emoji) {
@@ -1223,7 +1393,7 @@
         image,
         audio,
         duration,
-        wifi: selectedWifi,
+        network: currentNetwork,
         timestamp: Date.now()
       };
 
@@ -1375,28 +1545,6 @@
       closeProfileModal();
       showLandingView();
     }
-
-    // --- SUBNET SWITCHER ---
-    const wifiOneBtn = document.getElementById("wifiOneBtn");
-    const wifiTwoBtn = document.getElementById("wifiTwoBtn");
-
-    function switchSubnet(newWifi) {
-      selectedWifi = newWifi;
-      if (newWifi === "SSSIHL-STUDENT") {
-        wifiOneBtn.className = "px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm";
-        wifiTwoBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium";
-      } else {
-        wifiTwoBtn.className = "px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm";
-        wifiOneBtn.className = "px-3.5 py-1.5 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium";
-      }
-      if (currentUser) {
-        if (channel) sb.removeChannel(channel);
-        initUserSession(currentUser);
-      }
-    }
-
-    wifiOneBtn.addEventListener("click", () => switchSubnet("SSSIHL-STUDENT"));
-    wifiTwoBtn.addEventListener("click", () => switchSubnet("SSSIHL-STUDENT2"));
 
     // --- THEME SWITCHER ---
     const themeBtn = document.getElementById("themeToggle");
