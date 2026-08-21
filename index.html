@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-color="blue">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,8 +30,9 @@
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
-            brand: '#3B82F6',
-            brandDark: '#1D4ED8',
+            brand: 'var(--brand-color)',
+            brandDark: 'var(--brand-dark)',
+            brandLight: 'var(--brand-light)',
             devGreen: '#10B981',
             darkBg: '#0B0D14',
             darkCard: '#131722',
@@ -45,6 +46,17 @@
     }
   </script>
   <style>
+    :root {
+      --brand-color: #3B82F6;
+      --brand-dark: #1D4ED8;
+      --brand-light: #60A5FA;
+    }
+    [data-color="red"] {
+      --brand-color: #E11D48;
+      --brand-dark: #BE123C;
+      --brand-light: #FB7185;
+    }
+
     .glass-nav {
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
@@ -80,12 +92,17 @@
       height: 12px;
       width: 12px;
       border-radius: 9999px;
-      background: #3B82F6;
+      background: var(--brand-color);
       cursor: pointer;
     }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
+
+  <!-- LOW VOLUME TOAST -->
+  <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500/90 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-lg backdrop-blur flex items-center gap-2 hidden transition-all">
+    <span>⚠️</span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
+  </div>
 
   <!-- TOP BAR -->
   <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
@@ -101,6 +118,16 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Color Grading Picker (Red vs Blue) -->
+      <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
+        <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-6 h-6 rounded-full flex items-center justify-center transition" title="Blue Accent">
+          <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+        </button>
+        <button id="colorRedBtn" onclick="setColorGrading('red')" class="w-6 h-6 rounded-full flex items-center justify-center transition" title="Red Accent">
+          <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+        </button>
+      </div>
+
       <!-- Network Switcher -->
       <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-3.5 py-1.5 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm">SSSIHL-STUDENT</button>
@@ -132,11 +159,11 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, self-destruct voice clips, and 24/7 background audio lounges for students across the local network.
+        Real-time direct messaging, seekable self-destruct voice clips with custom play limits, and 24/7 background audio lounges.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
-        <span class="text-brand font-bold">● Network Notice:</span> All students on campus communicate on the unified <strong>SSSIHL-STUDENT</strong> channel. Developers with access credentials can switch to the isolated <strong>DEVS</strong> network above.
+        <span class="text-brand font-bold">● Network Notice:</span> All students communicate on <strong>SSSIHL-STUDENT</strong>. Verified developers can switch to the isolated <strong>DEVS</strong> network above.
       </div>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
@@ -154,19 +181,19 @@
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">01</span>
         <h3 class="text-sm font-bold">Direct 1-on-1 Chats</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Fast direct messaging and voice calling with live active peers on your local network.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Fast direct messaging and firewall-piercing WebRTC audio calling with active peers.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">02</span>
-        <h3 class="text-sm font-bold">Self-Destruct Audio Notes</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Send voice clips under 30s that permanently erase the moment playback finishes.</p>
+        <h3 class="text-sm font-bold">Controlled Audio Notes</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Full scrubbing control, global master volume, and customizable 1x, 2x, or 3x self-destruct limits.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">03</span>
-        <h3 class="text-sm font-bold">Campus Radio Hub</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Stream background music streams across English, Hindi, and regional languages with dedicated volume control.</p>
+        <h3 class="text-sm font-bold">Theme & Grading Control</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Switch seamless visual color grading between sleek Red and Blue accents anytime.</p>
       </div>
     </div>
   </main>
@@ -199,7 +226,7 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- CAMPUS RADIO SIDE-BAR PLAYER -->
+      <!-- CAMPUS RADIO & GLOBAL WEBSITE MASTER VOLUME SLIDER -->
       <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
@@ -224,17 +251,24 @@
           </button>
         </div>
 
-        <div class="flex items-center gap-2 pt-0.5 px-1">
-          <span class="text-[10px] text-slate-400">🔈</span>
-          <input id="radioVolumeSlider" type="range" min="0" max="100" value="80" oninput="adjustRadioVolume(this.value)" class="w-full h-1 bg-slate-200 dark:bg-darkBg rounded-lg appearance-none cursor-pointer">
-          <span class="text-[10px] text-slate-400">🔊</span>
+        <!-- Global Master Volume Control (Full 100% by default) -->
+        <div class="space-y-1 pt-1">
+          <div class="flex justify-between text-[10px] font-semibold text-slate-400">
+            <span>Master Volume</span>
+            <span id="volPercentLabel">100%</span>
+          </div>
+          <div class="flex items-center gap-2 px-1">
+            <span class="text-[10px] text-slate-400">🔈</span>
+            <input id="masterVolumeSlider" type="range" min="0" max="100" value="100" oninput="adjustMasterVolume(this.value)" class="w-full h-1.5 bg-slate-200 dark:bg-darkBg rounded-lg appearance-none cursor-pointer">
+            <span class="text-[10px] text-slate-400">🔊</span>
+          </div>
         </div>
       </div>
 
       <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
         <div class="flex items-center gap-2.5 truncate">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
             <span id="myAvatarLetter">U</span>
           </div>
           <div class="truncate">
@@ -258,7 +292,7 @@
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
           
           <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2.5 cursor-pointer hover:opacity-80 transition">
-            <div id="activeChatPeerAvatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+            <div id="activeChatPeerAvatar" class="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm">
               ?
             </div>
             <div>
@@ -315,12 +349,19 @@
           Send
         </button>
 
-        <!-- Recording HUD Overlay -->
-        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-gradient-to-r from-brand to-indigo-600 text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
-          <div class="flex items-center gap-2 text-xs font-semibold">
+        <!-- Recording HUD Overlay with Burn Limit Selector (1x, 2x, 3x) -->
+        <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
+          <div class="flex items-center gap-2.5 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-            <span>RECORDING VOICE CLIP</span>
+            <span>RECORDING</span>
             <span id="recordingTimer" class="font-bold font-mono">0:00</span>
+            
+            <!-- Limit Selector -->
+            <div class="flex items-center bg-black/20 rounded-lg p-0.5 text-[10px] ml-1">
+              <button type="button" onclick="setDestructLimit(1)" id="limBtn1" class="px-2 py-0.5 rounded bg-white text-brand font-bold">1x</button>
+              <button type="button" onclick="setDestructLimit(2)" id="limBtn2" class="px-2 py-0.5 rounded text-white font-medium">2x</button>
+              <button type="button" onclick="setDestructLimit(3)" id="limBtn3" class="px-2 py-0.5 rounded text-white font-medium">3x</button>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button type="button" onclick="cancelVoiceRecording()" class="px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-semibold hover:bg-black/40 transition">Cancel</button>
@@ -338,7 +379,7 @@
       <button onclick="closePeerProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-2 pt-2">
-        <div id="inspectAvatarBox" class="w-16 h-16 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center text-xl font-extrabold mx-auto shadow-md">
+        <div id="inspectAvatarBox" class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-extrabold mx-auto shadow-md">
           ?
         </div>
         <div>
@@ -374,7 +415,7 @@
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-1 pt-1">
-        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center text-lg font-bold mx-auto shadow-md">
+        <div class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center text-lg font-bold mx-auto shadow-md">
           <span id="profileAvatarInitial">U</span>
         </div>
         <h3 id="profileUsername" class="text-base font-bold text-slate-900 dark:text-white">@username</h3>
@@ -500,13 +541,13 @@
     <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
       <div class="relative w-20 h-20 mx-auto">
         <div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping"></div>
-        <div class="relative w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center text-3xl shadow-lg">
+        <div class="relative w-20 h-20 rounded-full bg-emerald-500 text-white flex items-center justify-center text-3xl shadow-lg">
           📞
         </div>
       </div>
       <div>
         <h3 id="callPeerName" class="text-base font-bold">@peer</h3>
-        <p id="callStatusLabel" class="text-xs text-slate-400 pt-1">Connecting P2P Stream...</p>
+        <p id="callStatusLabel" class="text-xs text-slate-400 pt-1 font-mono">Connecting P2P Stream...</p>
       </div>
       <div class="flex justify-center gap-3">
         <button id="acceptCallBtn" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-2xl bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-sm">
@@ -516,7 +557,7 @@
           End Call
         </button>
       </div>
-      <audio id="remoteAudioElement" autoplay class="hidden"></audio>
+      <audio id="remoteAudioElement" autoplay playsinline class="hidden"></audio>
     </div>
   </div>
 
@@ -665,18 +706,23 @@
     let typingTimeout = null;
     let radioCountdownInterval = null;
     let inspectedPeerObj = null;
-    let radioAudioVolume = 0.8;
+
+    // --- GLOBAL MASTER VOLUME & DESTRUCT LIMIT ---
+    let globalMasterVolume = 1.0; // 100% by default
+    let activeDestructLimit = 1;  // 1x by default (1, 2, or 3)
+    let audioPlayedCounts = new Map(); // tracks playback counts per msg id
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = "sine", duration = 0.08) {
+      if (globalMasterVolume <= 0) return;
       if (audioCtx.state === "suspended") audioCtx.resume();
       try {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = type;
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04 * globalMasterVolume, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -688,6 +734,55 @@
     const soundSent = () => playBeep(880, "sine", 0.06);
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
+
+    // --- COLOR GRADING SWITCHER ---
+    function setColorGrading(color) {
+      document.documentElement.setAttribute('data-color', color);
+      localStorage.setItem('lan_color_grade', color);
+      
+      const blueBtn = document.getElementById('colorBlueBtn');
+      const redBtn = document.getElementById('colorRedBtn');
+      if (color === 'red') {
+        redBtn.className = "w-6 h-6 rounded-full flex items-center justify-center transition bg-white dark:bg-darkCard shadow-sm";
+        blueBtn.className = "w-6 h-6 rounded-full flex items-center justify-center transition opacity-60 hover:opacity-100";
+      } else {
+        blueBtn.className = "w-6 h-6 rounded-full flex items-center justify-center transition bg-white dark:bg-darkCard shadow-sm";
+        redBtn.className = "w-6 h-6 rounded-full flex items-center justify-center transition opacity-60 hover:opacity-100";
+      }
+    }
+
+    // --- MASTER VOLUME CONTROL & LOW VOLUME ALERT ---
+    function adjustMasterVolume(val) {
+      globalMasterVolume = parseFloat(val) / 100;
+      document.getElementById('volPercentLabel').innerText = `${val}%`;
+      
+      // Update all existing audio elements on the page in real-time
+      document.querySelectorAll('audio').forEach(a => {
+        a.volume = globalMasterVolume;
+      });
+    }
+
+    function checkVolumeAlert() {
+      if (globalMasterVolume <= 0.2) {
+        const toast = document.getElementById('lowVolumeToast');
+        document.getElementById('lowVolPct').innerText = Math.round(globalMasterVolume * 100);
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3500);
+      }
+    }
+
+    // --- SELF DESTRUCT LIMIT SELECTOR ---
+    function setDestructLimit(lim) {
+      activeDestructLimit = lim;
+      [1, 2, 3].forEach(n => {
+        const btn = document.getElementById(`limBtn${n}`);
+        if (n === lim) {
+          btn.className = "px-2 py-0.5 rounded bg-white text-brand font-bold";
+        } else {
+          btn.className = "px-2 py-0.5 rounded text-white font-medium";
+        }
+      });
+    }
 
     // --- Twemoji Helper ---
     function parseTwemoji(element) {
@@ -717,8 +812,11 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Startup Session Restore with 2-Hour Bio Session Check
+    // Startup Session Restore with 2-Hour Bio Session Check & Color Grade
     window.addEventListener("DOMContentLoaded", () => {
+      const savedColor = localStorage.getItem('lan_color_grade') || 'blue';
+      setColorGrading(savedColor);
+
       parseTwemoji(document.body);
 
       const cached = localStorage.getItem("nomesh_saved_user");
@@ -960,7 +1058,7 @@
         statusDot.className = "w-3 h-3 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse";
         if (netPill) netPill.innerText = "SSSIHL-STUDENT";
       }
-      parseTwemoji(document.header);
+      parseTwemoji(document.querySelector('header'));
     }
 
     // --- REALTIME ENGINE & PRESENCE ---
@@ -1154,7 +1252,7 @@
         
         row.innerHTML = `
           <div class="flex items-center gap-2.5 truncate" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-brand to-indigo-500 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+            <div class="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
               ${initial}
             </div>
             <div class="truncate text-left">
@@ -1304,11 +1402,7 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- CAMPUS RADIO SYSTEM WITH VOLUME CONTROL ---
-    function adjustRadioVolume(volPercent) {
-      radioAudioVolume = volPercent / 100;
-    }
-
+    // --- CAMPUS RADIO SYSTEM ---
     function requestRadioChannel(lang) {
       clearInterval(radioCountdownInterval);
       
@@ -1390,6 +1484,72 @@
       else pill.classList.add("hidden");
     }
 
+    // --- SEEKABLE CUSTOM AUDIO PLAYER & SCRUBBING ---
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60) || 0;
+      const s = Math.floor(secs % 60) || 0;
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function toggleAudioPlayback(id) {
+      const aud = document.getElementById(`native-aud-${id}`);
+      const btn = document.getElementById(`play-btn-${id}`);
+      if (!aud) return;
+
+      checkVolumeAlert();
+      aud.volume = globalMasterVolume;
+
+      if (aud.paused) {
+        aud.play();
+        btn.innerText = "⏸";
+      } else {
+        aud.pause();
+        btn.innerText = "▶";
+      }
+    }
+
+    function scrubAudioForward(id, deltaSec) {
+      const aud = document.getElementById(`native-aud-${id}`);
+      if (aud) {
+        aud.currentTime = Math.min(aud.duration, Math.max(0, aud.currentTime + deltaSec));
+      }
+    }
+
+    function onAudioSeekInput(id, val) {
+      const aud = document.getElementById(`native-aud-${id}`);
+      if (aud && aud.duration) {
+        aud.currentTime = (val / 100) * aud.duration;
+      }
+    }
+
+    function onAudioTimeUpdate(id) {
+      const aud = document.getElementById(`native-aud-${id}`);
+      const seek = document.getElementById(`seek-${id}`);
+      const timeLbl = document.getElementById(`time-${id}`);
+      if (aud && seek && timeLbl && aud.duration) {
+        const pct = (aud.currentTime / aud.duration) * 100;
+        seek.value = pct;
+        timeLbl.innerText = `${formatTime(aud.currentTime)} / ${formatTime(aud.duration)}`;
+      }
+    }
+
+    function handleAudioEnded(msgId, sender, limit) {
+      const btn = document.getElementById(`play-btn-${msgId}`);
+      if (btn) btn.innerText = "▶";
+
+      const currentPlays = (audioPlayedCounts.get(msgId) || 0) + 1;
+      audioPlayedCounts.set(msgId, currentPlays);
+
+      const countBadge = document.getElementById(`burn-count-${msgId}`);
+      if (countBadge) {
+        countBadge.innerText = `${currentPlays}/${limit} Plays`;
+      }
+
+      if (currentPlays >= limit) {
+        handleAudioDestruct(msgId, sender);
+      }
+    }
+
     // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
@@ -1402,7 +1562,7 @@
       meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.network || currentNetwork}</span>`;
 
       const contentHolder = document.createElement("div");
-      contentHolder.className = "relative flex items-center gap-1.5 max-w-[85%] sm:max-w-[70%]";
+      contentHolder.className = "relative flex items-center gap-1.5 max-w-[88%] sm:max-w-[75%]";
 
       const bubble = document.createElement("div");
       bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words ${
@@ -1418,13 +1578,32 @@
         bubble.className += " p-1";
         bubble.innerHTML = `<img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">`;
       } else if (msg.audio) {
-        bubble.className += " p-3 flex flex-col gap-2 min-w-[210px]";
+        const limit = msg.destructLimit || 1;
+        const currentCount = audioPlayedCounts.get(msg.id) || 0;
+        
+        bubble.className += " p-3 flex flex-col gap-2 min-w-[240px] sm:min-w-[280px]";
         bubble.innerHTML = `
           <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
-            <span class="font-bold flex items-center gap-1">🔥 Voice Clip</span>
-            <span class="font-semibold">${msg.duration}s</span>
+            <span class="font-bold flex items-center gap-1">🔥 Voice Clip (<span id="burn-count-${msg.id}">${currentCount}/${limit} Plays</span>)</span>
+            <span id="time-${msg.id}" class="font-mono">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
           </div>
-          <audio id="aud-${msg.id}" src="${msg.audio}" controls class="w-full h-8" onended="handleAudioDestruct('${msg.id}', '${msg.sender}')"></audio>
+
+          <!-- Hidden Native Audio for playback -->
+          <audio id="native-aud-${msg.id}" src="${msg.audio}" preload="metadata" ontimeupdate="onAudioTimeUpdate('${msg.id}')" onended="handleAudioEnded('${msg.id}', '${msg.sender}', ${limit})" class="hidden"></audio>
+
+          <!-- Custom Seekable Controller Bar -->
+          <div class="flex items-center gap-2">
+            <button type="button" id="play-btn-${msg.id}" onclick="toggleAudioPlayback('${msg.id}')" class="w-8 h-8 rounded-full ${isSelf ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-brand text-white'} flex items-center justify-center text-xs font-bold transition shrink-0">
+              ▶
+            </button>
+            <button type="button" onclick="scrubAudioForward('${msg.id}', -5)" title="Rewind 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
+              ↺ 5s
+            </button>
+            <input id="seek-${msg.id}" type="range" min="0" max="100" value="0" oninput="onAudioSeekInput('${msg.id}', this.value)" class="flex-1 h-1.5 bg-black/20 rounded-lg appearance-none cursor-pointer">
+            <button type="button" onclick="scrubAudioForward('${msg.id}', 5)" title="Forward 5s" class="text-xs opacity-75 hover:opacity-100 transition px-1">
+              5s ↻
+            </button>
+          </div>
         `;
       }
 
@@ -1549,7 +1728,7 @@
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         const reader = new FileReader();
         reader.onloadend = () => {
-          dispatchPayload({ audio: reader.result, duration });
+          dispatchPayload({ audio: reader.result, duration, destructLimit: activeDestructLimit });
         };
         reader.readAsDataURL(audioBlob);
         document.getElementById("recordingHUD").classList.add("hidden");
@@ -1593,7 +1772,7 @@
     }
 
     // --- PAYLOAD DISPATCH ---
-    function dispatchPayload({ text = null, image = null, audio = null, duration = null }) {
+    function dispatchPayload({ text = null, image = null, audio = null, duration = null, destructLimit = 1 }) {
       if (!channel || (!text && !image && !audio)) return;
 
       const payload = {
@@ -1604,6 +1783,7 @@
         image,
         audio,
         duration,
+        destructLimit,
         network: currentNetwork,
         timestamp: Date.now()
       };
@@ -1629,17 +1809,20 @@
       dispatchPayload({ text });
     });
 
-    // --- WEBRTC RELIABLE CALL ENGINE ---
+    // --- BULLETPROOF P2P WEBRTC CALL ENGINE (STUN + TURNS ON PORT 443 + ICE BUFFER) ---
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
+    let iceCandidateQueue = [];
 
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
-        { urls: 'turn:openrelay.metered.ca:443', username: 'openrelay', credential: 'openrelay' }
-      ]
+        { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelay', credential: 'openrelay' }
+      ],
+      iceCandidatePoolSize: 10
     };
 
     async function initiateAudioCall() {
@@ -1648,13 +1831,18 @@
       document.getElementById("callPeerName").innerText = `@${activeChatUser.username}`;
       document.getElementById("callStatusLabel").innerText = "Ringing peer...";
 
+      iceCandidateQueue = [];
       localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       peerConnection = new RTCPeerConnection(rtcConfig);
+      
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
       peerConnection.ontrack = (e) => {
-        document.getElementById("remoteAudioElement").srcObject = e.streams[0];
-        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
+        const remoteAudio = document.getElementById("remoteAudioElement");
+        remoteAudio.srcObject = e.streams[0];
+        remoteAudio.volume = globalMasterVolume;
+        remoteAudio.play().catch(() => {});
+        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
       };
 
       peerConnection.onicecandidate = (e) => {
@@ -1664,6 +1852,14 @@
             event: "webrtc_signal",
             payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: activeChatUser.username }
           });
+        }
+      };
+
+      peerConnection.oniceconnectionstatechange = () => {
+        if (peerConnection) {
+          if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
+            peerConnection.restartIce();
+          }
         }
       };
 
@@ -1690,9 +1886,19 @@
         parseTwemoji(document.getElementById("callOverlay"));
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
-        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
-      } else if (payload.type === "candidate" && peerConnection) {
-        await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
+        
+        // Process buffered ICE candidates
+        while (iceCandidateQueue.length > 0) {
+          const cand = iceCandidateQueue.shift();
+          try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
+        }
+        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
+      } else if (payload.type === "candidate") {
+        if (peerConnection && peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
+          try { await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e){}
+        } else {
+          iceCandidateQueue.push(payload.candidate);
+        }
       } else if (payload.type === "end_call") {
         endAudioCall(false);
       }
@@ -1702,13 +1908,18 @@
       document.getElementById("acceptCallBtn").classList.add("hidden");
       document.getElementById("callStatusLabel").innerText = "Connecting...";
 
+      iceCandidateQueue = [];
       localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       peerConnection = new RTCPeerConnection(rtcConfig);
+      
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
       peerConnection.ontrack = (e) => {
-        document.getElementById("remoteAudioElement").srcObject = e.streams[0];
-        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Audio)";
+        const remoteAudio = document.getElementById("remoteAudioElement");
+        remoteAudio.srcObject = e.streams[0];
+        remoteAudio.volume = globalMasterVolume;
+        remoteAudio.play().catch(() => {});
+        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
       };
 
       peerConnection.onicecandidate = (e) => {
@@ -1721,7 +1932,20 @@
         }
       };
 
+      peerConnection.oniceconnectionstatechange = () => {
+        if (peerConnection && (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed")) {
+          peerConnection.restartIce();
+        }
+      };
+
       await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
+      
+      // Process buffered ICE candidates
+      while (iceCandidateQueue.length > 0) {
+        const cand = iceCandidateQueue.shift();
+        try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
+      }
+
       const answer = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answer);
 
@@ -1751,6 +1975,7 @@
         localStream = null;
       }
       pendingOffer = null;
+      iceCandidateQueue = [];
       document.getElementById("callOverlay").classList.add("hidden");
       document.getElementById("acceptCallBtn").classList.add("hidden");
     }
