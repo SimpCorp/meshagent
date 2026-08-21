@@ -79,7 +79,7 @@
     </div>
   </header>
 
-  <!-- ==================== VIEW 1: CLEAN PROFESSIONAL LANDING ==================== -->
+  <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-10">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/60 text-xs font-medium text-neutral-500 shadow-sm">
@@ -90,7 +90,7 @@
         Simple. Secure.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed">
-        Connect directly with students across the campus network. Real-time direct messaging, ephemeral audio notes, and optional verified identity verification.
+        Connect directly with students across the campus network. Real-time direct messaging, ephemeral audio notes, and LinkedIn-verified identity authentication.
       </p>
 
       <!-- Subnet Isolation Advisory Note -->
@@ -119,7 +119,7 @@
       <div class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs font-mono text-accent font-semibold">02</span>
         <h3 class="text-sm font-semibold">Self-Destruct Voice Notes</h3>
-        <p class="text-xs text-neutral-500 leading-relaxed">Send audio clips under 30s that permanently erase the moment playback finishes.</p>
+        <p class="text-xs text-neutral-500 leading-relaxed">Send voice clips under 30s that permanently erase the moment playback finishes.</p>
       </div>
 
       <div onclick="openSourceNotice()" class="p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm cursor-pointer hover:border-neutral-400 dark:hover:border-neutral-600 transition group">
@@ -159,7 +159,7 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <!-- Bottom Profile Bar (Clickable to open profile & verification) -->
+      <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-3 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800/60 transition group">
         <div class="flex items-center gap-2 truncate">
           <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></div>
@@ -168,7 +168,7 @@
             <span id="myVerifiedBadge" class="hidden text-verified text-[11px]" title="Verified with LinkedIn">✓</span>
           </div>
         </div>
-        <span class="text-[10px] text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white font-mono">Settings ⚙</span>
+        <span class="text-[10px] text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white font-mono">Profile ⚙</span>
       </div>
     </section>
 
@@ -314,7 +314,7 @@
         </div>
       </div>
 
-      <!-- LinkedIn Profile URL Input Option or OAuth -->
+      <!-- LinkedIn Profile URL Input -->
       <div class="space-y-2 pt-1">
         <label class="text-[11px] font-medium text-neutral-400">LinkedIn Profile URL</label>
         <input id="inputLinkedinUrl" type="url" placeholder="https://www.linkedin.com/in/username" class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-verified font-mono">
@@ -634,6 +634,7 @@
       initUserSession(data);
     }
 
+    // --- BULLETPROOF AUTHENTICATION ---
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
@@ -655,7 +656,7 @@
         }
         initUserSession(data);
       } else {
-        // Multi-user registration allowed (IP restriction removed)
+        // Multi-user registration allowed (IP restriction removed completely)
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
         if (userCheck) {
           err.innerText = "Handle taken. Choose another.";
@@ -663,17 +664,20 @@
           return;
         }
 
-        const { data: newUser, error: insErr } = await sb.from("campus_users").insert([{
+        const payload = {
           username: u,
           password: p,
           course: selectedCourse,
           year: selectedYear,
           wifi_network: selectedWifi,
           linkedin_url: null
-        }]).select().single();
+        };
+
+        const { data: newUser, error: insErr } = await sb.from("campus_users").insert([payload]).select().single();
 
         if (insErr) {
-          err.innerText = "Registration failed. Try again.";
+          console.error("Supabase insert error:", insErr);
+          err.innerText = "Registration failed. Please try again.";
           err.classList.remove("hidden");
           return;
         }
@@ -893,7 +897,6 @@
 
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
       
-      // Verified Link handling
       const verifiedEl = document.getElementById("activeChatPeerVerified");
       if (peer.linkedin_url) {
         verifiedEl.classList.remove("hidden");
@@ -1103,7 +1106,6 @@
         return;
       }
 
-      // Update in Supabase
       const { error } = await sb
         .from("campus_users")
         .update({ linkedin_url: url })
