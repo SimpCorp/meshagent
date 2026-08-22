@@ -261,6 +261,7 @@
           <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">OTH</button>
         </div>
 
+        <!-- Master Volume Control -->
         <div class="space-y-1 pt-0.5">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
@@ -619,14 +620,8 @@
         <span id="radioCountdown" class="text-sm font-bold text-brand">5</span>
       </div>
 
-      <div id="radioResultBox" class="p-3 bg-slate-100 dark:bg-darkMuted rounded-2xl border border-slate-200 dark:border-slate-800 hidden">
-        <p class="text-xs font-bold text-amber-500 flex items-center justify-center gap-1">
-          <span>📡</span> Signal N/A (Stream Offline)
-        </p>
-      </div>
-
       <button onclick="closeRadioModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold transition">
-        Close
+        Cancel
       </button>
     </div>
   </div>
@@ -776,10 +771,11 @@
     let radioCountdownInterval = null;
     let inspectedPeerObj = null;
 
-    // --- GLOBAL MASTER VOLUME & DESTRUCT LIMIT ---
+    // --- GLOBAL MASTER VOLUME & ACTIVE PLAYERS ---
     let globalMasterVolume = 1.0;
     let activeDestructLimit = 1;
     let audioPlayedCounts = new Map();
+    let activeRadioPlayer = null;
 
     // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
@@ -856,11 +852,18 @@
       }
     }
 
-    // --- MASTER VOLUME CONTROL & LOW VOLUME ALERT ---
+    // --- MASTER VOLUME CONTROL & DIRECT SYNC (FIXED) ---
     function adjustMasterVolume(val) {
       globalMasterVolume = parseFloat(val) / 100;
       document.getElementById('volPercentLabel').innerText = `${val}%`;
+      
+      // Update all inline voice clip audio tags
       document.querySelectorAll('audio').forEach(a => { a.volume = globalMasterVolume; });
+      
+      // Explicitly sync the live background radio stream
+      if (activeRadioPlayer) {
+        activeRadioPlayer.volume = globalMasterVolume;
+      }
     }
 
     function checkVolumeAlert() {
@@ -1742,16 +1745,37 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    let activeRadioPlayer = null;
-
+    // --- REVERSE-PROXIED CAMPUS RADIO WITH 5S COUNTDOWN ---
     function requestRadioChannel(lang) {
+      clearInterval(radioCountdownInterval);
+      
+      document.getElementById("radioWarningModal").classList.remove("hidden");
+      document.getElementById("radioTimerBox").classList.remove("hidden");
+      
+      let count = 5;
+      document.getElementById("radioCountdown").innerText = count;
+      document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+
+      radioCountdownInterval = setInterval(() => {
+        count--;
+        document.getElementById("radioCountdown").innerText = count;
+        if (count <= 0) {
+          clearInterval(radioCountdownInterval);
+          document.getElementById("radioWarningModal").classList.add("hidden");
+          executeRadioStream(lang);
+        }
+      }, 1000);
+      parseTwemoji(document.getElementById("radioWarningModal"));
+    }
+
+    function executeRadioStream(lang) {
       if (activeRadioPlayer) {
         activeRadioPlayer.pause();
         activeRadioPlayer.src = "";
         activeRadioPlayer = null;
       }
 
-      // Points directly to Cloudflare Edge proxy
+      // Hits your Cloudflare Pages Edge Function Proxy directly
       const streamUrl = `/api/radio?channel=${lang.toLowerCase()}`;
       
       activeRadioPlayer = new Audio(streamUrl);
@@ -1762,13 +1786,15 @@
           document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
         })
         .catch((err) => {
-          console.warn("Radio playback waiting for touch interaction:", err);
+          console.warn("Stream playback waiting for direct touch/interaction:", err);
           document.getElementById("radioStatusTag").innerText = `Tuning...`;
         });
     }
 
     function closeRadioModal() {
+      clearInterval(radioCountdownInterval);
       document.getElementById("radioWarningModal").classList.add("hidden");
+      document.getElementById("radioStatusTag").innerText = `Idle`;
     }
 
     function getSessionKey(peerName) { return `chat_${currentUser.username}_with_${peerName}`; }
