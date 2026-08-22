@@ -113,7 +113,7 @@
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
   </div>
 
-  <!-- TOP BAR (Apple / Nothing Minimalist Header) -->
+  <!-- TOP BAR -->
   <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
@@ -127,7 +127,7 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Color Grading Picker (Red vs Blue Accent) -->
+      <!-- Color Grading Picker -->
       <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-5 h-5 rounded-full flex items-center justify-center transition" title="Blue Accent">
           <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
@@ -168,7 +168,7 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, live waveform audio calls, 2-second fading spoiler shields, and seekable voice notes.
+        Real-time direct messaging, live bidirectional waveform audio calling, 2-second fading spoiler shields, and seekable voice notes.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
@@ -190,7 +190,7 @@
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
         <h3 class="text-sm font-bold">Dynamic Audio Calling</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Live reactive speech waveforms, elapsed call timer, in-call mute, and encrypted P2P channels.</p>
+        <p class="text-xs text-slate-500 leading-relaxed">Live reactive speech waveforms on both ends, elapsed timer, universal mute toggle, and P2P WebRTC.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
@@ -355,11 +355,10 @@
         </div>
       </div>
 
-      <!-- Message Form (Instagram/iMessage Style Rounded Bar) -->
+      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
-        <!-- Instagram Plus Button -->
         <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Media" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -367,12 +366,10 @@
           </svg>
         </button>
 
-        <!-- Voice Clip Button -->
         <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <span id="voiceMicIcon" class="text-xs">🎤</span>
         </button>
 
-        <!-- Message Capsule Input -->
         <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-0.5">
         </div>
@@ -403,7 +400,7 @@
     </section>
   </main>
 
-  <!-- ==================== APPLE / NOTHING INSPIRED IN-CALL HUD ==================== -->
+  <!-- ==================== APPLE / NOTHING IN-CALL HUD ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
       
@@ -417,24 +414,21 @@
         <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Stream...</p>
       </div>
 
-      <!-- Live Reactive Audio Waveform Canvas (Nothing Tech Aesthetic) -->
+      <!-- Live Reactive Audio Waveform Canvas (Dual-Source: Local + Remote) -->
       <div class="relative w-full h-24 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
         <canvas id="callWaveformCanvas" class="w-full h-full"></canvas>
       </div>
 
       <!-- Call Controls (Mute / End / Accept) -->
       <div class="flex justify-center items-center gap-4 pt-1">
-        <!-- In-Call Mute Button -->
         <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Mute Microphone">
           <span id="muteIcon">🎙️</span>
         </button>
 
-        <!-- Accept Call (Receiver) -->
         <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-6 py-3 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-2">
           <span>📞</span> Accept
         </button>
 
-        <!-- End Call Button -->
         <button type="button" onclick="endAudioCall()" class="w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95" title="End Call">
           ✕
         </button>
@@ -442,7 +436,7 @@
     </div>
   </div>
 
-  <!-- Real WebRTC Playback Receiver Element (Always rendered, unhidden, volume managed by master slider) -->
+  <!-- Real WebRTC Playback Receiver Element (Always rendered in DOM) -->
   <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
 
   <!-- ==================== PEER PROFILE VIEW MODAL ==================== -->
@@ -494,7 +488,6 @@
         <p id="profileMeta" class="text-[11px] text-slate-400">Course • Year</p>
       </div>
 
-      <!-- Bio Input Option (With 2-Hour Expiry) -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Status (Active 2 Hours)</label>
@@ -562,7 +555,7 @@
       </div>
 
       <div class="space-y-2 pt-1">
-        <input id="devPassInput" type="password" placeholder="Developer Passkey" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-devGreen">
+        <input id="devPassInput" type="password" placeholder="Developer Passkey" onkeydown="if(event.key==='Enter') verifyDevAccess()" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-devGreen">
         <p id="devPassError" class="text-xs text-brand font-medium hidden"></p>
       </div>
 
@@ -614,7 +607,7 @@
       
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- Quick Unlock -->
+      <!-- Quick Unlock (Instant Autofocus & Enter Key Supported) -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -631,12 +624,12 @@
 
         <div class="space-y-2">
           <label class="text-[11px] font-medium text-slate-400">Enter Password</label>
-          <input id="unlockPassInput" type="password" placeholder="Passkey" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+          <input id="unlockPassInput" type="password" placeholder="Passkey" onkeydown="if(event.key==='Enter') submitQuickUnlock()" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           <p id="unlockError" class="text-xs text-brand font-medium hidden"></p>
         </div>
 
         <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md">
-          Unlock Terminal
+          Unlock Terminal ↵
         </button>
 
         <div class="text-center pt-1">
@@ -683,23 +676,23 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- Step 3 Handle & Password -->
+      <!-- Step 3 Handle & Password (Instant Autofocus & Enter Key Supported) -->
       <div id="stepAuth" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
         <h3 class="text-base font-bold" id="authHeading">Create your profile</h3>
         <div class="space-y-2">
           <div>
             <label class="text-[11px] font-medium text-slate-400">Username</label>
-            <input id="inputUser" type="text" placeholder="e.g. alex" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+            <input id="inputUser" type="text" placeholder="e.g. alex" onkeydown="if(event.key==='Enter') document.getElementById('inputPass').focus()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
           <div>
             <label class="text-[11px] font-medium text-slate-400">Password</label>
-            <input id="inputPass" type="password" placeholder="Passkey for future logins" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+            <input id="inputPass" type="password" placeholder="Passkey for future logins" onkeydown="if(event.key==='Enter') submitAuth()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
           <p id="authError" class="text-xs text-brand font-medium hidden"></p>
         </div>
         <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md">
-          Create Account & Join
+          Create Account & Join ↵
         </button>
       </div>
 
@@ -722,7 +715,7 @@
     </div>
   </div>
 
-  <!-- FOOTER (Prominent Jobless B.COM Student Signature) -->
+  <!-- FOOTER -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -925,6 +918,11 @@
       document.getElementById("unlockUserLabel").innerText = `@${user.username}`;
       document.getElementById("unlockMetaLabel").innerText = `${user.course} • ${user.year}`;
       document.getElementById("stepQuickUnlock").classList.remove("hidden");
+      
+      setTimeout(() => {
+        const passInp = document.getElementById("unlockPassInput");
+        if (passInp) passInp.focus();
+      }, 50);
     }
 
     function switchUserSession() {
@@ -934,8 +932,11 @@
     }
 
     function handleNavAction() {
-      if (currentUser) showChatView();
-      else openAuthModal();
+      if (currentUser) {
+        showChatView();
+      } else {
+        openAuthModal();
+      }
     }
 
     function showLandingView() {
@@ -948,7 +949,17 @@
       document.getElementById("chatView").classList.remove("hidden");
     }
 
-    function openAuthModal() { document.getElementById("authModal").classList.remove("hidden"); }
+    function openAuthModal() { 
+      document.getElementById("authModal").classList.remove("hidden");
+      const quickPass = document.getElementById("unlockPassInput");
+      const regUser = document.getElementById("inputUser");
+      if (!document.getElementById("stepQuickUnlock").classList.contains("hidden") && quickPass) {
+        setTimeout(() => quickPass.focus(), 50);
+      } else if (!document.getElementById("stepAuth").classList.contains("hidden") && regUser) {
+        setTimeout(() => regUser.focus(), 50);
+      }
+    }
+
     function closeAuthModal() { document.getElementById("authModal").classList.add("hidden"); }
     function openSourceNotice() { document.getElementById("sourceModal").classList.remove("hidden"); }
     function closeSourceModal() { document.getElementById("sourceModal").classList.add("hidden"); }
@@ -963,6 +974,10 @@
       selectedYear = y;
       document.getElementById("stepYear").classList.add("hidden");
       document.getElementById("stepAuth").classList.remove("hidden");
+      setTimeout(() => {
+        const userInp = document.getElementById("inputUser");
+        if (userInp) userInp.focus();
+      }, 50);
     }
 
     function backToStep(s) {
@@ -977,7 +992,11 @@
       document.getElementById("stepCourse").classList.add("hidden");
       document.getElementById("stepAuth").classList.remove("hidden");
       document.getElementById("authHeading").innerText = "Sign In";
-      document.getElementById("authActionBtn").innerText = "Authenticate";
+      document.getElementById("authActionBtn").innerText = "Authenticate ↵";
+      setTimeout(() => {
+        const userInp = document.getElementById("inputUser");
+        if (userInp) userInp.focus();
+      }, 50);
     }
 
     async function submitQuickUnlock() {
@@ -1065,7 +1084,10 @@
         document.getElementById("devPassInput").value = "";
         document.getElementById("devPassError").classList.add("hidden");
         document.getElementById("devAccessModal").classList.remove("hidden");
-        document.getElementById("devPassInput").focus();
+        setTimeout(() => {
+          const pInp = document.getElementById("devPassInput");
+          if (pInp) pInp.focus();
+        }, 50);
       }
     }
 
@@ -1945,7 +1967,7 @@
     });
 
     // =========================================================================
-    // PRODUCTION-GRADE P2P WEBRTC CALL ENGINE (FIXED TRACK BINDING & WAVEFORM)
+    // PRODUCTION P2P WEBRTC (DUAL-SOURCE WAVEFORM & BIDIRECTIONAL MUTE)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -1956,11 +1978,11 @@
     let callStartTime = 0;
     let isLocalMuted = false;
 
-    // Real-time Audio Visualizer State
     let audioVisualizerContext = null;
     let audioVisualizerAnalyser = null;
-    let audioVisualizerSource = null;
     let visualizerAnimationId = null;
+    let localVisSource = null;
+    let remoteVisSource = null;
 
     const rtcConfig = {
       iceServers: [
@@ -2003,83 +2025,95 @@
       }
     }
 
-    function startAudioWaveformVisualizer(stream) {
-      try {
-        if (!audioVisualizerContext) {
-          audioVisualizerContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioVisualizerContext.state === "suspended") {
-          audioVisualizerContext.resume();
-        }
-
+    function setupVisualizerGraph() {
+      if (!audioVisualizerContext) {
+        audioVisualizerContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioVisualizerContext.state === "suspended") {
+        audioVisualizerContext.resume();
+      }
+      if (!audioVisualizerAnalyser) {
         audioVisualizerAnalyser = audioVisualizerContext.createAnalyser();
         audioVisualizerAnalyser.fftSize = 256;
-        audioVisualizerSource = audioVisualizerContext.createMediaStreamSource(stream);
-        audioVisualizerSource.connect(audioVisualizerAnalyser);
-
-        const canvas = document.getElementById("callWaveformCanvas");
-        const ctx = canvas.getContext("2d");
-        const bufferLength = audioVisualizerAnalyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
-        function resizeCanvas() {
-          canvas.width = canvas.parentElement.clientWidth;
-          canvas.height = canvas.parentElement.clientHeight;
-        }
-        resizeCanvas();
-
-        let phase = 0;
-
-        function drawWave() {
-          visualizerAnimationId = requestAnimationFrame(drawWave);
-          audioVisualizerAnalyser.getByteFrequencyData(dataArray);
-
-          // Compute average volume level (0 to 1)
-          let sum = 0;
-          for (let i = 0; i < bufferLength; i++) {
-            sum += dataArray[i];
-          }
-          const avgVolume = (sum / bufferLength) / 255; // 0 (silent) to 1.0 (loud)
-
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-          const width = canvas.width;
-          const height = canvas.height;
-          const centerY = height / 2;
-
-          // Draw Smooth Sine Wave with Nothing Tech styling
-          ctx.lineWidth = 2.2;
-          ctx.strokeStyle = document.documentElement.getAttribute('data-color') === 'red' ? '#FB7185' : '#60A5FA';
-          ctx.beginPath();
-
-          phase += 0.08;
-          const amplitude = avgVolume > 0.03 ? (avgVolume * (height * 0.42)) : 0; // Flat line when silent
-
-          for (let x = 0; x < width; x++) {
-            const freq = 0.04;
-            const y = centerY + Math.sin(x * freq + phase) * amplitude;
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-
-          // Subtle harmonic background line
-          ctx.lineWidth = 1.0;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-          ctx.beginPath();
-          for (let x = 0; x < width; x++) {
-            const freq = 0.02;
-            const y = centerY + Math.cos(x * freq - phase * 0.7) * (amplitude * 0.4);
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-        }
-
-        drawWave();
-      } catch (err) {
-        console.warn("Waveform visualizer init fallback:", err);
       }
+    }
+
+    function attachStreamToVisualizer(stream, isLocal) {
+      try {
+        setupVisualizerGraph();
+        if (isLocal && !localVisSource && stream) {
+          localVisSource = audioVisualizerContext.createMediaStreamSource(stream);
+          localVisSource.connect(audioVisualizerAnalyser);
+        } else if (!isLocal && !remoteVisSource && stream) {
+          remoteVisSource = audioVisualizerContext.createMediaStreamSource(stream);
+          remoteVisSource.connect(audioVisualizerAnalyser);
+        }
+      } catch (err) {
+        console.warn("Visualizer node attach:", err);
+      }
+    }
+
+    function startAudioWaveformVisualizer() {
+      setupVisualizerGraph();
+      if (visualizerAnimationId) return;
+
+      const canvas = document.getElementById("callWaveformCanvas");
+      const ctx = canvas.getContext("2d");
+      const bufferLength = audioVisualizerAnalyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth || 320;
+        canvas.height = canvas.parentElement.clientHeight || 96;
+      }
+      resizeCanvas();
+
+      let phase = 0;
+
+      function drawWave() {
+        visualizerAnimationId = requestAnimationFrame(drawWave);
+        audioVisualizerAnalyser.getByteFrequencyData(dataArray);
+
+        let sum = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
+        }
+        const avgVolume = (sum / bufferLength) / 255;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerY = height / 2;
+
+        ctx.lineWidth = 2.0;
+        ctx.strokeStyle = document.documentElement.getAttribute('data-color') === 'red' ? '#FB7185' : '#60A5FA';
+        ctx.beginPath();
+
+        phase += 0.08;
+        const amplitude = avgVolume > 0.02 ? (avgVolume * (height * 0.44)) : 0;
+
+        for (let x = 0; x < width; x++) {
+          const freq = 0.04;
+          const y = centerY + Math.sin(x * freq + phase) * amplitude;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        ctx.lineWidth = 1.0;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.beginPath();
+        for (let x = 0; x < width; x++) {
+          const freq = 0.02;
+          const y = centerY + Math.cos(x * freq - phase * 0.7) * (amplitude * 0.35);
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      drawWave();
     }
 
     function stopAudioWaveformVisualizer() {
@@ -2087,9 +2121,13 @@
         cancelAnimationFrame(visualizerAnimationId);
         visualizerAnimationId = null;
       }
-      if (audioVisualizerSource) {
-        audioVisualizerSource.disconnect();
-        audioVisualizerSource = null;
+      if (localVisSource) {
+        try { localVisSource.disconnect(); } catch(e){}
+        localVisSource = null;
+      }
+      if (remoteVisSource) {
+        try { remoteVisSource.disconnect(); } catch(e){}
+        remoteVisSource = null;
       }
       const canvas = document.getElementById("callWaveformCanvas");
       if (canvas) {
@@ -2123,17 +2161,19 @@
 
       isLocalMuted = false;
       document.getElementById("muteIcon").innerText = "🎙️";
+      document.getElementById("toggleMuteBtn").className = "w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+      attachStreamToVisualizer(localStream, true);
+      startAudioWaveformVisualizer();
+
       peerConnection = new RTCPeerConnection(rtcConfig);
       
-      // Clean Track attachment
       localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
       });
 
-      // Fixed ontrack: direct MediaStream creation per track
       peerConnection.ontrack = (e) => {
         if (e.track) {
           remoteStream = new MediaStream([e.track]);
@@ -2141,9 +2181,9 @@
           remoteAudio.volume = globalMasterVolume;
           remoteAudio.play().catch(err => console.error("Audio playback error:", err));
           
+          attachStreamToVisualizer(remoteStream, false);
           document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
           startCallTimer();
-          startAudioWaveformVisualizer(remoteStream);
         }
       };
 
@@ -2167,7 +2207,6 @@
         }
       };
 
-      // Clean Offer without conflicting transceivers
       const offer = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offer);
 
@@ -2219,16 +2258,19 @@
 
       isLocalMuted = false;
       document.getElementById("muteIcon").innerText = "🎙️";
+      document.getElementById("toggleMuteBtn").className = "w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+      attachStreamToVisualizer(localStream, true);
+      startAudioWaveformVisualizer();
+
       peerConnection = new RTCPeerConnection(rtcConfig);
       
       localStream.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStream);
       });
 
-      // Fixed ontrack: direct MediaStream creation per track
       peerConnection.ontrack = (e) => {
         if (e.track) {
           remoteStream = new MediaStream([e.track]);
@@ -2236,9 +2278,9 @@
           remoteAudio.volume = globalMasterVolume;
           remoteAudio.play().catch(err => console.error("Audio playback error:", err));
 
+          attachStreamToVisualizer(remoteStream, false);
           document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
           startCallTimer();
-          startAudioWaveformVisualizer(remoteStream);
         }
       };
 
