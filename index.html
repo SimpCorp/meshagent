@@ -34,9 +34,9 @@
             brandDark: 'var(--brand-dark)',
             brandLight: 'var(--brand-light)',
             devGreen: '#10B981',
-            darkBg: '#090A0F',
-            darkCard: '#11131A',
-            darkMuted: '#191C26',
+            darkBg: '#080A0F',
+            darkCard: '#10131B',
+            darkMuted: '#171B26',
             lightBg: '#F8FAFC',
             lightCard: '#FFFFFF',
             lightMuted: '#F1F5F9'
@@ -63,14 +63,14 @@
     }
     .custom-scroll::-webkit-scrollbar { width: 4px; }
     .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.2); border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.25); border-radius: 9999px; }
     
     img.emoji {
       display: inline-block;
-      width: 1.2em;
-      height: 1.2em;
+      width: 1.15em;
+      height: 1.15em;
       margin: 0 0.1em;
-      vertical-align: -0.2em;
+      vertical-align: -0.18em;
     }
 
     @keyframes burn {
@@ -78,29 +78,29 @@
       50% { opacity: 0.5; transform: scale(0.96); filter: blur(2px) contrast(150%); }
       100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
-    .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+    .destructing { animation: burn 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
 
     .spoiler-overlay {
-      transition: opacity 2s ease, filter 2s ease, visibility 2s;
+      transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), filter 1.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .spoiler-revealed {
       opacity: 0 !important;
-      filter: blur(10px) !important;
+      filter: blur(12px) !important;
       pointer-events: none !important;
     }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
     }
-    .shake { animation: shake 0.4s ease-in-out; }
+    .shake { animation: shake 0.35s ease-in-out; }
 
     @keyframes pingFlash {
-      0% { background-color: rgba(239, 68, 68, 0.4); }
+      0% { background-color: rgba(239, 68, 68, 0.45); }
       100% { background-color: transparent; }
     }
-    .poke-flash { animation: pingFlash 0.9s ease-out; }
+    .poke-flash { animation: pingFlash 0.8s ease-out; }
     
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
@@ -112,10 +112,10 @@
     }
   </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
+<body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
   <!-- LOW VOLUME TOAST -->
-  <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
+  <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
   </div>
 
@@ -125,7 +125,7 @@
   </div>
 
   <!-- TOP BAR -->
-  <header class="w-full max-w-6xl mx-auto p-4 flex items-center justify-between z-30">
+  <header class="w-full max-w-6xl mx-auto p-3.5 flex items-center justify-between z-30">
     <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
       <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
       <div class="flex flex-col">
@@ -133,7 +133,7 @@
           <h1 class="text-xs font-bold tracking-tight uppercase">LAN CHAT</h1>
           <span id="devModeBadge" class="hidden text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-devGreen/10 text-devGreen border border-devGreen/30">DEV ISOLATED</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Campus Local Messenger</span>
+        <span class="text-[10px] text-slate-400 font-medium">Campus Direct Messenger</span>
       </div>
     </div>
 
@@ -169,21 +169,21 @@
   </header>
 
   <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
-  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 flex-1 flex flex-col justify-center items-center space-y-10">
+  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-8">
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-        Direct Campus Communication
+        Direct Campus Mesh Communication
       </div>
       <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
-        Simple. Private.<br>Direct Campus Messaging.
+        Zero Latency.<br>Direct Campus Mesh.
       </h2>
       <p class="text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, live location sharing, ephemeral PDF/text uploads under 2 MB, audio waveform calls, and haptic peer pokes.
+        Real-time direct messaging, two-way delete on read, background tab alerts, live location cards, and self-destruct media.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
-        <span class="text-brand font-bold">● Network Notice:</span> All students communicate on <strong>SSSIHL-STUDENT</strong>. Verified developers can switch to the isolated <strong>DEVS</strong> network above.
+        <span class="text-brand font-bold">● Network Notice:</span> All students connect to <strong>SSSIHL-STUDENT</strong>. Verified devs can unlock the isolated <strong>DEVS</strong> network above.
       </div>
       
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
@@ -191,29 +191,29 @@
           Open Messages →
         </button>
         <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold text-slate-600 dark:text-slate-300 transition">
-          Open Source Code
+          Source Code & Audits
         </button>
       </div>
     </div>
 
     <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
-        <h3 class="text-sm font-bold">Location & File Drops</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Share live GPS location with Apple/Google Maps links and upload PDFs/text notes strictly under 2 MB.</p>
+        <h3 class="text-xs font-bold">Background Tab Flash</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Poking a peer alters their browser tab title even when watching YouTube or researching.</p>
       </div>
 
-      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">02</span>
-        <h3 class="text-sm font-bold">Calling & Haptic Pokes</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Reactive voice ripple aura, elapsed timer, speaker toggle, and ⚡ instant attention buzzers.</p>
+        <h3 class="text-xs font-bold">Two-Way Delete</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Instantly erase any sent message, location card, image, or document on both ends simultaneously.</p>
       </div>
 
-      <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-sm font-bold">Spoiler & Burner Text</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Send shrouded 2s-fade spoiler shields and self-destruct countdown text messages (5s–custom).</p>
+        <h3 class="text-xs font-bold">Zero-Lag Direct Switch</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Optimized in-memory message hydration renders conversations with immediate response time.</p>
       </div>
     </div>
   </main>
@@ -224,20 +224,20 @@
     <!-- LEFT SIDEBAR -->
     <section id="sidebarPane" class="w-full sm:w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30">
       
-      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800 space-y-2.5">
+      <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
           <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
         </div>
 
-        <div class="flex p-1 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
+        <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
           <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold">Direct Messages</button>
           <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium">Campus Lounge</button>
         </div>
 
         <div class="relative">
-          <input id="userSearchInput" type="text" placeholder="Search peers... (Ctrl+K)" oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-brand pr-8">
-          <span class="absolute right-2.5 top-2 text-[10px] text-slate-400 font-mono hidden sm:inline">⌘K</span>
+          <input id="userSearchInput" type="text" placeholder="Search peers... (Ctrl+K)" oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-brand pr-8">
+          <span class="absolute right-2.5 top-1.5 text-[10px] text-slate-400 font-mono hidden sm:inline">⌘K</span>
         </div>
       </div>
 
@@ -255,21 +255,13 @@
         </div>
         
         <div class="grid grid-cols-4 gap-1">
-          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">
-            ENG
-          </button>
-          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">
-            HIN
-          </button>
-          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">
-            S.IND
-          </button>
-          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">
-            OTH
-          </button>
+          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">ENG</button>
+          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">HIN</button>
+          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">S.IND</button>
+          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">OTH</button>
         </div>
 
-        <div class="space-y-1 pt-1">
+        <div class="space-y-1 pt-0.5">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
             <span id="volPercentLabel">100%</span>
@@ -283,7 +275,7 @@
       </div>
 
       <!-- Bottom Profile Bar -->
-      <div onclick="openProfileModal()" class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
+      <div onclick="openProfileModal()" class="p-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
         <div class="flex items-center gap-2.5 truncate">
           <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
             <span id="myAvatarLetter">U</span>
@@ -304,7 +296,7 @@
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative">
       
       <!-- Chat Header -->
-      <div class="p-3.5 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10">
+      <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10">
         <div class="flex items-center gap-2.5">
           <button onclick="closeChatMobile()" class="sm:hidden text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">← Back</button>
           
@@ -322,9 +314,9 @@
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
-          <!-- Haptic Poke Button -->
-          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm" title="Poke Peer">
-            <span>⚡</span> Poke
+          <!-- Haptic Poke Button (With 30s Cooldown & 5x/2min Limit Logic) -->
+          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
+            <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
           <!-- Audio Call Button -->
@@ -346,8 +338,8 @@
         <span>↓</span> New messages
       </button>
 
-      <!-- Message Customization Sub-Bar (Spoiler & Burner) -->
-      <div class="px-4 py-1.5 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-3 text-[11px] z-10 select-none">
+      <!-- Message Customization Sub-Bar -->
+      <div class="px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-3 text-[11px] z-10 select-none">
         <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition text-[11px]">
           <span>⚠️</span> Spoiler
         </button>
@@ -372,14 +364,11 @@
         </div>
       </div>
 
-      <!-- Message Form (Instagram/iMessage Style Bar with Drawer) -->
+      <!-- Message Form with Instagram Style Drawer -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
-        
-        <!-- Hidden Inputs for Attachments -->
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         <input type="file" id="docUploadInput" accept=".pdf,.txt,.doc,.docx" class="hidden" onchange="handleDocSelection(event)">
         
-        <!-- Instagram Plus Button Container -->
         <div class="relative">
           <button type="button" onclick="toggleAttachmentDrawer()" id="plusBtnTrigger" title="Attach Media & Location" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -388,8 +377,7 @@
             </svg>
           </button>
 
-          <!-- Instagram Attachment Drawer Popover -->
-          <div id="attachmentDrawer" class="absolute bottom-11 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 min-w-[170px] hidden z-30 text-xs font-semibold">
+          <div id="attachmentDrawer" class="absolute bottom-11 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-0.5 min-w-[180px] hidden z-30 text-xs font-semibold">
             <button type="button" onclick="triggerImgUpload()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
               <span>🖼️</span> Photo
             </button>
@@ -402,12 +390,10 @@
           </div>
         </div>
 
-        <!-- Voice Clip Button -->
         <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <span id="voiceMicIcon" class="text-xs">🎤</span>
         </button>
 
-        <!-- Message Capsule Input -->
         <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-0.5">
         </div>
@@ -416,7 +402,6 @@
           Send
         </button>
 
-        <!-- Voice Clip Recording Overlay -->
         <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -439,18 +424,16 @@
     </section>
   </main>
 
-  <!-- ==================== APPLE / NOTHING IN-CALL HUD (WITH RIPPLE AURA & SPEAKER TOGGLE) ==================== -->
+  <!-- ==================== APPLE / NOTHING IN-CALL HUD ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
       
-      <!-- Top Status & Timer -->
       <div class="space-y-1">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="callDurationTimer">00:00</span>
         </div>
         
-        <!-- Talking Ripple Avatar -->
         <div class="relative w-16 h-16 mx-auto mt-2">
           <div id="callTalkingAura" class="absolute inset-0 rounded-full bg-brand/30 transition-transform duration-100 scale-100 opacity-50"></div>
           <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg">
@@ -462,29 +445,23 @@
         <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Stream...</p>
       </div>
 
-      <!-- Live Reactive Audio Waveform Canvas (Dual-Source: Local + Remote) -->
       <div class="relative w-full h-20 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
         <canvas id="callWaveformCanvas" class="w-full h-full"></canvas>
       </div>
 
-      <!-- Call Controls (Mute / Speaker / End / Accept) -->
       <div class="flex justify-center items-center gap-3 pt-1">
-        <!-- Universal Mute Button -->
         <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Mute Microphone">
           <span id="muteIcon">🎙️</span>
         </button>
 
-        <!-- Speaker Output Boost Toggle -->
         <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Speaker Output Mode">
           <span id="speakerIcon">🔊</span>
         </button>
 
-        <!-- Accept Call (Receiver) -->
         <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5">
           <span>📞</span> Accept
         </button>
 
-        <!-- End Call Button -->
         <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95" title="End Call">
           ✕
         </button>
@@ -492,7 +469,6 @@
     </div>
   </div>
 
-  <!-- Real WebRTC Playback Receiver Element -->
   <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
 
   <!-- ==================== PEER PROFILE VIEW MODAL ==================== -->
@@ -660,7 +636,6 @@
   <!-- ONBOARDING & AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
-      
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <!-- Quick Unlock -->
@@ -812,6 +787,14 @@
     let isSpoilerActive = false;
     let activeBurnerDuration = 0;
 
+    // --- POKE RATE LIMITING (30s Cooldown + 5x in 2 min Block) ---
+    const peerPokeHistory = new Map(); // peer -> { timestamps: [], blockedUntil: 0 }
+    let tabFlashInterval = null;
+    const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
+
+    // --- In-Memory Fast Cache for Zero-Lag Swapping ---
+    const inMemoryChatCache = new Map();
+
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = "sine", duration = 0.08) {
@@ -838,6 +821,27 @@
       playBeep(987.77, "sine", 0.1);
       setTimeout(() => playBeep(1318.51, "sine", 0.15), 100);
     };
+
+    // --- TAB TITLE FLASHING ON BACKGROUND POKES ---
+    function triggerBackgroundTabFlash(senderName) {
+      clearInterval(tabFlashInterval);
+      let isAlt = false;
+      let count = 0;
+      tabFlashInterval = setInterval(() => {
+        document.title = isAlt ? `⚡ @${senderName} POKED YOU!` : `🔴 Attention Required!`;
+        isAlt = !isAlt;
+        count++;
+        if (count > 20) {
+          clearInterval(tabFlashInterval);
+          document.title = ORIGINAL_TITLE;
+        }
+      }, 700);
+    }
+
+    window.addEventListener("focus", () => {
+      clearInterval(tabFlashInterval);
+      document.title = ORIGINAL_TITLE;
+    });
 
     // --- COLOR GRADING SWITCHER ---
     function setColorGrading(color) {
@@ -921,12 +925,12 @@
       );
     }
 
-    // --- DOCUMENT / MICRO-FILE UPLOAD (<2MB) ---
+    // --- DOCUMENT UPLOAD (<2MB) ---
     function handleDocSelection(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const maxBytes = 2 * 1024 * 1024; // 2 MB strict limit
+      const maxBytes = 2 * 1024 * 1024;
       if (file.size > maxBytes) {
         alert("File size exceeds 2 MB limit for direct ephemeral sharing.");
         event.target.value = "";
@@ -950,37 +954,113 @@
       reader.readAsDataURL(file);
     }
 
-    // --- HAPTIC POKE / ATTENTION BUZZER ---
+    // --- POKE WITH 30S COOLDOWN & 5X/2MIN RATE LIMIT ---
     function sendHapticPoke() {
       if (!channel || !activeChatUser) return;
+      const targetUser = activeChatUser.username;
+      const now = Date.now();
+
+      let history = peerPokeHistory.get(targetUser) || { timestamps: [], blockedUntil: 0 };
+
+      if (now < history.blockedUntil) {
+        const remainingSecs = Math.ceil((history.blockedUntil - now) / 1000);
+        alert(`Poke limit reached. Try again in ${remainingSecs}s.`);
+        return;
+      }
+
+      // Filter timestamps within last 2 minutes
+      history.timestamps = history.timestamps.filter(t => now - t < 120000);
+
+      // Check single poke 30s throttle
+      if (history.timestamps.length > 0 && now - history.timestamps[history.timestamps.length - 1] < 30000) {
+        const cooldownRemaining = Math.ceil((30000 - (now - history.timestamps[history.timestamps.length - 1])) / 1000);
+        alert(`Please wait ${cooldownRemaining}s before poking @${targetUser} again.`);
+        return;
+      }
+
+      history.timestamps.push(now);
+
+      // Block for 2 minutes if 5 pokes reached in 2 minutes
+      if (history.timestamps.length >= 5) {
+        history.blockedUntil = now + 120000;
+        peerPokeHistory.set(targetUser, history);
+        alert(`You poked @${targetUser} 5 times. Poking disabled for 2 minutes.`);
+        updatePokeBtnUI(120);
+        return;
+      }
+
+      peerPokeHistory.set(targetUser, history);
+      updatePokeBtnUI(30);
+
       channel.send({
         type: "broadcast",
         event: "haptic_poke",
-        payload: { from: currentUser.username, to: activeChatUser.username }
+        payload: { from: currentUser.username, to: targetUser }
       });
       soundSent();
+    }
+
+    function updatePokeBtnUI(seconds) {
+      const btn = document.getElementById("pokePeerBtn");
+      const lbl = document.getElementById("pokeBtnLabel");
+      btn.setAttribute("disabled", "true");
+      let remaining = seconds;
+      lbl.innerText = `${remaining}s`;
+
+      const t = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          lbl.innerText = `${remaining}s`;
+        } else {
+          clearInterval(t);
+          lbl.innerText = "Poke";
+          btn.removeAttribute("disabled");
+        }
+      }, 1000);
     }
 
     function handleIncomingPoke(payload) {
       if (payload.to !== currentUser.username) return;
 
-      // Vibration Pattern on Mobile
       if (navigator.vibrate) {
         navigator.vibrate([100, 50, 100, 50, 150]);
       }
 
       soundPoke();
+      triggerBackgroundTabFlash(payload.from);
 
-      // Screen Flash
       document.body.classList.remove("poke-flash");
       void document.body.offsetWidth;
       document.body.classList.add("poke-flash");
 
-      // HUD Toast
       const toast = document.getElementById("pokeToast");
       document.getElementById("pokeToastText").innerText = `@${payload.from} poked you!`;
       toast.classList.remove("hidden");
       setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    // --- TWO-WAY MESSAGE DELETE ENGINE ---
+    function triggerDeleteMessage(msgId) {
+      if (!channel) return;
+      
+      handleLocalMessageRemoval(msgId);
+
+      channel.send({
+        type: "broadcast",
+        event: "delete_msg",
+        payload: { id: msgId, from: currentUser.username }
+      });
+    }
+
+    function handleLocalMessageRemoval(msgId) {
+      const el = document.getElementById(`msg-${msgId}`);
+      if (el) {
+        el.classList.add("destructing");
+        setTimeout(() => el.remove(), 400);
+      }
+
+      const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
+      removeMessageFromSession(targetKey, msgId);
     }
 
     // --- SPOILER & BURNER TOGGLES ---
@@ -1104,11 +1184,8 @@
     }
 
     function handleNavAction() {
-      if (currentUser) {
-        showChatView();
-      } else {
-        openAuthModal();
-      }
+      if (currentUser) showChatView();
+      else openAuthModal();
     }
 
     function showLandingView() {
@@ -1399,6 +1476,9 @@
         .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
           applyReactionToDom(payload.id, payload.emoji, payload.by);
         })
+        .on("broadcast", { event: "delete_msg" }, ({ payload }) => {
+          handleLocalMessageRemoval(payload.id);
+        })
         .on("broadcast", { event: "haptic_poke" }, ({ payload }) => {
           handleIncomingPoke(payload);
         })
@@ -1545,6 +1625,7 @@
 
     function filterUsers() { renderUsersList(); }
 
+    // --- ZERO-LAG PEER SWITCHING WITH IN-MEMORY FAST CACHE ---
     function selectPeerForChat(peer) {
       if (!peer) return;
       activeChatUser = peer;
@@ -1703,15 +1784,20 @@
 
     function saveMessageToSession(peerName, messageObj) {
       const key = getSessionKey(peerName);
-      const history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      let history = inMemoryChatCache.get(key);
+      if (!history) {
+        history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      }
       history.push(messageObj);
+      inMemoryChatCache.set(key, history);
       sessionStorage.setItem(key, JSON.stringify(history));
     }
 
     function removeMessageFromSession(peerName, id) {
       const key = getSessionKey(peerName);
-      let history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      let history = inMemoryChatCache.get(key) || JSON.parse(sessionStorage.getItem(key) || "[]");
       history = history.filter(m => m.id !== id);
+      inMemoryChatCache.set(key, history);
       sessionStorage.setItem(key, JSON.stringify(history));
     }
 
@@ -1720,7 +1806,11 @@
       area.innerHTML = "";
 
       const key = getSessionKey(peerName);
-      const history = JSON.parse(sessionStorage.getItem(key) || "[]");
+      let history = inMemoryChatCache.get(key);
+      if (!history) {
+        history = JSON.parse(sessionStorage.getItem(key) || "[]");
+        inMemoryChatCache.set(key, history);
+      }
 
       if (history.length === 0) {
         area.innerHTML = `
@@ -1811,7 +1901,7 @@
       }
 
       if (currentPlays >= limit) {
-        handleAudioDestruct(msgId, sender);
+        handleLocalMessageRemoval(msgId);
       }
     }
 
@@ -1819,7 +1909,7 @@
       const overlay = document.getElementById(`spoiler-cover-${msgId}`);
       if (overlay) {
         overlay.classList.add('spoiler-revealed');
-        setTimeout(() => overlay.remove(), 2000);
+        setTimeout(() => overlay.remove(), 1800);
       }
       startBurnerCountdown(msgId);
     }
@@ -1843,25 +1933,14 @@
         } else {
           clearInterval(interval);
           activeBurnerTimers.delete(msgId);
-          handleMessageDestruct(msgId);
+          handleLocalMessageRemoval(msgId);
         }
       }, 1000);
 
       activeBurnerTimers.set(msgId, interval);
     }
 
-    function handleMessageDestruct(msgId) {
-      const wrap = document.getElementById(`msg-${msgId}`);
-      if (wrap) {
-        wrap.classList.add("destructing");
-        setTimeout(() => {
-          wrap.remove();
-          const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
-          removeMessageFromSession(targetKey, msgId);
-        }, 800);
-      }
-    }
-
+    // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -1873,7 +1952,7 @@
       meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.network || currentNetwork}</span>`;
 
       const contentHolder = document.createElement("div");
-      contentHolder.className = "relative flex items-center gap-1.5 max-w-[88%] sm:max-w-[75%]";
+      contentHolder.className = "relative flex items-center gap-1.5 max-w-[90%] sm:max-w-[78%]";
 
       const bubble = document.createElement("div");
       bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words ${
@@ -1886,7 +1965,14 @@
       if (msg.text) {
         contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
       } else if (msg.image) {
-        contentHtml = `<div class="p-1"><img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')"></div>`;
+        contentHtml = `
+          <div class="p-1 relative group/img">
+            <img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">
+            <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/80 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md">
+              <span>⬇</span> Save
+            </a>
+          </div>
+        `;
       } else if (msg.location) {
         const { lat, lng, accuracy } = msg.location;
         const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
@@ -1916,7 +2002,9 @@
                 <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
               </div>
             </div>
-            <a href="${data}" download="${name}" class="p-2 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-xs font-bold shrink-0 hover:opacity-90 transition">⬇</a>
+            <a href="${data}" download="${name}" title="Download File" class="px-2.5 py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm">
+              <span>⬇</span> Save
+            </a>
           </div>
         `;
       } else if (msg.audio) {
@@ -1946,13 +2034,14 @@
         `;
       }
 
+      // Uncramped Spoiler Container Styling
       if (msg.isSpoiler) {
         bubble.innerHTML = `
-          <div class="relative">
-            <div class="spoiler-content">${contentHtml}</div>
-            <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/90 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer p-4 text-center z-10 backdrop-blur-md rounded-2xl">
-              <span class="text-xs tracking-widest uppercase flex items-center gap-1">⚠️ SPOILER</span>
-              <span class="text-[10px] font-medium opacity-80 pt-0.5">Tap to reveal</span>
+          <div class="relative min-h-[44px] min-w-[140px] flex items-center">
+            <div class="spoiler-content w-full">${contentHtml}</div>
+            <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/95 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer px-4 py-2 text-center z-10 backdrop-blur-md rounded-2xl">
+              <span class="text-[11px] tracking-wider uppercase flex items-center gap-1 font-bold">⚠️ SPOILER</span>
+              <span class="text-[9px] font-medium opacity-80 pt-0.5">Tap to reveal</span>
             </div>
           </div>
         `;
@@ -1960,13 +2049,24 @@
         bubble.innerHTML = contentHtml;
       }
 
+      // Inline Emoji Reaction & Delete Actions
       const reactionTrigger = document.createElement("div");
-      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
+      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex items-center gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
+      
+      let deleteBtnHtml = "";
+      if (isSelf) {
+        deleteBtnHtml = `
+          <span class="w-[1px] h-3 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
+          <button onclick="triggerDeleteMessage('${msg.id}')" title="Delete Everywhere" class="text-[10px] text-rose-500 hover:scale-125 transition px-1">🗑️</button>
+        `;
+      }
+
       reactionTrigger.innerHTML = `
         <button onclick="sendReaction('${msg.id}', '🔥')" class="hover:scale-125 transition">🔥</button>
         <button onclick="sendReaction('${msg.id}', '❤️')" class="hover:scale-125 transition">❤️</button>
         <button onclick="sendReaction('${msg.id}', '😂')" class="hover:scale-125 transition">😂</button>
         <button onclick="sendReaction('${msg.id}', '👍')" class="hover:scale-125 transition">👍</button>
+        ${deleteBtnHtml}
       `;
 
       if (isSelf) {
@@ -2024,10 +2124,6 @@
       tag.textContent = `${emoji} ${by}`;
       container.appendChild(tag);
       parseTwemoji(tag);
-    }
-
-    function handleAudioDestruct(msgId, sender) {
-      handleMessageDestruct(msgId);
     }
 
     let mediaRecorder = null;
@@ -2179,7 +2275,7 @@
     });
 
     // =========================================================================
-    // PRODUCTION-GRADE P2P WEBRTC CALL ENGINE WITH DUAL WAVEFORM & SPEAKER BOOST
+    // WEBRTC CALL ENGINE (DUAL-SOURCE WAVEFORM & BIDIRECTIONAL MUTE)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -2308,7 +2404,6 @@
         }
         const avgVolume = (sum / bufferLength) / 255;
 
-        // Reactive Talking Aura Scale
         if (aura) {
           const scaleVal = 1 + (avgVolume * 0.45);
           aura.style.transform = `scale(${scaleVal})`;
