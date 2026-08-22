@@ -49,12 +49,12 @@
     :root {
       --brand-color: #2563EB;
       --brand-dark: #1D4ED8;
-      --brand-light: #60A5FA;
+      --brand-light: #93C5FD;
     }
     [data-color="red"] {
       --brand-color: #E11D48;
       --brand-dark: #BE123C;
-      --brand-light: #FB7185;
+      --brand-light: #FDA4AF;
     }
 
     .glass-nav {
@@ -78,7 +78,7 @@
       50% { opacity: 0.5; transform: scale(0.96); filter: blur(2px) contrast(150%); }
       100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
-    .destructing { animation: burn 0.5s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+    .destructing { animation: burn 0.4s forwards cubic-bezier(0.4, 0, 0.2, 1); }
 
     .spoiler-overlay {
       transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), filter 1.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -110,6 +110,18 @@
       background: var(--brand-color);
       cursor: pointer;
     }
+
+    /* iMessage-Style Typing Bubble Animation */
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-4px); opacity: 1; }
+    }
+    .typing-dot {
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
@@ -117,6 +129,11 @@
   <!-- LOW VOLUME TOAST -->
   <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
+  </div>
+
+  <!-- STREAM ERROR TOAST -->
+  <div id="radioErrorToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-rose-600 text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20">
+    <span>📡</span> <span id="radioErrorMsg">Stream connection failed. Retrying...</span>
   </div>
 
   <!-- POKE / ATTENTION HUD NOTIFICATION -->
@@ -133,7 +150,7 @@
           <h1 class="text-xs font-bold tracking-tight uppercase">LAN CHAT</h1>
           <span id="devModeBadge" class="hidden text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-devGreen/10 text-devGreen border border-devGreen/30">DEV ISOLATED</span>
         </div>
-        <span class="text-[10px] text-slate-400 font-medium">Campus Direct Messenger</span>
+        <span class="text-[11px] text-slate-700 dark:text-slate-200 font-semibold tracking-tight">Direct Campus Messenger</span>
       </div>
     </div>
 
@@ -244,14 +261,19 @@
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
-      <!-- CAMPUS RADIO & GLOBAL WEBSITE MASTER VOLUME SLIDER -->
+      <!-- CAMPUS RADIO & MASTER VOLUME -->
       <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
             <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Radio</span>
           </div>
-          <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">Idle</span>
+          <div class="flex items-center gap-1.5">
+            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200" title="Pause/Play Stream">
+              ⏸
+            </button>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">Idle</span>
+          </div>
         </div>
         
         <div class="grid grid-cols-4 gap-1">
@@ -313,12 +335,12 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
-          
+          <!-- Haptic Poke Button -->
           <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
+          <!-- Call Button -->
           <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
             <span>📞</span> Call
           </button>
@@ -331,6 +353,16 @@
 
       <!-- Message History Scroll Area -->
       <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scroll relative"></div>
+
+      <!-- iMessage Style Realtime Typing Indicator Bubble -->
+      <div id="typingIndicatorBubble" class="hidden px-4 py-1.5 flex items-center gap-2 transition-all">
+        <div class="bg-white dark:bg-darkMuted border border-slate-200/80 dark:border-slate-800 px-3 py-2 rounded-2xl rounded-bl-sm flex items-center gap-1 shadow-sm">
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
+        </div>
+        <span id="typingUserLabel" class="text-[10px] text-slate-400 font-medium">@peer is typing...</span>
+      </div>
 
       <!-- Floating Unread New Messages Pill -->
       <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
@@ -363,7 +395,7 @@
         </div>
       </div>
 
-      <!-- Message Form with Instagram Style Drawer -->
+      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         <input type="file" id="docUploadInput" accept=".pdf,.txt,.doc,.docx" class="hidden" onchange="handleDocSelection(event)">
@@ -423,7 +455,7 @@
     </section>
   </main>
 
-  <!-- ==================== APPLE / NOTHING IN-CALL HUD ==================== -->
+  <!-- ==================== WEBRTC CALL HUD ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
       
@@ -601,7 +633,7 @@
     </div>
   </div>
 
-  <!-- CAMPUS RADIO EARPHONES MODAL -->
+  <!-- CAMPUS RADIO EARPHONES MODAL (ONCE PER SESSION) -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
       <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
@@ -609,7 +641,7 @@
       </div>
       
       <div class="space-y-1.5">
-        <h3 class="text-base font-extrabold tracking-tight text-brand">PLEASE PLEASE USE EARPHONES</h3>
+        <h3 class="text-base font-extrabold tracking-tight text-brand">PLEASE USE EARPHONES</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
           Campus Wi-Fi radio channels are high gain. Respect the study environment around you.
         </p>
@@ -767,9 +799,10 @@
     let channel = null;
     let onlineUsersMap = new Map();
     let unreadMap = new Map();
-    let typingTimeout = null;
+    let typingBubbleTimeout = null;
     let radioCountdownInterval = null;
     let inspectedPeerObj = null;
+    let hasShownRadioEarphoneWarning = false;
 
     // --- GLOBAL MASTER VOLUME & ACTIVE PLAYERS ---
     let globalMasterVolume = 1.0;
@@ -852,15 +885,15 @@
       }
     }
 
-    // --- MASTER VOLUME CONTROL & DIRECT SYNC (FIXED) ---
+    // --- MASTER VOLUME CONTROL & DIRECT SYNC ---
     function adjustMasterVolume(val) {
       globalMasterVolume = parseFloat(val) / 100;
       document.getElementById('volPercentLabel').innerText = `${val}%`;
       
-      // Update all inline voice clip audio tags
+      // Update voice tags
       document.querySelectorAll('audio').forEach(a => { a.volume = globalMasterVolume; });
       
-      // Explicitly sync the live background radio stream
+      // Explicitly update active radio player
       if (activeRadioPlayer) {
         activeRadioPlayer.volume = globalMasterVolume;
       }
@@ -873,6 +906,13 @@
         toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 3500);
       }
+    }
+
+    function showRadioErrorToast(msg) {
+      const toast = document.getElementById('radioErrorToast');
+      document.getElementById('radioErrorMsg').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
     // --- ATTACHMENT DRAWER TOGGLE ---
@@ -1051,7 +1091,7 @@
       const el = document.getElementById(`msg-${msgId}`);
       if (el) {
         el.classList.add("destructing");
-        setTimeout(() => el.remove(), 400);
+        setTimeout(() => el.remove(), 350);
       }
 
       const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
@@ -1479,7 +1519,7 @@
         })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
           if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username) {
-            showTypingVisual();
+            showTypingBubble(payload.sender);
           }
         })
         .on("broadcast", { event: "webrtc_signal" }, handleIncomingWebRTCSignal)
@@ -1502,11 +1542,18 @@
       }
     }
 
-    function showTypingVisual() {
-      const el = document.getElementById("typingIndicator");
-      el.classList.remove("hidden");
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => el.classList.add("hidden"), 1800);
+    // --- iMessage STYLE VISUAL TYPING BUBBLE ---
+    function showTypingBubble(senderName) {
+      const bubble = document.getElementById("typingIndicatorBubble");
+      const label = document.getElementById("typingUserLabel");
+      label.innerText = `@${senderName} is typing...`;
+      bubble.classList.remove("hidden");
+      
+      const area = document.getElementById("dmChatArea");
+      area.scrollTop = area.scrollHeight;
+
+      clearTimeout(typingBubbleTimeout);
+      typingBubbleTimeout = setTimeout(() => bubble.classList.add("hidden"), 2000);
     }
 
     document.getElementById("dmInput").addEventListener("input", () => {
@@ -1745,27 +1792,32 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- REVERSE-PROXIED CAMPUS RADIO WITH 5S COUNTDOWN ---
+    // --- REVERSE-PROXIED CAMPUS RADIO WITH ONE-TIME PROMPT & PAUSE ---
     function requestRadioChannel(lang) {
-      clearInterval(radioCountdownInterval);
-      
-      document.getElementById("radioWarningModal").classList.remove("hidden");
-      document.getElementById("radioTimerBox").classList.remove("hidden");
-      
-      let count = 5;
-      document.getElementById("radioCountdown").innerText = count;
-      document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
-
-      radioCountdownInterval = setInterval(() => {
-        count--;
+      if (!hasShownRadioEarphoneWarning) {
+        hasShownRadioEarphoneWarning = true;
+        clearInterval(radioCountdownInterval);
+        
+        document.getElementById("radioWarningModal").classList.remove("hidden");
+        document.getElementById("radioTimerBox").classList.remove("hidden");
+        
+        let count = 5;
         document.getElementById("radioCountdown").innerText = count;
-        if (count <= 0) {
-          clearInterval(radioCountdownInterval);
-          document.getElementById("radioWarningModal").classList.add("hidden");
-          executeRadioStream(lang);
-        }
-      }, 1000);
-      parseTwemoji(document.getElementById("radioWarningModal"));
+        document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+
+        radioCountdownInterval = setInterval(() => {
+          count--;
+          document.getElementById("radioCountdown").innerText = count;
+          if (count <= 0) {
+            clearInterval(radioCountdownInterval);
+            document.getElementById("radioWarningModal").classList.add("hidden");
+            executeRadioStream(lang);
+          }
+        }, 1000);
+        parseTwemoji(document.getElementById("radioWarningModal"));
+      } else {
+        executeRadioStream(lang);
+      }
     }
 
     function executeRadioStream(lang) {
@@ -1775,20 +1827,44 @@
         activeRadioPlayer = null;
       }
 
-      // Hits your Cloudflare Pages Edge Function Proxy directly
+      document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
       const streamUrl = `/api/radio?channel=${lang.toLowerCase()}`;
       
       activeRadioPlayer = new Audio(streamUrl);
       activeRadioPlayer.volume = globalMasterVolume;
+
+      activeRadioPlayer.addEventListener("error", () => {
+        showRadioErrorToast(`Unable to establish connection to ${lang} stream.`);
+        document.getElementById("radioStatusTag").innerText = `Offline`;
+        document.getElementById("radioPauseBtn").classList.add("hidden");
+      });
       
       activeRadioPlayer.play()
         .then(() => {
           document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
+          const pauseBtn = document.getElementById("radioPauseBtn");
+          pauseBtn.classList.remove("hidden");
+          pauseBtn.innerText = "⏸";
         })
         .catch((err) => {
-          console.warn("Stream playback waiting for direct touch/interaction:", err);
-          document.getElementById("radioStatusTag").innerText = `Tuning...`;
+          console.warn("Stream playback waiting for touch interaction:", err);
+          document.getElementById("radioStatusTag").innerText = `Idle`;
         });
+    }
+
+    function toggleRadioPlayback() {
+      if (!activeRadioPlayer) return;
+      const btn = document.getElementById("radioPauseBtn");
+      
+      if (activeRadioPlayer.paused) {
+        activeRadioPlayer.play();
+        btn.innerText = "⏸";
+        document.getElementById("radioStatusTag").innerText = "Live Stream";
+      } else {
+        activeRadioPlayer.pause();
+        btn.innerText = "▶";
+        document.getElementById("radioStatusTag").innerText = "Paused";
+      }
     }
 
     function closeRadioModal() {
@@ -1957,6 +2033,7 @@
       activeBurnerTimers.set(msgId, interval);
     }
 
+    // --- MESSAGE BUBBLES WITH CLEAN MINIMALISTIC ICONS ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -1964,8 +2041,8 @@
       wrap.className = `group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
       const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-semibold";
-      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand">• ${msg.network || currentNetwork}</span>`;
+      meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold";
+      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand font-bold">• ${msg.network || currentNetwork}</span>`;
 
       const contentHolder = document.createElement("div");
       contentHolder.className = "relative flex items-center gap-1.5 max-w-[90%] sm:max-w-[78%]";
@@ -1984,8 +2061,9 @@
         contentHtml = `
           <div class="p-1 relative group/img">
             <img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">
-            <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/80 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md">
-              <span>⬇</span> Save
+            <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/85 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md hover:bg-slate-900">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Save</span>
             </a>
           </div>
         `;
@@ -2018,8 +2096,9 @@
                 <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
               </div>
             </div>
-            <a href="${data}" download="${name}" title="Download File" class="px-2.5 py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm">
-              <span>⬇</span> Save
+            <a href="${data}" download="${name}" title="Download File" class="px-2.5 py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1.5 shadow-sm">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Save</span>
             </a>
           </div>
         `;
@@ -2071,7 +2150,9 @@
       if (isSelf) {
         deleteBtnHtml = `
           <span class="w-[1px] h-3 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
-          <button onclick="triggerDeleteMessage('${msg.id}')" title="Delete Everywhere" class="text-[10px] text-rose-500 hover:scale-125 transition px-1">🗑️</button>
+          <button onclick="triggerDeleteMessage('${msg.id}')" title="Delete Everywhere" class="p-1 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         `;
       }
 
