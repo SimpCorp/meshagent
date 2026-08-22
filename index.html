@@ -78,7 +78,7 @@
       50% { opacity: 0.5; transform: scale(0.96); filter: blur(2px) contrast(150%); }
       100% { opacity: 0; transform: scale(0.8); filter: blur(8px); height: 0; margin: 0; padding: 0; }
     }
-    .destructing { animation: burn 0.4s forwards cubic-bezier(0.4, 0, 0.2, 1); }
+    .destructing { animation: burn 0.35s forwards cubic-bezier(0.4, 0, 0.2, 1); }
 
     .spoiler-overlay {
       transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), filter 1.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -809,6 +809,7 @@
     let activeDestructLimit = 1;
     let audioPlayedCounts = new Map();
     let activeRadioPlayer = null;
+    let radioErrorRecoveryTimeout = null;
 
     // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
@@ -1792,7 +1793,7 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- REVERSE-PROXIED CAMPUS RADIO WITH ONE-TIME PROMPT & PAUSE ---
+    // --- REVERSE-PROXIED CAMPUS RADIO WITH ONE-TIME PROMPT, PAUSE, & GRACEFUL ERROR HANDLING ---
     function requestRadioChannel(lang) {
       if (!hasShownRadioEarphoneWarning) {
         hasShownRadioEarphoneWarning = true;
@@ -1821,7 +1822,12 @@
     }
 
     function executeRadioStream(lang) {
+      clearTimeout(radioErrorRecoveryTimeout);
+
+      // Gracefully tear down previous player instance without firing phantom abort errors
       if (activeRadioPlayer) {
+        activeRadioPlayer.onabort = null;
+        activeRadioPlayer.onerror = null;
         activeRadioPlayer.pause();
         activeRadioPlayer.src = "";
         activeRadioPlayer = null;
@@ -1830,26 +1836,34 @@
       document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
       const streamUrl = `/api/radio?channel=${lang.toLowerCase()}`;
       
-      activeRadioPlayer = new Audio(streamUrl);
-      activeRadioPlayer.volume = globalMasterVolume;
+      const player = new Audio();
+      player.preload = "auto";
+      player.volume = globalMasterVolume;
 
-      activeRadioPlayer.addEventListener("error", () => {
-        showRadioErrorToast(`Unable to establish connection to ${lang} stream.`);
-        document.getElementById("radioStatusTag").innerText = `Offline`;
-        document.getElementById("radioPauseBtn").classList.add("hidden");
-      });
+      // Graceful error listener: only alerts user if stream cannot recover after timeout
+      player.onerror = (e) => {
+        if (!player.src || player.src === "") return;
+        radioErrorRecoveryTimeout = setTimeout(() => {
+          showRadioErrorToast(`Unable to establish connection to ${lang} stream.`);
+          document.getElementById("radioStatusTag").innerText = `Offline`;
+          document.getElementById("radioPauseBtn").classList.add("hidden");
+        }, 3000);
+      };
+
+      player.onplaying = () => {
+        clearTimeout(radioErrorRecoveryTimeout);
+        document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
+        const pauseBtn = document.getElementById("radioPauseBtn");
+        pauseBtn.classList.remove("hidden");
+        pauseBtn.innerText = "⏸";
+      };
+
+      player.src = streamUrl;
+      activeRadioPlayer = player;
       
-      activeRadioPlayer.play()
-        .then(() => {
-          document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
-          const pauseBtn = document.getElementById("radioPauseBtn");
-          pauseBtn.classList.remove("hidden");
-          pauseBtn.innerText = "⏸";
-        })
-        .catch((err) => {
-          console.warn("Stream playback waiting for touch interaction:", err);
-          document.getElementById("radioStatusTag").innerText = `Idle`;
-        });
+      player.play().catch((err) => {
+        console.warn("Stream playback waiting for direct user gesture:", err);
+      });
     }
 
     function toggleRadioPlayback() {
