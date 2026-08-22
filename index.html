@@ -95,6 +95,12 @@
       40%, 80% { transform: translateX(6px); }
     }
     .shake { animation: shake 0.4s ease-in-out; }
+
+    @keyframes pingFlash {
+      0% { background-color: rgba(239, 68, 68, 0.4); }
+      100% { background-color: transparent; }
+    }
+    .poke-flash { animation: pingFlash 0.9s ease-out; }
     
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
@@ -111,6 +117,11 @@
   <!-- LOW VOLUME TOAST -->
   <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
+  </div>
+
+  <!-- POKE / ATTENTION HUD NOTIFICATION -->
+  <div id="pokeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-brand text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20 animate-bounce">
+    <span>⚡</span> <span id="pokeToastText">@peer poked you!</span>
   </div>
 
   <!-- TOP BAR -->
@@ -168,7 +179,7 @@
         Simple. Private.<br>Direct Campus Messaging.
       </h2>
       <p class="text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, live bidirectional waveform audio calling, 2-second fading spoiler shields, and seekable voice notes.
+        Real-time direct messaging, live location sharing, ephemeral PDF/text uploads under 2 MB, audio waveform calls, and haptic peer pokes.
       </p>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
@@ -189,20 +200,20 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
-        <h3 class="text-sm font-bold">Dynamic Audio Calling</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Live reactive speech waveforms on both ends, elapsed timer, universal mute toggle, and P2P WebRTC.</p>
+        <h3 class="text-sm font-bold">Location & File Drops</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Share live GPS location with Apple/Google Maps links and upload PDFs/text notes strictly under 2 MB.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">02</span>
-        <h3 class="text-sm font-bold">Spoiler & Burner Text</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Send shrouded 2s-fade spoiler alerts and self-destruct countdown text messages (5s–custom).</p>
+        <h3 class="text-sm font-bold">Calling & Haptic Pokes</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Reactive voice ripple aura, elapsed timer, speaker toggle, and ⚡ instant attention buzzers.</p>
       </div>
 
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-sm font-bold">Controlled Audio Notes</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">Full scrubbing control, global master volume, and customizable 1x, 2x, or 3x self-destruct limits.</p>
+        <h3 class="text-sm font-bold">Spoiler & Burner Text</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">Send shrouded 2s-fade spoiler shields and self-destruct countdown text messages (5s–custom).</p>
       </div>
     </div>
   </main>
@@ -311,6 +322,12 @@
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
+          <!-- Haptic Poke Button -->
+          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm" title="Poke Peer">
+            <span>⚡</span> Poke
+          </button>
+
+          <!-- Audio Call Button -->
           <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
             <span>📞</span> Call
           </button>
@@ -355,21 +372,42 @@
         </div>
       </div>
 
-      <!-- Message Form -->
+      <!-- Message Form (Instagram/iMessage Style Bar with Drawer) -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
-        <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
-        <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Media" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </button>
+        <!-- Hidden Inputs for Attachments -->
+        <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
+        <input type="file" id="docUploadInput" accept=".pdf,.txt,.doc,.docx" class="hidden" onchange="handleDocSelection(event)">
+        
+        <!-- Instagram Plus Button Container -->
+        <div class="relative">
+          <button type="button" onclick="toggleAttachmentDrawer()" id="plusBtnTrigger" title="Attach Media & Location" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
 
+          <!-- Instagram Attachment Drawer Popover -->
+          <div id="attachmentDrawer" class="absolute bottom-11 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 min-w-[170px] hidden z-30 text-xs font-semibold">
+            <button type="button" onclick="triggerImgUpload()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
+              <span>🖼️</span> Photo
+            </button>
+            <button type="button" onclick="triggerDocUpload()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
+              <span>📄</span> Document (<span class="text-[10px] text-brand font-mono">&lt;2MB</span>)
+            </button>
+            <button type="button" onclick="shareCurrentLocation()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
+              <span>📍</span> Live Location
+            </button>
+          </div>
+        </div>
+
+        <!-- Voice Clip Button -->
         <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <span id="voiceMicIcon" class="text-xs">🎤</span>
         </button>
 
+        <!-- Message Capsule Input -->
         <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-0.5">
         </div>
@@ -378,6 +416,7 @@
           Send
         </button>
 
+        <!-- Voice Clip Recording Overlay -->
         <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -400,7 +439,7 @@
     </section>
   </main>
 
-  <!-- ==================== APPLE / NOTHING IN-CALL HUD ==================== -->
+  <!-- ==================== APPLE / NOTHING IN-CALL HUD (WITH RIPPLE AURA & SPEAKER TOGGLE) ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
       
@@ -410,33 +449,50 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span id="callDurationTimer">00:00</span>
         </div>
+        
+        <!-- Talking Ripple Avatar -->
+        <div class="relative w-16 h-16 mx-auto mt-2">
+          <div id="callTalkingAura" class="absolute inset-0 rounded-full bg-brand/30 transition-transform duration-100 scale-100 opacity-50"></div>
+          <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg">
+            ?
+          </div>
+        </div>
+
         <h3 id="callPeerName" class="text-base font-bold tracking-tight pt-1">@peer</h3>
         <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Stream...</p>
       </div>
 
       <!-- Live Reactive Audio Waveform Canvas (Dual-Source: Local + Remote) -->
-      <div class="relative w-full h-24 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
+      <div class="relative w-full h-20 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
         <canvas id="callWaveformCanvas" class="w-full h-full"></canvas>
       </div>
 
-      <!-- Call Controls (Mute / End / Accept) -->
-      <div class="flex justify-center items-center gap-4 pt-1">
-        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Mute Microphone">
+      <!-- Call Controls (Mute / Speaker / End / Accept) -->
+      <div class="flex justify-center items-center gap-3 pt-1">
+        <!-- Universal Mute Button -->
+        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Mute Microphone">
           <span id="muteIcon">🎙️</span>
         </button>
 
-        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-6 py-3 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-2">
+        <!-- Speaker Output Boost Toggle -->
+        <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Speaker Output Mode">
+          <span id="speakerIcon">🔊</span>
+        </button>
+
+        <!-- Accept Call (Receiver) -->
+        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5">
           <span>📞</span> Accept
         </button>
 
-        <button type="button" onclick="endAudioCall()" class="w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95" title="End Call">
+        <!-- End Call Button -->
+        <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95" title="End Call">
           ✕
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Real WebRTC Playback Receiver Element (Always rendered in DOM) -->
+  <!-- Real WebRTC Playback Receiver Element -->
   <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
 
   <!-- ==================== PEER PROFILE VIEW MODAL ==================== -->
@@ -538,7 +594,7 @@
     </div>
   </div>
 
-  <!-- ==================== DEV ACCESS PASSWORD MODAL ==================== -->
+  <!-- DEV ACCESS PASSWORD MODAL -->
   <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -570,7 +626,7 @@
     </div>
   </div>
 
-  <!-- ==================== CAMPUS RADIO EARPHONES MODAL ==================== -->
+  <!-- CAMPUS RADIO EARPHONES MODAL -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
       <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
@@ -601,13 +657,13 @@
     </div>
   </div>
 
-  <!-- ==================== ONBOARDING & AUTH MODAL ==================== -->
+  <!-- ONBOARDING & AUTH MODAL -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- Quick Unlock (Instant Autofocus & Enter Key Supported) -->
+      <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -676,7 +732,7 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- Step 3 Handle & Password (Instant Autofocus & Enter Key Supported) -->
+      <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
         <h3 class="text-base font-bold" id="authHeading">Create your profile</h3>
@@ -778,6 +834,10 @@
     const soundSent = () => playBeep(880, "sine", 0.06);
     const soundRecv = () => { playBeep(520, "sine", 0.05); setTimeout(() => playBeep(780, "sine", 0.08), 50); };
     const soundPeer = () => playBeep(440, "triangle", 0.05);
+    const soundPoke = () => {
+      playBeep(987.77, "sine", 0.1);
+      setTimeout(() => playBeep(1318.51, "sine", 0.15), 100);
+    };
 
     // --- COLOR GRADING SWITCHER ---
     function setColorGrading(color) {
@@ -809,6 +869,118 @@
         toast.classList.remove('hidden');
         setTimeout(() => toast.classList.add('hidden'), 3500);
       }
+    }
+
+    // --- ATTACHMENT DRAWER TOGGLE ---
+    function toggleAttachmentDrawer() {
+      const drawer = document.getElementById("attachmentDrawer");
+      drawer.classList.toggle("hidden");
+    }
+
+    document.addEventListener("click", (e) => {
+      const drawer = document.getElementById("attachmentDrawer");
+      const trigger = document.getElementById("plusBtnTrigger");
+      if (drawer && !drawer.contains(e.target) && !trigger.contains(e.target)) {
+        drawer.classList.add("hidden");
+      }
+    });
+
+    function triggerImgUpload() {
+      document.getElementById("attachmentDrawer").classList.add("hidden");
+      document.getElementById("imgUploadInput").click();
+    }
+
+    function triggerDocUpload() {
+      document.getElementById("attachmentDrawer").classList.add("hidden");
+      document.getElementById("docUploadInput").click();
+    }
+
+    // --- GEOLOCATION SHARING ---
+    function shareCurrentLocation() {
+      document.getElementById("attachmentDrawer").classList.add("hidden");
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported on this browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const accuracy = Math.round(pos.coords.accuracy);
+          dispatchPayload({
+            location: { lat, lng, accuracy },
+            isSpoiler: isSpoilerActive,
+            burnerDuration: activeBurnerDuration
+          });
+        },
+        (err) => {
+          alert("Unable to fetch location: " + err.message);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+
+    // --- DOCUMENT / MICRO-FILE UPLOAD (<2MB) ---
+    function handleDocSelection(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const maxBytes = 2 * 1024 * 1024; // 2 MB strict limit
+      if (file.size > maxBytes) {
+        alert("File size exceeds 2 MB limit for direct ephemeral sharing.");
+        event.target.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        dispatchPayload({
+          fileDoc: {
+            name: file.name,
+            size: (file.size / 1024).toFixed(1) + " KB",
+            type: file.type || "application/octet-stream",
+            data: e.target.result
+          },
+          isSpoiler: isSpoilerActive,
+          burnerDuration: activeBurnerDuration
+        });
+        event.target.value = "";
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- HAPTIC POKE / ATTENTION BUZZER ---
+    function sendHapticPoke() {
+      if (!channel || !activeChatUser) return;
+      channel.send({
+        type: "broadcast",
+        event: "haptic_poke",
+        payload: { from: currentUser.username, to: activeChatUser.username }
+      });
+      soundSent();
+    }
+
+    function handleIncomingPoke(payload) {
+      if (payload.to !== currentUser.username) return;
+
+      // Vibration Pattern on Mobile
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100, 50, 150]);
+      }
+
+      soundPoke();
+
+      // Screen Flash
+      document.body.classList.remove("poke-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add("poke-flash");
+
+      // HUD Toast
+      const toast = document.getElementById("pokeToast");
+      document.getElementById("pokeToastText").innerText = `@${payload.from} poked you!`;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 3000);
     }
 
     // --- SPOILER & BURNER TOGGLES ---
@@ -1227,6 +1399,9 @@
         .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
           applyReactionToDom(payload.id, payload.emoji, payload.by);
         })
+        .on("broadcast", { event: "haptic_poke" }, ({ payload }) => {
+          handleIncomingPoke(payload);
+        })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
           if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username) {
             showTypingVisual();
@@ -1278,6 +1453,7 @@
         document.getElementById("activeChatPeerMeta").innerText = "Choose an active student to message";
         document.getElementById("activeChatPeerAvatar").innerText = "?";
         document.getElementById("startCallBtn").classList.add("hidden");
+        document.getElementById("pokePeerBtn").classList.add("hidden");
         document.getElementById("dmInput").setAttribute("disabled", "true");
         document.getElementById("dmSendBtn").setAttribute("disabled", "true");
         document.getElementById("dmInput").placeholder = "Select a peer from directory...";
@@ -1303,6 +1479,7 @@
       document.getElementById("chatPane").classList.remove("hidden");
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.add("hidden");
+      document.getElementById("pokePeerBtn").classList.add("hidden");
 
       document.getElementById("dmInput").removeAttribute("disabled");
       document.getElementById("dmSendBtn").removeAttribute("disabled");
@@ -1381,6 +1558,7 @@
       document.getElementById("chatPane").classList.remove("hidden");
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.remove("hidden");
+      document.getElementById("pokePeerBtn").classList.remove("hidden");
 
       document.getElementById("activeChatPeerAvatar").innerText = peer.username.charAt(0).toUpperCase();
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
@@ -1709,6 +1887,38 @@
         contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
       } else if (msg.image) {
         contentHtml = `<div class="p-1"><img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')"></div>`;
+      } else if (msg.location) {
+        const { lat, lng, accuracy } = msg.location;
+        const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        const appleMapsUrl = `https://maps.apple.com/?q=${lat},${lng}`;
+        
+        contentHtml = `
+          <div class="p-3.5 flex flex-col gap-2 min-w-[220px]">
+            <div class="flex items-center justify-between text-[11px] font-bold">
+              <span class="flex items-center gap-1.5"><span>📍</span> Live Location</span>
+              <span class="text-[9px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">±${accuracy}m</span>
+            </div>
+            <p class="text-[11px] font-mono opacity-85">${lat.toFixed(4)}°, ${lng.toFixed(4)}°</p>
+            <div class="flex gap-1.5 pt-1">
+              <a href="${googleMapsUrl}" target="_blank" class="flex-1 py-1.5 rounded-lg text-center ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[10px] font-bold transition hover:opacity-90">Google Maps ↗</a>
+              <a href="${appleMapsUrl}" target="_blank" class="flex-1 py-1.5 rounded-lg text-center ${isSelf ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-darkBg text-slate-900 dark:text-white'} text-[10px] font-bold transition hover:opacity-90">Apple Maps ↗</a>
+            </div>
+          </div>
+        `;
+      } else if (msg.fileDoc) {
+        const { name, size, data } = msg.fileDoc;
+        contentHtml = `
+          <div class="p-3 flex items-center justify-between gap-3 min-w-[220px]">
+            <div class="flex items-center gap-2.5 truncate">
+              <div class="w-8 h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-sm shrink-0">📄</div>
+              <div class="truncate text-left">
+                <p class="text-xs font-bold truncate">${name}</p>
+                <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
+              </div>
+            </div>
+            <a href="${data}" download="${name}" class="p-2 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-xs font-bold shrink-0 hover:opacity-90 transition">⬇</a>
+          </div>
+        `;
       } else if (msg.audio) {
         const limit = msg.destructLimit || 1;
         const currentCount = audioPlayedCounts.get(msg.id) || 0;
@@ -1923,8 +2133,8 @@
       reader.readAsDataURL(file);
     }
 
-    function dispatchPayload({ text = null, image = null, audio = null, duration = null, destructLimit = 1, isSpoiler = false, burnerDuration = 0 }) {
-      if (!channel || (!text && !image && !audio)) return;
+    function dispatchPayload({ text = null, image = null, audio = null, location = null, fileDoc = null, duration = null, destructLimit = 1, isSpoiler = false, burnerDuration = 0 }) {
+      if (!channel || (!text && !image && !audio && !location && !fileDoc)) return;
 
       const payload = {
         id: "msg_" + Math.random().toString(36).substr(2, 9),
@@ -1933,6 +2143,8 @@
         text,
         image,
         audio,
+        location,
+        fileDoc,
         duration,
         destructLimit,
         isSpoiler,
@@ -1967,7 +2179,7 @@
     });
 
     // =========================================================================
-    // PRODUCTION P2P WEBRTC (DUAL-SOURCE WAVEFORM & BIDIRECTIONAL MUTE)
+    // PRODUCTION-GRADE P2P WEBRTC CALL ENGINE WITH DUAL WAVEFORM & SPEAKER BOOST
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -1977,6 +2189,7 @@
     let callTimerInterval = null;
     let callStartTime = 0;
     let isLocalMuted = false;
+    let isSpeakerBoosted = false;
 
     let audioVisualizerContext = null;
     let audioVisualizerAnalyser = null;
@@ -2016,12 +2229,26 @@
         const btn = document.getElementById("toggleMuteBtn");
         const icon = document.getElementById("muteIcon");
         if (isLocalMuted) {
-          btn.className = "w-12 h-12 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center text-sm transition shadow-sm active:scale-95";
+          btn.className = "w-11 h-11 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center text-sm transition shadow-sm active:scale-95";
           icon.innerText = "🔇";
         } else {
-          btn.className = "w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
+          btn.className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
           icon.innerText = "🎙️";
         }
+      }
+    }
+
+    function toggleSpeakerOutput() {
+      isSpeakerBoosted = !isSpeakerBoosted;
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      const btn = document.getElementById("toggleSpeakerBtn");
+      
+      if (isSpeakerBoosted) {
+        remoteAudio.volume = Math.min(1.0, globalMasterVolume * 1.5);
+        btn.className = "w-11 h-11 rounded-full bg-brand text-white flex items-center justify-center text-sm transition shadow-lg shadow-brand/30 active:scale-95";
+      } else {
+        remoteAudio.volume = globalMasterVolume;
+        btn.className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
       }
     }
 
@@ -2058,13 +2285,14 @@
       if (visualizerAnimationId) return;
 
       const canvas = document.getElementById("callWaveformCanvas");
+      const aura = document.getElementById("callTalkingAura");
       const ctx = canvas.getContext("2d");
       const bufferLength = audioVisualizerAnalyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
       function resizeCanvas() {
         canvas.width = canvas.parentElement.clientWidth || 320;
-        canvas.height = canvas.parentElement.clientHeight || 96;
+        canvas.height = canvas.parentElement.clientHeight || 80;
       }
       resizeCanvas();
 
@@ -2079,6 +2307,13 @@
           sum += dataArray[i];
         }
         const avgVolume = (sum / bufferLength) / 255;
+
+        // Reactive Talking Aura Scale
+        if (aura) {
+          const scaleVal = 1 + (avgVolume * 0.45);
+          aura.style.transform = `scale(${scaleVal})`;
+          aura.style.opacity = (0.3 + avgVolume * 0.7).toString();
+        }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -2156,12 +2391,13 @@
 
       document.getElementById("callOverlay").classList.remove("hidden");
       document.getElementById("callPeerName").innerText = `@${activeChatUser.username}`;
+      document.getElementById("callAvatarBox").innerText = activeChatUser.username.charAt(0).toUpperCase();
       document.getElementById("callStatusLabel").innerText = "Ringing peer...";
       document.getElementById("acceptCallBtn").classList.add("hidden");
 
       isLocalMuted = false;
       document.getElementById("muteIcon").innerText = "🎙️";
-      document.getElementById("toggleMuteBtn").className = "w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
+      document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
       localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
@@ -2225,6 +2461,7 @@
         pendingOffer = payload;
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
+        document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
         document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
         document.getElementById("acceptCallBtn").classList.remove("hidden");
         parseTwemoji(document.getElementById("callOverlay"));
@@ -2258,7 +2495,7 @@
 
       isLocalMuted = false;
       document.getElementById("muteIcon").innerText = "🎙️";
-      document.getElementById("toggleMuteBtn").className = "w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
+      document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
       localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
