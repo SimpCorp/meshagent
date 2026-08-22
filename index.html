@@ -314,12 +314,10 @@
         <div class="flex items-center gap-2">
           <span id="typingIndicator" class="text-[11px] text-brand hidden animate-pulse font-medium">typing...</span>
           
-          <!-- Haptic Poke Button (With 30s Cooldown & 5x/2min Limit Logic) -->
           <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
-          <!-- Audio Call Button -->
           <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
             <span>📞</span> Call
           </button>
@@ -787,8 +785,8 @@
     let isSpoilerActive = false;
     let activeBurnerDuration = 0;
 
-    // --- POKE RATE LIMITING (30s Cooldown + 5x in 2 min Block) ---
-    const peerPokeHistory = new Map(); // peer -> { timestamps: [], blockedUntil: 0 }
+    // --- POKE RATE LIMITING & TAB FLASH ---
+    const peerPokeHistory = new Map();
     let tabFlashInterval = null;
     const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
 
@@ -822,7 +820,6 @@
       setTimeout(() => playBeep(1318.51, "sine", 0.15), 100);
     };
 
-    // --- TAB TITLE FLASHING ON BACKGROUND POKES ---
     function triggerBackgroundTabFlash(senderName) {
       clearInterval(tabFlashInterval);
       let isAlt = false;
@@ -968,10 +965,8 @@
         return;
       }
 
-      // Filter timestamps within last 2 minutes
       history.timestamps = history.timestamps.filter(t => now - t < 120000);
 
-      // Check single poke 30s throttle
       if (history.timestamps.length > 0 && now - history.timestamps[history.timestamps.length - 1] < 30000) {
         const cooldownRemaining = Math.ceil((30000 - (now - history.timestamps[history.timestamps.length - 1])) / 1000);
         alert(`Please wait ${cooldownRemaining}s before poking @${targetUser} again.`);
@@ -980,7 +975,6 @@
 
       history.timestamps.push(now);
 
-      // Block for 2 minutes if 5 pokes reached in 2 minutes
       if (history.timestamps.length >= 5) {
         history.blockedUntil = now + 120000;
         peerPokeHistory.set(targetUser, history);
@@ -1042,9 +1036,7 @@
     // --- TWO-WAY MESSAGE DELETE ENGINE ---
     function triggerDeleteMessage(msgId) {
       if (!channel) return;
-      
       handleLocalMessageRemoval(msgId);
-
       channel.send({
         type: "broadcast",
         event: "delete_msg",
@@ -1625,7 +1617,6 @@
 
     function filterUsers() { renderUsersList(); }
 
-    // --- ZERO-LAG PEER SWITCHING WITH IN-MEMORY FAST CACHE ---
     function selectPeerForChat(peer) {
       if (!peer) return;
       activeChatUser = peer;
@@ -1751,32 +1742,32 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    function requestRadioChannel(lang) {
-      clearInterval(radioCountdownInterval);
-      
-      document.getElementById("radioWarningModal").classList.remove("hidden");
-      document.getElementById("radioTimerBox").classList.remove("hidden");
-      document.getElementById("radioResultBox").classList.add("hidden");
-      
-      let count = 5;
-      document.getElementById("radioCountdown").innerText = count;
-      document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+    let activeRadioPlayer = null;
 
-      radioCountdownInterval = setInterval(() => {
-        count--;
-        document.getElementById("radioCountdown").innerText = count;
-        if (count <= 0) {
-          clearInterval(radioCountdownInterval);
-          document.getElementById("radioTimerBox").classList.add("hidden");
-          document.getElementById("radioResultBox").classList.remove("hidden");
-          document.getElementById("radioStatusTag").innerText = `Offline`;
-        }
-      }, 1000);
-      parseTwemoji(document.getElementById("radioWarningModal"));
+    function requestRadioChannel(lang) {
+      if (activeRadioPlayer) {
+        activeRadioPlayer.pause();
+        activeRadioPlayer.src = "";
+        activeRadioPlayer = null;
+      }
+
+      // Points directly to Cloudflare Edge proxy
+      const streamUrl = `/api/radio?channel=${lang.toLowerCase()}`;
+      
+      activeRadioPlayer = new Audio(streamUrl);
+      activeRadioPlayer.volume = globalMasterVolume;
+      
+      activeRadioPlayer.play()
+        .then(() => {
+          document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
+        })
+        .catch((err) => {
+          console.warn("Radio playback waiting for touch interaction:", err);
+          document.getElementById("radioStatusTag").innerText = `Tuning...`;
+        });
     }
 
     function closeRadioModal() {
-      clearInterval(radioCountdownInterval);
       document.getElementById("radioWarningModal").classList.add("hidden");
     }
 
@@ -1940,7 +1931,6 @@
       activeBurnerTimers.set(msgId, interval);
     }
 
-    // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -2034,7 +2024,6 @@
         `;
       }
 
-      // Uncramped Spoiler Container Styling
       if (msg.isSpoiler) {
         bubble.innerHTML = `
           <div class="relative min-h-[44px] min-w-[140px] flex items-center">
@@ -2049,7 +2038,6 @@
         bubble.innerHTML = contentHtml;
       }
 
-      // Inline Emoji Reaction & Delete Actions
       const reactionTrigger = document.createElement("div");
       reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex items-center gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
       
@@ -2275,7 +2263,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE (DUAL-SOURCE WAVEFORM & BIDIRECTIONAL MUTE)
+    // WEBRTC CALL ENGINE
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
