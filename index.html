@@ -57,6 +57,11 @@
       --brand-light: #FDA4AF;
     }
 
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
     .glass-nav {
       backdrop-filter: blur(28px);
       -webkit-backdrop-filter: blur(28px);
@@ -122,9 +127,28 @@
     .typing-dot:nth-child(1) { animation-delay: 0s; }
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    /* Ultra Smooth UI Animations */
+    @keyframes bubbleIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .msg-anim {
+      animation: bubbleIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .smooth-transition {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
   </style>
 </head>
-<body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-200 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
+<body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
   <!-- LOW VOLUME TOAST -->
   <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
@@ -215,19 +239,19 @@
 
     <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
         <h3 class="text-xs font-bold">Background Tab Flash</h3>
         <p class="text-[11px] text-slate-500 leading-relaxed">Poking a peer alters their browser tab title even when watching YouTube or researching.</p>
       </div>
 
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">02</span>
         <h3 class="text-xs font-bold">Two-Way Delete</h3>
         <p class="text-[11px] text-slate-500 leading-relaxed">Instantly erase any sent message, location card, image, or document on both ends simultaneously.</p>
       </div>
 
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm">
+      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
         <h3 class="text-xs font-bold">Zero-Lag Direct Switch</h3>
         <p class="text-[11px] text-slate-500 leading-relaxed">Optimized in-memory message hydration renders conversations with immediate response time.</p>
@@ -368,6 +392,17 @@
       <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
         <span>↓</span> New messages
       </button>
+
+      <!-- Active Quote / Reply Preview Drawer -->
+      <div id="activeReplyBar" class="hidden px-4 py-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-100/80 dark:bg-darkMuted/60 flex items-center justify-between text-xs z-10 smooth-transition">
+        <div class="flex items-center gap-2.5 truncate border-l-2 border-brand pl-2.5">
+          <div class="truncate">
+            <span class="font-bold text-[11px] text-brand" id="replyAuthorLabel">Replying to @peer</span>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-xs sm:max-w-md" id="replySnippetLabel">Message snippet...</p>
+          </div>
+        </div>
+        <button type="button" onclick="cancelActiveReply()" class="w-5 h-5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs">✕</button>
+      </div>
 
       <!-- Message Customization Sub-Bar -->
       <div class="px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-3 text-[11px] z-10 select-none">
@@ -771,11 +806,11 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER WITH LIVE REAL-TIME PING MONITOR -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
-      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Session Active • <span id="pingMeter" class="font-mono text-emerald-500">⚡ 18ms</span> • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
+      <span id="pingStatusDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+      <span>Session Active • <span id="pingMeter" class="font-mono text-emerald-500 font-bold">⚡ --ms</span> • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
     </div>
 
     <div class="px-3.5 py-1.5 rounded-full bg-slate-200/70 dark:bg-darkMuted border border-slate-300 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-sm">
@@ -814,6 +849,9 @@
     // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
     let activeBurnerDuration = 0;
+
+    // --- ACTIVE REPLY STATE ---
+    let activeReplyTarget = null;
 
     // --- POKE RATE LIMITING & TAB FLASH ---
     const peerPokeHistory = new Map();
@@ -869,6 +907,41 @@
       clearInterval(tabFlashInterval);
       document.title = ORIGINAL_TITLE;
     });
+
+    // --- REALTIME PING & NETWORK QUALITY MONITOR ---
+    async function checkNetworkPing() {
+      const pingMeter = document.getElementById("pingMeter");
+      const statusDot = document.getElementById("pingStatusDot");
+      const startTime = performance.now();
+
+      try {
+        await fetch(`${SUPABASE_URL}/auth/v1/health`, {
+          method: "HEAD",
+          headers: { apikey: SUPABASE_ANON_KEY },
+          cache: "no-store"
+        });
+        const duration = Math.round(performance.now() - startTime);
+        pingMeter.innerText = `⚡ ${duration}ms`;
+
+        if (duration < 60) {
+          pingMeter.className = "font-mono text-emerald-500 font-bold";
+          statusDot.className = "w-2 h-2 rounded-full bg-emerald-500";
+        } else if (duration < 180) {
+          pingMeter.className = "font-mono text-amber-500 font-bold";
+          statusDot.className = "w-2 h-2 rounded-full bg-amber-500";
+        } else {
+          pingMeter.className = "font-mono text-rose-500 font-bold";
+          statusDot.className = "w-2 h-2 rounded-full bg-rose-500";
+        }
+      } catch(err) {
+        pingMeter.innerText = `⚡ Timeout`;
+        pingMeter.className = "font-mono text-rose-500 font-bold";
+        statusDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
+      }
+    }
+
+    setInterval(checkNetworkPing, 8000);
+    setTimeout(checkNetworkPing, 1000);
 
     // --- COLOR GRADING SWITCHER ---
     function setColorGrading(color) {
@@ -970,11 +1043,14 @@
     function handleDocSelection(event) {
       const file = event.target.files[0];
       if (!file) return;
+      processDocumentUpload(file);
+      event.target.value = "";
+    }
 
+    function processDocumentUpload(file) {
       const maxBytes = 2 * 1024 * 1024;
       if (file.size > maxBytes) {
         alert("File size exceeds 2 MB limit for direct ephemeral sharing.");
-        event.target.value = "";
         return;
       }
 
@@ -990,10 +1066,34 @@
           isSpoiler: isSpoilerActive,
           burnerDuration: activeBurnerDuration
         });
-        event.target.value = "";
       };
       reader.readAsDataURL(file);
     }
+
+    // --- DIRECT DRAG & DROP LISTENER FOR CHAT PANE ---
+    const chatPane = document.getElementById("chatPane");
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      chatPane.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    chatPane.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          processAndSendImage(file);
+        } else {
+          processDocumentUpload(file);
+        }
+      }
+    });
 
     // --- POKE WITH 30S COOLDOWN & 5X/2MIN RATE LIMIT ---
     function sendHapticPoke() {
@@ -1638,7 +1738,7 @@
         const initial = peer.username.charAt(0).toUpperCase();
         
         const row = document.createElement("div");
-        row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer ${
+        row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer smooth-transition ${
           isSelected ? "bg-slate-200/80 dark:bg-darkMuted" : "hover:bg-slate-100 dark:hover:bg-darkMuted/60"
         }`;
         
@@ -1793,7 +1893,7 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- REVERSE-PROXIED CAMPUS RADIO WITH ONE-TIME PROMPT, PAUSE, & GRACEFUL ERROR HANDLING ---
+    // --- REVERSE-PROXIED CAMPUS RADIO WITH AUTO-RECONNECT BUFFER ---
     function requestRadioChannel(lang) {
       if (!hasShownRadioEarphoneWarning) {
         hasShownRadioEarphoneWarning = true;
@@ -1824,7 +1924,6 @@
     function executeRadioStream(lang) {
       clearTimeout(radioErrorRecoveryTimeout);
 
-      // Gracefully tear down previous player instance without firing phantom abort errors
       if (activeRadioPlayer) {
         activeRadioPlayer.onabort = null;
         activeRadioPlayer.onerror = null;
@@ -1840,14 +1939,15 @@
       player.preload = "auto";
       player.volume = globalMasterVolume;
 
-      // Graceful error listener: only alerts user if stream cannot recover after timeout
-      player.onerror = (e) => {
+      // Auto-reconnect backoff on connection drop
+      player.onerror = () => {
         if (!player.src || player.src === "") return;
         radioErrorRecoveryTimeout = setTimeout(() => {
-          showRadioErrorToast(`Unable to establish connection to ${lang} stream.`);
-          document.getElementById("radioStatusTag").innerText = `Offline`;
-          document.getElementById("radioPauseBtn").classList.add("hidden");
-        }, 3000);
+          showRadioErrorToast(`Re-synchronizing ${lang} audio relay...`);
+          // Re-trigger playback seamlessly with fresh timestamp cache-buster
+          player.src = `${streamUrl}&t=${Date.now()}`;
+          player.play().catch(() => {});
+        }, 2000);
       };
 
       player.onplaying = () => {
@@ -2047,12 +2147,27 @@
       activeBurnerTimers.set(msgId, interval);
     }
 
-    // --- MESSAGE BUBBLES WITH CLEAN MINIMALISTIC ICONS ---
+    // --- DIRECT REPLY / QUOTE HANDLER ---
+    function triggerReplyToMessage(msgId, author, snippet) {
+      activeReplyTarget = { id: msgId, author: author, snippet: snippet };
+      const bar = document.getElementById("activeReplyBar");
+      document.getElementById("replyAuthorLabel").innerText = `Replying to @${author}`;
+      document.getElementById("replySnippetLabel").innerText = snippet || "Attachment / Media";
+      bar.classList.remove("hidden");
+      document.getElementById("dmInput").focus();
+    }
+
+    function cancelActiveReply() {
+      activeReplyTarget = null;
+      document.getElementById("activeReplyBar").classList.add("hidden");
+    }
+
+    // --- MESSAGE BUBBLE RENDERING WITH DIRECT QUOTES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
       wrap.id = `msg-${msg.id}`;
-      wrap.className = `group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
+      wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold";
@@ -2068,10 +2183,24 @@
           : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
       }`;
 
+      // Reply Quote Preview Header inside Bubble
+      let replySnippetHtml = "";
+      if (msg.replyTo) {
+        replySnippetHtml = `
+          <div class="px-3 pt-2 pb-1 border-b ${isSelf ? 'border-white/20 bg-black/10' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-darkBg/50'} text-[10px] space-y-0.5">
+            <span class="font-bold ${isSelf ? 'text-white/90' : 'text-brand'}">↳ @${msg.replyTo.author}</span>
+            <p class="truncate opacity-80 italic">${msg.replyTo.snippet}</p>
+          </div>
+        `;
+      }
+
       let contentHtml = "";
+      let rawSnippetText = msg.text || "";
+
       if (msg.text) {
         contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
       } else if (msg.image) {
+        rawSnippetText = "🖼️ Photo";
         contentHtml = `
           <div class="p-1 relative group/img">
             <img src="${msg.image}" class="max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">
@@ -2082,6 +2211,7 @@
           </div>
         `;
       } else if (msg.location) {
+        rawSnippetText = "📍 Live Location";
         const { lat, lng, accuracy } = msg.location;
         const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
         const appleMapsUrl = `https://maps.apple.com/?q=${lat},${lng}`;
@@ -2101,6 +2231,7 @@
         `;
       } else if (msg.fileDoc) {
         const { name, size, data } = msg.fileDoc;
+        rawSnippetText = `📄 ${name}`;
         contentHtml = `
           <div class="p-3 flex items-center justify-between gap-3 min-w-[220px]">
             <div class="flex items-center gap-2.5 truncate">
@@ -2117,6 +2248,7 @@
           </div>
         `;
       } else if (msg.audio) {
+        rawSnippetText = "🔥 Voice Clip";
         const limit = msg.destructLimit || 1;
         const currentCount = audioPlayedCounts.get(msg.id) || 0;
         
@@ -2145,7 +2277,8 @@
 
       if (msg.isSpoiler) {
         bubble.innerHTML = `
-          <div class="relative min-h-[44px] min-w-[140px] flex items-center">
+          <div class="relative min-h-[44px] min-w-[140px] flex flex-col">
+            ${replySnippetHtml}
             <div class="spoiler-content w-full">${contentHtml}</div>
             <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/95 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer px-4 py-2 text-center z-10 backdrop-blur-md rounded-2xl">
               <span class="text-[11px] tracking-wider uppercase flex items-center gap-1 font-bold">⚠️ SPOILER</span>
@@ -2154,11 +2287,13 @@
           </div>
         `;
       } else {
-        bubble.innerHTML = contentHtml;
+        bubble.innerHTML = replySnippetHtml + contentHtml;
       }
 
       const reactionTrigger = document.createElement("div");
-      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex items-center gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
+      reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex items-center gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0 smooth-transition";
+      
+      const safeSnippet = encodeURIComponent(rawSnippetText.substring(0, 50));
       
       let deleteBtnHtml = "";
       if (isSelf) {
@@ -2171,6 +2306,9 @@
       }
 
       reactionTrigger.innerHTML = `
+        <button onclick="triggerReplyToMessage('${msg.id}', '${msg.sender}', decodeURIComponent('${safeSnippet}'))" title="Reply / Quote" class="p-1 rounded-full text-slate-400 hover:text-brand hover:bg-brand/10 transition flex items-center justify-center">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
+        </button>
         <button onclick="sendReaction('${msg.id}', '🔥')" class="hover:scale-125 transition">🔥</button>
         <button onclick="sendReaction('${msg.id}', '❤️')" class="hover:scale-125 transition">❤️</button>
         <button onclick="sendReaction('${msg.id}', '😂')" class="hover:scale-125 transition">😂</button>
@@ -2309,8 +2447,13 @@
     window.addEventListener("paste", (e) => {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
-        if (item.kind === "file" && item.type.startsWith("image/")) {
-          processAndSendImage(item.getAsFile());
+        if (item.kind === "file") {
+          const file = item.getAsFile();
+          if (item.type.startsWith("image/")) {
+            processAndSendImage(file);
+          } else {
+            processDocumentUpload(file);
+          }
         }
       }
     });
@@ -2354,6 +2497,7 @@
         destructLimit,
         isSpoiler,
         burnerDuration,
+        replyTo: activeReplyTarget,
         network: currentNetwork,
         timestamp: Date.now()
       };
@@ -2362,6 +2506,9 @@
       saveMessageToSession(targetKey, payload);
       renderBubble(payload, true);
       soundSent();
+
+      // Clear active reply after dispatching
+      cancelActiveReply();
 
       channel.send({
         type: "broadcast",
