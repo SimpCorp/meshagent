@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAN CHAT — Direct Campus Network</title>
+  <title>LAN CHAT — Direct BRN Network</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,7 +80,6 @@
     }
     .destructing { animation: burn 0.8s forwards cubic-bezier(0.4, 0, 0.2, 1); }
 
-    /* 2-Second Smooth Fade for Spoilers */
     .spoiler-overlay {
       transition: opacity 2s ease, filter 2s ease, visibility 2s;
     }
@@ -128,7 +127,7 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Color Grading Picker (Red vs Blue) -->
+      <!-- Color Grading Picker -->
       <div class="flex p-0.5 bg-slate-200/80 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-6 h-6 rounded-full flex items-center justify-center transition" title="Blue Accent">
           <span class="w-3 h-3 rounded-full bg-blue-500"></span>
@@ -186,7 +185,6 @@
       </div>
     </div>
 
-    <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 w-full">
       <div class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1.5 shadow-sm">
         <span class="text-xs text-brand font-bold">01</span>
@@ -261,7 +259,6 @@
           </button>
         </div>
 
-        <!-- Global Master Volume Control (100% by default) -->
         <div class="space-y-1 pt-1">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
@@ -335,18 +332,15 @@
 
       <!-- Message Customization Sub-Bar (Spoiler & Burner) -->
       <div class="px-4 py-1.5 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-3 text-[11px] z-10 select-none">
-        <!-- Spoiler Toggle -->
         <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
           <span>⚠️</span> Spoiler
         </button>
 
-        <!-- Burner Mode Toggle & Dropdown -->
         <div class="relative flex items-center">
           <button type="button" id="burnerToggleBtn" onclick="toggleBurnerOption()" class="flex items-center gap-1 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
             <span>⏱️</span> <span id="burnerLabelDisplay">Burner Off</span>
           </button>
 
-          <!-- Burner Time Selector Popover -->
           <div id="burnerMenu" class="absolute bottom-8 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1 min-w-[150px] hidden z-30">
             <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase">Self-Destruct in:</div>
             <button type="button" onclick="selectBurnerDuration(0, 'Burner Off')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">Off (Normal)</button>
@@ -362,11 +356,10 @@
         </div>
       </div>
 
-      <!-- Message Form (Instagram/iMessage Style Rounded Bar) -->
+      <!-- Message Form -->
       <form id="dmForm" class="p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         
-        <!-- Instagram Plus Button -->
         <button type="button" onclick="document.getElementById('imgUploadInput').click()" title="Attach Media" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -374,12 +367,10 @@
           </svg>
         </button>
 
-        <!-- Voice Clip Button -->
         <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
           <span id="voiceMicIcon" class="text-sm">🎤</span>
         </button>
 
-        <!-- Message Capsule Input -->
         <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-1">
         </div>
@@ -388,7 +379,6 @@
           Send
         </button>
 
-        <!-- Recording HUD Overlay with Burn Limit Selector (1x, 2x, 3x) -->
         <div id="recordingHUD" class="absolute inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-4 hidden z-20 shadow-lg">
           <div class="flex items-center gap-2.5 text-xs font-semibold">
             <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
@@ -460,7 +450,6 @@
         <p id="profileMeta" class="text-xs text-slate-400">Course • Year</p>
       </div>
 
-      <!-- Bio Input Option (With 2-Hour Expiry) -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Status (Active 2 Hours)</label>
@@ -595,9 +584,11 @@
           End Call
         </button>
       </div>
-      <audio id="remoteAudioElement" autoplay playsinline class="hidden"></audio>
     </div>
   </div>
+
+  <!-- Real WebRTC Playback Receiver Element (Always rendered, volume managed by master slider) -->
+  <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
 
   <!-- ==================== ONBOARDING & AUTH MODAL ==================== -->
   <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -752,7 +743,7 @@
 
     // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
-    let activeBurnerDuration = 0; // 0 = off, >0 = seconds
+    let activeBurnerDuration = 0;
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -855,14 +846,12 @@
       });
     }
 
-    // --- Twemoji Helper ---
     function parseTwemoji(element) {
       if (window.twemoji && element) {
         twemoji.parse(element, { folder: 'svg', ext: '.svg' });
       }
     }
 
-    // --- Keyboard Shortcuts ---
     let lastEscPress = 0;
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
@@ -883,7 +872,6 @@
       window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
     }
 
-    // Startup Session Restore
     window.addEventListener("DOMContentLoaded", () => {
       const savedColor = localStorage.getItem('lan_color_grade') || 'blue';
       setColorGrading(savedColor);
@@ -1004,7 +992,6 @@
       initUserSession(data);
     }
 
-    // --- REGISTRATION & AUTHENTICATION ---
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
@@ -1053,7 +1040,6 @@
       }
     }
 
-    // --- NETWORK SWITCHER & DEV AUTH GATE ---
     function promptDevsAccess() {
       if (sessionStorage.getItem("dev_authenticated") === "true") {
         switchToDevNetwork();
@@ -1129,7 +1115,6 @@
       parseTwemoji(document.querySelector('header'));
     }
 
-    // --- REALTIME ENGINE & PRESENCE ---
     function initUserSession(userData) {
       currentUser = userData;
 
@@ -1244,7 +1229,6 @@
       }
     });
 
-    // --- VIEW / CHANNEL HANDLING (DMs First) ---
     function selectDirectTab() {
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -1378,7 +1362,6 @@
       document.getElementById("sidebarPane").classList.remove("hidden");
     }
 
-    // --- PEER PROFILE INSPECTOR MODAL ---
     function inspectPeerProfile(peerUsername) {
       const peer = onlineUsersMap.get(peerUsername);
       if (!peer) return;
@@ -1414,7 +1397,6 @@
       }
     }
 
-    // --- USER PROFILE & BIO CONFIGURATION (2-Hour Session) ---
     function openProfileModal() {
       if (!currentUser) return;
       document.getElementById("profileModal").classList.remove("hidden");
@@ -1470,7 +1452,6 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- CAMPUS RADIO SYSTEM ---
     function requestRadioChannel(lang) {
       clearInterval(radioCountdownInterval);
       
@@ -1500,7 +1481,6 @@
       document.getElementById("radioWarningModal").classList.add("hidden");
     }
 
-    // --- EPHEMERAL STORAGE & AUTO-SCROLL ---
     function getSessionKey(peerName) { return `chat_${currentUser.username}_with_${peerName}`; }
 
     function saveMessageToSession(peerName, messageObj) {
@@ -1552,7 +1532,6 @@
       else pill.classList.add("hidden");
     }
 
-    // --- SEEKABLE CUSTOM AUDIO PLAYER & SCRUBBING ---
     function formatTime(secs) {
       const m = Math.floor(secs / 60) || 0;
       const s = Math.floor(secs % 60) || 0;
@@ -1618,18 +1597,15 @@
       }
     }
 
-    // --- SPOILER REVEAL (2-Second Fade Animation) ---
     function revealSpoiler(msgId) {
       const overlay = document.getElementById(`spoiler-cover-${msgId}`);
       if (overlay) {
         overlay.classList.add('spoiler-revealed');
         setTimeout(() => overlay.remove(), 2000);
       }
-      // Start burner countdown if it was waiting for spoiler reveal
       startBurnerCountdown(msgId);
     }
 
-    // --- MESSAGE BURNER COUNTDOWN ---
     const activeBurnerTimers = new Map();
 
     function startBurnerCountdown(msgId) {
@@ -1668,7 +1644,6 @@
       }
     }
 
-    // --- INSTAGRAM / IMESSAGE MESSAGE BUBBLES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -1689,7 +1664,6 @@
           : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
       }`;
 
-      // Insert message content
       let contentHtml = "";
       if (msg.text) {
         contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
@@ -1722,12 +1696,10 @@
         `;
       }
 
-      // Wrap in spoiler cover if flagged
       if (msg.isSpoiler) {
         bubble.innerHTML = `
           <div class="relative">
             <div class="spoiler-content">${contentHtml}</div>
-            <!-- Red Glass Spoiler Overlay with 2-Second Fade -->
             <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/90 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer p-4 text-center z-10 backdrop-blur-md rounded-2xl">
               <span class="text-xs tracking-widest uppercase flex items-center gap-1">⚠️ SPOILER</span>
               <span class="text-[10px] font-medium opacity-80 pt-0.5">Tap to reveal</span>
@@ -1738,7 +1710,6 @@
         bubble.innerHTML = contentHtml;
       }
 
-      // Inline Emoji Reaction Pill
       const reactionTrigger = document.createElement("div");
       reactionTrigger.className = "opacity-0 group-hover:opacity-100 transition flex gap-1 p-1 bg-white dark:bg-darkMuted border border-slate-200 dark:border-slate-800 rounded-full text-xs shadow-md shrink-0";
       reactionTrigger.innerHTML = `
@@ -1760,7 +1731,6 @@
       reactionsContainer.id = `reactions-${msg.id}`;
       reactionsContainer.className = "flex gap-1 text-[10px] px-2 font-semibold";
 
-      // Time tag & Burner Countdown Badge
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("div");
       timeTag.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-medium";
@@ -1781,7 +1751,6 @@
       parseTwemoji(wrap);
       scrollChatToBottom();
 
-      // Trigger burner countdown immediately if not hidden behind a spoiler
       if (msg.burnerDuration && msg.burnerDuration > 0 && !msg.isSpoiler) {
         startBurnerCountdown(msg.id);
       }
@@ -1811,7 +1780,6 @@
       handleMessageDestruct(msgId);
     }
 
-    // --- EPHEMERAL VOICE RECORDER (<30s) ---
     let mediaRecorder = null;
     let audioChunks = [];
     let recordStartTime = 0;
@@ -1877,7 +1845,6 @@
       mediaRecorder.stop();
     }
 
-    // --- IMAGE ATTACHMENTS ---
     function handleImageSelection(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1916,7 +1883,6 @@
       reader.readAsDataURL(file);
     }
 
-    // --- PAYLOAD DISPATCH ---
     function dispatchPayload({ text = null, image = null, audio = null, duration = null, destructLimit = 1, isSpoiler = false, burnerDuration = 0 }) {
       if (!channel || (!text && !image && !audio)) return;
 
@@ -1960,7 +1926,9 @@
       });
     });
 
-    // --- BULLETPROOF P2P WEBRTC CALL ENGINE ---
+    // ==========================================
+    // BULLETPROOF P2P WEBRTC CALL ENGINE (FIXED)
+    // ==========================================
     let peerConnection = null;
     let localStream = null;
     let pendingOffer = null;
@@ -1976,24 +1944,41 @@
       iceCandidatePoolSize: 10
     };
 
+    async function drainIceCandidates() {
+      while (iceCandidateQueue.length > 0) {
+        const cand = iceCandidateQueue.shift();
+        try {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(cand));
+        } catch(e) {
+          console.warn("ICE candidate drain warning:", e);
+        }
+      }
+    }
+
     async function initiateAudioCall() {
       if (!activeChatUser || !channel) return;
+      
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      remoteAudio.volume = globalMasterVolume;
+      remoteAudio.play().catch(() => {}); // Unlock audio policy on user click
+
       document.getElementById("callOverlay").classList.remove("hidden");
       document.getElementById("callPeerName").innerText = `@${activeChatUser.username}`;
       document.getElementById("callStatusLabel").innerText = "Ringing peer...";
 
       iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       peerConnection = new RTCPeerConnection(rtcConfig);
       
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
       peerConnection.ontrack = (e) => {
-        const remoteAudio = document.getElementById("remoteAudioElement");
-        remoteAudio.srcObject = e.streams[0];
-        remoteAudio.volume = globalMasterVolume;
-        remoteAudio.play().catch(() => {});
-        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
+        if (e.streams && e.streams[0]) {
+          remoteAudio.srcObject = e.streams[0];
+          remoteAudio.volume = globalMasterVolume;
+          remoteAudio.play().catch(err => console.error("Audio playback error:", err));
+          document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Stream Live)";
+        }
       };
 
       peerConnection.onicecandidate = (e) => {
@@ -2008,13 +1993,15 @@
 
       peerConnection.oniceconnectionstatechange = () => {
         if (peerConnection) {
-          if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
+          if (peerConnection.iceConnectionState === "connected") {
+            document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Stream Live)";
+          } else if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
             peerConnection.restartIce();
           }
         }
       };
 
-      const offer = await peerConnection.createOffer();
+      const offer = await peerConnection.createOffer({ offerToReceiveAudio: true });
       await peerConnection.setLocalDescription(offer);
 
       channel.send({
@@ -2037,15 +2024,15 @@
         parseTwemoji(document.getElementById("callOverlay"));
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
-        
-        while (iceCandidateQueue.length > 0) {
-          const cand = iceCandidateQueue.shift();
-          try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
-        }
-        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
+        await drainIceCandidates();
+        document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Stream Live)";
       } else if (payload.type === "candidate") {
         if (peerConnection && peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
-          try { await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate)); } catch(e){}
+          try {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
+          } catch(e) {
+            console.warn("ICE candidate addition error:", e);
+          }
         } else {
           iceCandidateQueue.push(payload.candidate);
         }
@@ -2058,18 +2045,23 @@
       document.getElementById("acceptCallBtn").classList.add("hidden");
       document.getElementById("callStatusLabel").innerText = "Connecting...";
 
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      remoteAudio.volume = globalMasterVolume;
+      remoteAudio.play().catch(() => {}); // Unlock audio policy on user click
+
       iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       peerConnection = new RTCPeerConnection(rtcConfig);
       
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
       peerConnection.ontrack = (e) => {
-        const remoteAudio = document.getElementById("remoteAudioElement");
-        remoteAudio.srcObject = e.streams[0];
-        remoteAudio.volume = globalMasterVolume;
-        remoteAudio.play().catch(() => {});
-        document.getElementById("callStatusLabel").innerText = "Call Connected (Encrypted P2P)";
+        if (e.streams && e.streams[0]) {
+          remoteAudio.srcObject = e.streams[0];
+          remoteAudio.volume = globalMasterVolume;
+          remoteAudio.play().catch(err => console.error("Audio playback error:", err));
+          document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Stream Live)";
+        }
       };
 
       peerConnection.onicecandidate = (e) => {
@@ -2083,19 +2075,19 @@
       };
 
       peerConnection.oniceconnectionstatechange = () => {
-        if (peerConnection && (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed")) {
-          peerConnection.restartIce();
+        if (peerConnection) {
+          if (peerConnection.iceConnectionState === "connected") {
+            document.getElementById("callStatusLabel").innerText = "Call Connected (P2P Stream Live)";
+          } else if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
+            peerConnection.restartIce();
+          }
         }
       };
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
-      
-      while (iceCandidateQueue.length > 0) {
-        const cand = iceCandidateQueue.shift();
-        try { await peerConnection.addIceCandidate(new RTCIceCandidate(cand)); } catch(e){}
-      }
+      await drainIceCandidates();
 
-      const answer = await peerConnection.createAnswer();
+      const answer = await peerConnection.createAnswer({ offerToReceiveAudio: true });
       await peerConnection.setLocalDescription(answer);
 
       channel.send({
@@ -2123,6 +2115,12 @@
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
       }
+      
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      if (remoteAudio) {
+        remoteAudio.srcObject = null;
+      }
+
       pendingOffer = null;
       iceCandidateQueue = [];
       document.getElementById("callOverlay").classList.add("hidden");
