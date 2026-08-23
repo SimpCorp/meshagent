@@ -193,6 +193,11 @@
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
   </div>
 
+  <!-- COPY CONFIRMATION TOAST -->
+  <div id="copyToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 dark:border-slate-200 transition-all">
+    <span>📋</span> Copied to clipboard!
+  </div>
+
   <!-- STREAM ERROR TOAST -->
   <div id="radioErrorToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-rose-600 text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20">
     <span>📡</span> <span id="radioErrorMsg">Stream connection failed. Retrying...</span>
@@ -844,7 +849,7 @@
     </div>
   </div>
 
-  <!-- FOOTER WITH LIVE REAL-TIME PING MONITOR -->
+  <!-- FOOTER WITH PORTFOLIO LINK & LIVE REAL-TIME PING MONITOR -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span id="pingStatusDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -853,7 +858,7 @@
 
     <div class="px-3.5 py-1.5 rounded-full bg-slate-200/70 dark:bg-darkMuted border border-slate-300 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-sm">
       <span class="text-brand font-bold">●</span>
-      <span>Developed by a Jobless B.COM 1st year student <strong class="text-slate-900 dark:text-white font-bold">(SimpCorp)</strong></span>
+      <span>Developed by a Jobless B.COM 1st year student (<a href="https://portdp.pages.dev" target="_blank" rel="noopener noreferrer" class="text-slate-900 dark:text-white font-bold hover:underline hover:text-brand dark:hover:text-brand transition cursor-pointer">SimpCorp</a>)</span>
     </div>
   </footer>
 
@@ -946,18 +951,34 @@
       document.title = ORIGINAL_TITLE;
     });
 
+    // --- COPY TEXT TO CLIPBOARD HELPER ---
+    function copyMessageText(text) {
+      if (!navigator.clipboard) {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      } else {
+        navigator.clipboard.writeText(text);
+      }
+
+      const toast = document.getElementById("copyToast");
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 2000);
+    }
+
     // --- IMPORTANT MIGRATION MODAL (TWICE A DAY ENGINE WITH 2S ENFORCED DELAY) ---
     function checkAndShowDomainNotice() {
       const STORAGE_KEY = "domain_migration_notice_views";
       const now = Date.now();
-      const twelveHours = 12 * 60 * 60 * 1000;
       
       let viewLogs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       // Filter out log entries older than 24 hours
       viewLogs = viewLogs.filter(timestamp => now - timestamp < 24 * 60 * 60 * 1000);
 
       if (viewLogs.length < 2) {
-        // Display modal
         const modal = document.getElementById("domainNoticeModal");
         modal.classList.remove("hidden");
         parseTwemoji(modal);
@@ -2243,7 +2264,7 @@
       document.getElementById("activeReplyBar").classList.add("hidden");
     }
 
-    // --- MESSAGE BUBBLE RENDERING WITH DIRECT QUOTES ---
+    // --- MESSAGE BUBBLE RENDERING WITH COPY TEXT & DIRECT QUOTES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
@@ -2279,7 +2300,7 @@
       let rawSnippetText = msg.text || "";
 
       if (msg.text) {
-        contentHtml = `<div class="px-4 py-2.5">${msg.text}</div>`;
+        contentHtml = `<div class="px-4 py-2.5 select-text">${msg.text}</div>`;
       } else if (msg.image) {
         rawSnippetText = "🖼️ Photo";
         contentHtml = `
@@ -2376,6 +2397,16 @@
       
       const safeSnippet = encodeURIComponent(rawSnippetText.substring(0, 50));
       
+      let copyBtnHtml = "";
+      if (msg.text) {
+        const escapedText = encodeURIComponent(msg.text);
+        copyBtnHtml = `
+          <button onclick="copyMessageText(decodeURIComponent('${escapedText}'))" title="Copy Text" class="p-1 rounded-full text-slate-400 hover:text-brand hover:bg-brand/10 transition flex items-center justify-center">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+        `;
+      }
+
       let deleteBtnHtml = "";
       if (isSelf) {
         deleteBtnHtml = `
@@ -2390,6 +2421,7 @@
         <button onclick="triggerReplyToMessage('${msg.id}', '${msg.sender}', decodeURIComponent('${safeSnippet}'))" title="Reply / Quote" class="p-1 rounded-full text-slate-400 hover:text-brand hover:bg-brand/10 transition flex items-center justify-center">
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>
         </button>
+        ${copyBtnHtml}
         <button onclick="sendReaction('${msg.id}', '🔥')" class="hover:scale-125 transition">🔥</button>
         <button onclick="sendReaction('${msg.id}', '❤️')" class="hover:scale-125 transition">❤️</button>
         <button onclick="sendReaction('${msg.id}', '😂')" class="hover:scale-125 transition">😂</button>
