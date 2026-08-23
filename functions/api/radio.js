@@ -1,76 +1,128 @@
+/**
+ * Cloudflare Pages Functions - /api/radio
+ * Reverse-proxies audio streams with 15-second persistent multi-station retries,
+ * browser-spoofed headers (bypassing CDN/Datacenter IP blocks), and a seamless Lo-Fi fallback.
+ */
+
+const STATIONS = {
+  hindi: [
+    "https://stream.zeno.fm/f3wvbbqmdg8uv", // Bollywood Hits
+    "https://stream.zeno.fm/0r0xa792kwzuv", // Radio Mirchi Mirror
+    "https://mirchi-hindi.streamguys1.com/mirchi-hindi",
+    "https://stream.zeno.fm/3hww9cydg8uv"  // Desi Retro
+  ],
+  south: [
+    "https://stream.zeno.fm/v22nwtkgwzruv", // Tamil Regional Hits
+    "https://stream.zeno.fm/s494y9s7wzruv", // South Gold / Telugu
+    "https://stream.zeno.fm/k2y0q0a2kwzuv", // Malayalam / Regional Mirror
+    "https://stream.zeno.fm/05w6t72q4ehvv"  // South Mega Live
+  ],
+  english: [
+    "https://icecast.somafm.com/groovesalad-128-mp3",
+    "https://stream.nightwaveplaza.com/plaza.mp3",
+    "https://stream-relay-geo.ntslive.net/stream",
+    "https://icecast.somafm.com/indiepop-128-mp3"
+  ],
+  other: [
+    "https://icecast.somafm.com/chill-128-mp3",
+    "https://icecast.somafm.com/dronezone-128-mp3",
+    "https://icecast.somafm.com/lush-128-mp3"
+  ]
+};
+
+// High-Uptime 24/7 Lo-Fi Fallback Relays
+const LOFI_FALLBACK_STREAMS = [
+  "https://icecast.somafm.com/chill-128-mp3",
+  "https://stream.nightwaveplaza.com/plaza.mp3",
+  "https://icecast.somafm.com/groovesalad-128-mp3"
+];
+
+const BROWSER_HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+  "Accept": "*/*",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Icy-MetaData": "0"
+};
+
 export async function onRequest(context) {
-  const { searchParams } = new URL(context.request.url);
-  const channel = searchParams.get('channel')?.toLowerCase() || 'english';
+  const url = new URL(context.request.url);
+  const channel = (url.searchParams.get("channel") || "english").toLowerCase();
+  const candidates = STATIONS[channel] || STATIONS.english;
 
-  // Multi-source fallback pools for every category
-  const STREAM_POOLS = {
-    english: [
-      "https://streams.ilovemusic.de/iloveradio1.mp3",
-      "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one",
-      "https://dancewave.online/dance.mp3"
-    ],
-    hindi: [
-      "https://sc-bb.1.fm:8017/",                          // 1.FM Bombay Beats India (High Uptime)
-      "https://stream.zeno.fm/f3wvbbqmdg8uv",               // Secondary Mirror
-      "https://radioindia.net/radio/mirchi98/icecast.audio",// Radio Mirchi Mirror
-      "https://stream.zeno.fm/0r0xa792kwzuv"                // Retro Bollywood Relay
-    ],
-    south: [
-      "https://prclive1.listenon.in:9960/",                 // Radio City South Live Direct
-      "https://stream.zeno.fm/s8s62tqmdg8uv",               // South Indian Regional
-      "https://stream.zeno.fm/4w982392kwzuv",               // Tamil/Telugu Hits
-      "https://ice31.securenetsystems.net/CARNATIC"         // Carnatic/Classical FM
-    ],
-    other: [
-      "https://stream.zeno.fm/7k9yvbqmdg8uv",
-      "https://streams.ilovemusic.de/iloveradio2.mp3",
-      "https://stream.zeno.fm/8wvbbqmdg8uv"
-    ]
-  };
+  const OVERALL_DEADLINE_MS = 15000; // 15-second hard budget before switching to Lo-Fi
+  const overallStartTime = Date.now();
 
-  const candidateUrls = STREAM_POOLS[channel] || STREAM_POOLS.english;
+  // 1. Attempt all primary channel candidates within the 15-second budget
+  for (let i = 0; i < candidates.length; i++) {
+    const elapsed = Date.now() - overallStartTime;
+    if (elapsed >= OVERALL_DEADLINE_MS) break;
 
-  // Try each stream candidate sequentially until a healthy stream responds
-  for (let i = 0; i < candidateUrls.length; i++) {
-    const targetUrl = candidateUrls[i];
-    
+    const remainingTime = Math.min(4500, OVERALL_DEADLINE_MS - elapsed);
+    const streamUrl = candidates[i];
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s connection deadline per candidate
+      const timeoutId = setTimeout(() => controller.abort(), remainingTime);
 
-      const upstreamRes = await fetch(targetUrl, {
-        signal: controller.signal,
-        redirect: "follow",
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "*/*",
-          "Icy-MetaData": "1"
-        }
+      const response = await fetch(streamUrl, {
+        method: "GET",
+        headers: BROWSER_HEADERS,
+        signal: controller.signal
       });
 
       clearTimeout(timeoutId);
 
-      // Verify valid response status and active body stream
-      if (upstreamRes.ok && upstreamRes.body) {
-        return new Response(upstreamRes.body, {
+      if (response.ok && response.body) {
+        return new Response(response.body, {
           status: 200,
           headers: {
-            "Content-Type": upstreamRes.headers.get("Content-Type") || "audio/mpeg",
+            "Content-Type": response.headers.get("Content-Type") || "audio/mpeg",
             "Cache-Control": "no-cache, no-store, must-revalidate",
             "Access-Control-Allow-Origin": "*",
-            "X-Stream-Source-Index": i.toString()
+            "X-Radio-Channel": channel,
+            "X-Radio-Station": `primary-${i}`
           }
         });
       }
     } catch (err) {
-      // Current candidate timed out or failed; automatically proceeds to candidate i + 1
+      // Station timed out or dropped; cycle to the next candidate
       continue;
     }
   }
 
-  // If all candidate streams in the pool failed
-  return new Response("All regional stream candidates are currently offline.", {
-    status: 504,
+  // 2. If all attempts failed after 15 seconds, connect to the Lo-Fi fallback stream
+  for (const lofiUrl of LOFI_FALLBACK_STREAMS) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      const lofiResponse = await fetch(lofiUrl, {
+        method: "GET",
+        headers: BROWSER_HEADERS,
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (lofiResponse.ok && lofiResponse.body) {
+        return new Response(lofiResponse.body, {
+          status: 200,
+          headers: {
+            "Content-Type": lofiResponse.headers.get("Content-Type") || "audio/mpeg",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Access-Control-Allow-Origin": "*",
+            "X-Radio-Channel": channel,
+            "X-Radio-Fallback": "lofi-stream"
+          }
+        });
+      }
+    } catch (err) {
+      continue;
+    }
+  }
+
+  return new Response("All radio streams and fallback relays are currently offline.", {
+    status: 502,
     headers: {
       "Content-Type": "text/plain",
       "Access-Control-Allow-Origin": "*"
