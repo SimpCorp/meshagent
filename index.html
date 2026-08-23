@@ -200,7 +200,7 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
-  <!-- ==================== IMPORTANT DOMAIN CHANGE NOTIFICATION MODAL (2X/DAY) ==================== -->
+  <!-- ==================== IMPORTANT DOMAIN CHANGE NOTIFICATION MODAL (EVERY VISIT / 1s DELAY) ==================== -->
   <div id="domainNoticeModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-md bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
       <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto shadow-sm">
@@ -224,14 +224,14 @@
             ● The legacy link <strong>nomesh.pages.dev</strong> will stop redirecting in <strong>10 days</strong>.
           </p>
           <p class="text-[11px] text-slate-400 dark:text-slate-400">
-            ✓ <em>No worries:</em> Searching or typing <strong>nomesh</strong> in your browser automatically opens <strong>meshage.pages.dev</strong> right away. Please update your bookmarks.
+            ✓ <em>Tip:</em> Typing <strong>nomesh</strong> opens <strong>meshage.pages.dev</strong> automatically. Update your bookmarks.
           </p>
         </div>
       </div>
 
       <div class="pt-1">
         <button id="closeDomainNoticeBtn" onclick="closeDomainNotice()" disabled class="w-full py-3 bg-brand text-white text-xs font-bold rounded-2xl transition hover:opacity-90 shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
-          <span id="closeNoticeTimerLabel">Please wait 2s...</span>
+          <span id="closeNoticeTimerLabel">Please wait 1s...</span>
         </button>
       </div>
     </div>
@@ -315,8 +315,8 @@
       <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
         <span class="text-base shrink-0">✨</span>
         <div class="space-y-0.5">
-          <p class="font-bold text-emerald-600 dark:text-emerald-400">System Updated & Bugs Fixed</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Audio overlapping completely eliminated, seamless seeking added for saved music tracks, and full Android & iOS display optimizations live.</p>
+          <p class="font-bold text-emerald-600 dark:text-emerald-400">System Updated & Sophie AI Integrated</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Audio overlap resolved, scrub controls active for saved tracks, complete mobile display optimizations applied, and Sophie AI is online 24/7.</p>
         </div>
       </div>
 
@@ -378,6 +378,25 @@
         </div>
       </div>
 
+      <!-- PINNED 24/7 SOPHIE AI CARD -->
+      <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-purple-500/5 to-transparent">
+        <div onclick="selectSophieAI()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-purple-500/10 border border-purple-500/20 shadow-sm group">
+          <div class="flex items-center gap-2.5 truncate">
+            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+              🤖
+            </div>
+            <div class="truncate text-left">
+              <div class="flex items-center gap-1.5">
+                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Sophie</p>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">AI BOT</span>
+              </div>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Sarcastic Campus LLM • 24/7 Online</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-purple-500 font-bold group-hover:translate-x-0.5 transition">Ask →</span>
+        </div>
+      </div>
+
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
@@ -396,7 +415,7 @@
           </div>
         </div>
         
-        <!-- Live Radio Buttons Row (Clean Unified Style) -->
+        <!-- Live Radio Buttons Row -->
         <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1">
           <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">ENG</button>
           <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">HIN</button>
@@ -949,6 +968,7 @@
     let isLoginMode = false;
     let currentUser = null;
     let activeChatUser = null;
+    let isSophieActive = false;
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -965,7 +985,7 @@
     let activeRadioPlayer = null;
     let radioErrorRecoveryTimeout = null;
     let activeLiveSessionTimer = null;
-    let activeAudioSessionId = 0; // Monotonic Session ID to eliminate race conditions & overlap
+    let activeAudioSessionId = 0;
 
     // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
     const SAVED_SONGS_LIST = [
@@ -1037,7 +1057,7 @@
 
     // --- UNIVERSAL AUDIO ENGINE RESET HELPER ---
     function stopAndKillActiveAudio() {
-      activeAudioSessionId++; // Invalidate previous pending sessions
+      activeAudioSessionId++;
       clearTimeout(activeLiveSessionTimer);
       clearTimeout(radioErrorRecoveryTimeout);
 
@@ -1073,37 +1093,26 @@
       setTimeout(() => toast.classList.add("hidden"), 2000);
     }
 
-    // --- IMPORTANT MIGRATION MODAL (TWICE A DAY ENGINE WITH 2S ENFORCED DELAY) ---
+    // --- MIGRATION MODAL (TRIGGERS EVERY TIME WITH 1-SECOND DISMISS) ---
     function checkAndShowDomainNotice() {
-      const STORAGE_KEY = "domain_migration_notice_views";
-      const now = Date.now();
-      
-      let viewLogs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-      viewLogs = viewLogs.filter(timestamp => now - timestamp < 24 * 60 * 60 * 1000);
+      const modal = document.getElementById("domainNoticeModal");
+      modal.classList.remove("hidden");
+      parseTwemoji(modal);
 
-      if (viewLogs.length < 2) {
-        const modal = document.getElementById("domainNoticeModal");
-        modal.classList.remove("hidden");
-        parseTwemoji(modal);
+      const closeBtn = document.getElementById("closeDomainNoticeBtn");
+      const timerLabel = document.getElementById("closeNoticeTimerLabel");
+      let remaining = 1;
 
-        viewLogs.push(now);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(viewLogs));
-
-        const closeBtn = document.getElementById("closeDomainNoticeBtn");
-        const timerLabel = document.getElementById("closeNoticeTimerLabel");
-        let remaining = 2;
-
-        const countdown = setInterval(() => {
-          remaining--;
-          if (remaining > 0) {
-            timerLabel.innerText = `Please wait ${remaining}s...`;
-          } else {
-            clearInterval(countdown);
-            closeBtn.removeAttribute("disabled");
-            timerLabel.innerText = "Understood & Proceed ↵";
-          }
-        }, 1000);
-      }
+      const countdown = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          timerLabel.innerText = `Please wait ${remaining}s...`;
+        } else {
+          clearInterval(countdown);
+          closeBtn.removeAttribute("disabled");
+          timerLabel.innerText = "Understood & Proceed ↵";
+        }
+      }, 1000);
     }
 
     function closeDomainNotice() {
@@ -1313,6 +1322,86 @@
       }
     }
 
+    // --- PINNED SOPHIE AI SELECTION & INTERACTION ---
+    function selectSophieAI() {
+      isSophieActive = true;
+      activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7" };
+
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
+
+      document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
+      document.getElementById("chatPane").classList.remove("hidden");
+      document.getElementById("chatPane").classList.add("flex");
+      document.getElementById("startCallBtn").classList.add("hidden");
+      document.getElementById("pokePeerBtn").classList.add("hidden");
+
+      document.getElementById("activeChatPeerAvatar").innerText = "🤖";
+      document.getElementById("activeChatPeerName").innerText = "Sophie";
+      document.getElementById("activeChatPeerMeta").innerText = "Sarcastic Campus LLM • Always Online";
+
+      const input = document.getElementById("dmInput");
+      const btn = document.getElementById("dmSendBtn");
+      input.removeAttribute("disabled");
+      btn.removeAttribute("disabled");
+      input.placeholder = "Ask Sophie something... if you dare";
+      input.focus();
+
+      loadConversationFromSession("Sophie");
+    }
+
+    async function handleSophieInteraction(promptText) {
+      showTypingBubble("Sophie");
+      
+      const key = getSessionKey("Sophie");
+      const history = (inMemoryChatCache.get(key) || []).slice(-6);
+      
+      const messages = history.map(m => ({
+        role: m.sender === "Sophie" ? "assistant" : "user",
+        content: m.text || ""
+      })).filter(m => m.content.length > 0);
+
+      try {
+        const res = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages })
+        });
+
+        const data = await res.json();
+        const replyText = data.reply || data.error || "My brain had a momentary lapse. Try again.";
+
+        document.getElementById("typingIndicatorBubble").classList.add("hidden");
+
+        const sophiePayload = {
+          id: "msg_" + Math.random().toString(36).substr(2, 9),
+          sender: "Sophie",
+          recipient: currentUser.username,
+          text: replyText,
+          timestamp: Date.now(),
+          network: "GROQ-LLAMA-3.3"
+        };
+
+        saveMessageToSession("Sophie", sophiePayload);
+        if (isSophieActive) {
+          renderBubble(sophiePayload, false);
+          soundRecv();
+        }
+      } catch (err) {
+        document.getElementById("typingIndicatorBubble").classList.add("hidden");
+        const errPayload = {
+          id: "msg_" + Math.random().toString(36).substr(2, 9),
+          sender: "Sophie",
+          recipient: currentUser.username,
+          text: "Server error reaching Groq edge: " + err.message,
+          timestamp: Date.now(),
+          network: "ERROR"
+        };
+        saveMessageToSession("Sophie", errPayload);
+        if (isSophieActive) renderBubble(errPayload, false);
+      }
+    }
+
     // --- ATTACHMENT DRAWER TOGGLE ---
     function toggleAttachmentDrawer() {
       const drawer = document.getElementById("attachmentDrawer");
@@ -1421,7 +1510,7 @@
 
     // --- POKE WITH 30S COOLDOWN & 5X/2MIN RATE LIMIT ---
     function sendHapticPoke() {
-      if (!channel || !activeChatUser) return;
+      if (!channel || !activeChatUser || isSophieActive) return;
       const targetUser = activeChatUser.username;
       const now = Date.now();
 
@@ -1503,13 +1592,14 @@
 
     // --- TWO-WAY MESSAGE DELETE ENGINE ---
     function triggerDeleteMessage(msgId) {
-      if (!channel) return;
       handleLocalMessageRemoval(msgId);
-      channel.send({
-        type: "broadcast",
-        event: "delete_msg",
-        payload: { id: msgId, from: currentUser.username }
-      });
+      if (channel && !isSophieActive) {
+        channel.send({
+          type: "broadcast",
+          event: "delete_msg",
+          payload: { id: msgId, from: currentUser.username }
+        });
+      }
     }
 
     function handleLocalMessageRemoval(msgId) {
@@ -1519,7 +1609,7 @@
         setTimeout(() => el.remove(), 350);
       }
 
-      const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
+      const targetKey = isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
       removeMessageFromSession(targetKey, msgId);
     }
 
@@ -1904,7 +1994,7 @@
         })
         .on("broadcast", { event: "lounge_msg" }, ({ payload }) => {
           saveMessageToSession("GLOBAL_LOUNGE", payload);
-          if (activeChatUser === null) {
+          if (activeChatUser === null && !isSophieActive) {
             renderBubble(payload, false);
             soundRecv();
           }
@@ -1920,7 +2010,7 @@
               payload: { id: payload.id, from: currentUser.username, to: payload.sender }
             });
 
-            if (activeChatUser && activeChatUser.username === payload.sender) {
+            if (activeChatUser && activeChatUser.username === payload.sender && !isSophieActive) {
               renderBubble(payload, false);
             } else {
               const currentUnread = unreadMap.get(payload.sender) || 0;
@@ -1945,7 +2035,7 @@
           handleIncomingPoke(payload);
         })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
-          if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username) {
+          if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username && !isSophieActive) {
             showTypingBubble(payload.sender);
           }
         })
@@ -1983,7 +2073,7 @@
     }
 
     document.getElementById("dmInput").addEventListener("input", () => {
-      if (activeChatUser && channel) {
+      if (activeChatUser && channel && !isSophieActive) {
         channel.send({
           type: "broadcast",
           event: "typing_notice",
@@ -1993,6 +2083,7 @@
     });
 
     function selectDirectTab() {
+      isSophieActive = false;
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
 
@@ -2008,7 +2099,7 @@
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
             <div class="w-12 h-12 rounded-full bg-slate-200/60 dark:bg-darkMuted flex items-center justify-center text-lg font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory to start a direct message thread.</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory or talk to Sophie AI above.</p>
           </div>
         `;
         parseTwemoji(document.getElementById("dmChatArea"));
@@ -2019,6 +2110,7 @@
     }
 
     function selectLoungeChannel() {
+      isSophieActive = false;
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -2058,7 +2150,7 @@
 
       container.innerHTML = "";
       peers.forEach(peer => {
-        const isSelected = activeChatUser && activeChatUser.username === peer.username;
+        const isSelected = activeChatUser && activeChatUser.username === peer.username && !isSophieActive;
         const unreadCount = unreadMap.get(peer.username) || 0;
         const initial = peer.username.charAt(0).toUpperCase();
         
@@ -2095,6 +2187,7 @@
 
     function selectPeerForChat(peer) {
       if (!peer) return;
+      isSophieActive = false;
       activeChatUser = peer;
       unreadMap.delete(peer.username);
       
@@ -2146,7 +2239,7 @@
     }
 
     function openActivePeerProfileModal() {
-      if (activeChatUser) {
+      if (activeChatUser && !isSophieActive) {
         inspectPeerProfile(activeChatUser.username);
       }
     }
@@ -2629,7 +2722,7 @@
       }
 
       let deleteBtnHtml = "";
-      if (isSelf) {
+      if (isSelf || isSophieActive) {
         deleteBtnHtml = `
           <span class="w-[1px] h-3 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
           <button onclick="triggerDeleteMessage('${msg.id}')" title="Delete Everywhere" class="p-1 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition flex items-center justify-center">
@@ -2688,13 +2781,14 @@
     }
 
     function sendReaction(msgId, emoji) {
-      if (!channel) return;
       applyReactionToDom(msgId, emoji, currentUser.username);
-      channel.send({
-        type: "broadcast",
-        event: "reaction_msg",
-        payload: { id: msgId, emoji: emoji, by: currentUser.username }
-      });
+      if (channel && !isSophieActive) {
+        channel.send({
+          type: "broadcast",
+          event: "reaction_msg",
+          payload: { id: msgId, emoji: emoji, by: currentUser.username }
+        });
+      }
     }
 
     function applyReactionToDom(msgId, emoji, by) {
@@ -2816,12 +2910,12 @@
     }
 
     function dispatchPayload({ text = null, image = null, audio = null, location = null, fileDoc = null, duration = null, destructLimit = 1, isSpoiler = false, burnerDuration = 0 }) {
-      if (!channel || (!text && !image && !audio && !location && !fileDoc)) return;
+      if (!currentUser || (!text && !image && !audio && !location && !fileDoc)) return;
 
       const payload = {
         id: "msg_" + Math.random().toString(36).substr(2, 9),
         sender: currentUser.username,
-        recipient: activeChatUser ? activeChatUser.username : null,
+        recipient: isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : null),
         text,
         image,
         audio,
@@ -2836,18 +2930,22 @@
         timestamp: Date.now()
       };
 
-      const targetKey = activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE";
+      const targetKey = isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
       saveMessageToSession(targetKey, payload);
       renderBubble(payload, true);
       soundSent();
 
       cancelActiveReply();
 
-      channel.send({
-        type: "broadcast",
-        event: activeChatUser ? "direct_msg" : "lounge_msg",
-        payload
-      });
+      if (isSophieActive) {
+        if (text) handleSophieInteraction(text);
+      } else if (channel) {
+        channel.send({
+          type: "broadcast",
+          event: activeChatUser ? "direct_msg" : "lounge_msg",
+          payload
+        });
+      }
     }
 
     document.getElementById("dmForm").addEventListener("submit", (e) => {
@@ -3067,7 +3165,7 @@
     }
 
     async function initiateAudioCall() {
-      if (!activeChatUser || !channel) return;
+      if (!activeChatUser || !channel || isSophieActive) return;
       
       const remoteAudio = document.getElementById("remoteAudioElement");
       remoteAudio.volume = globalMasterVolume;
