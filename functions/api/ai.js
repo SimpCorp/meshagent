@@ -12,12 +12,12 @@ export async function onRequestPost(context) {
   try {
     const { messages } = await context.request.json();
     
-    const rawKey = context.env.GROQ_API_KEY;
+    const rawKey = context.env.GROQ_API_KEY || context.env.groq_api_key || context.env.groq_api;
     const apiKey = typeof rawKey === "string" ? rawKey.trim() : "";
 
     if (!apiKey) {
       return new Response(JSON.stringify({ 
-        error: "GROQ_API_KEY exists but contains an empty value. Re-enter the secret value in Cloudflare Settings." 
+        error: "GROQ_API_KEY is not configured in Cloudflare." 
       }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
@@ -36,7 +36,7 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: payload,
         temperature: 0.8,
         max_tokens: 450
