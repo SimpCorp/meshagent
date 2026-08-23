@@ -143,7 +143,6 @@
       cursor: pointer;
     }
 
-    /* iMessage-Style Typing Bubble Animation */
     @keyframes typingBounce {
       0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
       40% { transform: translateY(-4px); opacity: 1; }
@@ -155,7 +154,6 @@
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-    /* Ultra Smooth UI Animations */
     @keyframes bubbleIn {
       from {
         opacity: 0;
@@ -176,7 +174,7 @@
 
     @media (min-width: 640px) {
       #chatView {
-        height: 84vh;
+        height: 86vh;
       }
     }
 
@@ -313,6 +311,15 @@
         Real-time direct messaging, two-way delete on read, background tab alerts, live location cards, and self-destruct media.
       </p>
 
+      <!-- SYSTEM UPDATE & BUG FIX NOTICE BADGE -->
+      <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
+        <span class="text-base shrink-0">✨</span>
+        <div class="space-y-0.5">
+          <p class="font-bold text-emerald-600 dark:text-emerald-400">System Updated & Bugs Fixed</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Audio overlapping completely eliminated, seamless seeking added for saved music tracks, and full Android & iOS display optimizations live.</p>
+        </div>
+      </div>
+
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
         <span class="text-brand font-bold">● Network Notice:</span> All students connect to <strong>SSSIHL-STUDENT</strong>. Verified devs can unlock the isolated <strong>DEVS</strong> network above.
       </div>
@@ -374,37 +381,51 @@
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
-      <!-- CAMPUS RADIO & SAVED SONGS PLAYER -->
-      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
+      <!-- EXPANDED CAMPUS AUDIO & SAVED MUSIC TERMINAL -->
+      <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-darkCard/50 space-y-2.5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Audio</span>
+          <div class="flex items-center gap-1.5 truncate">
+            <span class="w-2 h-2 rounded-full bg-brand animate-pulse shrink-0"></span>
+            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase shrink-0">Campus Audio</span>
           </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 shrink-0">
             <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200" title="Pause/Play Stream">
               ⏸
             </button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[120px]">Idle</span>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[125px]">Idle</span>
           </div>
         </div>
         
-        <!-- Live Radio Buttons View -->
+        <!-- Live Radio Buttons Row (Clean Unified Style) -->
         <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1">
-          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">ENG</button>
-          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">HIN</button>
-          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">S.IND</button>
-          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">OTH</button>
-          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-brand/10 text-brand dark:bg-brand/20 border border-brand/30 text-[10px] font-bold transition text-center hover:bg-brand hover:text-white" title="Browse Saved MP3s">📁 SAVED</button>
+          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">ENG</button>
+          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">HIN</button>
+          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">S.IND</button>
+          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">OTH</button>
+          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95" title="Browse Saved Tracks">SAVED</button>
         </div>
 
-        <!-- Saved Songs Search & Selection Mini-Drawer -->
-        <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5 smooth-transition">
+        <!-- Saved Songs Search & Selection Mini-Drawer with Scrubber -->
+        <div id="savedMusicDrawer" class="hidden space-y-2 pt-0.5 smooth-transition">
           <div class="flex items-center gap-1">
-            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition" title="Back to Live Stations">← Live</button>
-            <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-[10px] focus:outline-none focus:border-brand">
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95" title="Back to Live Stations">← Live</button>
+            <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[10px] focus:outline-none focus:border-brand">
           </div>
+          
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
+
+          <!-- Saved Music Seeking & Scrubbing HUD -->
+          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1">
+            <div class="flex items-center justify-between text-[9px] font-mono text-slate-400">
+              <span id="savedCurrentTime">0:00</span>
+              <span id="savedTotalDuration">0:00</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="seekSavedSongDelta(-5)" title="Rewind 5s" class="text-[10px] text-slate-400 hover:text-brand font-bold transition px-1 active:scale-95">↺ 5s</button>
+              <input id="savedTrackSeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="flex-1 h-1 bg-slate-200 dark:bg-darkMuted rounded-lg appearance-none cursor-pointer">
+              <button onclick="seekSavedSongDelta(5)" title="Forward 5s" class="text-[10px] text-slate-400 hover:text-brand font-bold transition px-1 active:scale-95">5s ↻</button>
+            </div>
+          </div>
         </div>
 
         <!-- Master Volume Control -->
@@ -937,12 +958,14 @@
     let inspectedPeerObj = null;
     let hasShownRadioEarphoneWarning = false;
 
-    // --- GLOBAL MASTER VOLUME & ACTIVE PLAYERS ---
+    // --- GLOBAL MASTER VOLUME & AUDIO SESSION ENGINE (OVERLAP-PROOF) ---
     let globalMasterVolume = 1.0;
     let activeDestructLimit = 1;
     let audioPlayedCounts = new Map();
     let activeRadioPlayer = null;
     let radioErrorRecoveryTimeout = null;
+    let activeLiveSessionTimer = null;
+    let activeAudioSessionId = 0; // Monotonic Session ID to eliminate race conditions & overlap
 
     // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
     const SAVED_SONGS_LIST = [
@@ -1011,6 +1034,26 @@
       clearInterval(tabFlashInterval);
       document.title = ORIGINAL_TITLE;
     });
+
+    // --- UNIVERSAL AUDIO ENGINE RESET HELPER ---
+    function stopAndKillActiveAudio() {
+      activeAudioSessionId++; // Invalidate previous pending sessions
+      clearTimeout(activeLiveSessionTimer);
+      clearTimeout(radioErrorRecoveryTimeout);
+
+      if (activeRadioPlayer) {
+        activeRadioPlayer.pause();
+        activeRadioPlayer.ontimeupdate = null;
+        activeRadioPlayer.onended = null;
+        activeRadioPlayer.onerror = null;
+        activeRadioPlayer.onplaying = null;
+        activeRadioPlayer.src = "";
+        activeRadioPlayer = null;
+      }
+
+      const pauseBtn = document.getElementById("radioPauseBtn");
+      if (pauseBtn) pauseBtn.classList.add("hidden");
+    }
 
     // --- COPY TEXT TO CLIPBOARD HELPER ---
     function copyMessageText(text) {
@@ -1206,21 +1249,31 @@
 
     function playSavedSong(index) {
       if (index < 0 || index >= SAVED_SONGS_LIST.length) return;
+      
+      stopAndKillActiveAudio();
+      const sessionId = activeAudioSessionId;
+
       currentPlayingSongIndex = index;
       const song = SAVED_SONGS_LIST[index];
 
-      clearTimeout(radioErrorRecoveryTimeout);
-      if (activeRadioPlayer) {
-        activeRadioPlayer.pause();
-        activeRadioPlayer.src = "";
-        activeRadioPlayer = null;
-      }
+      document.getElementById("savedScrubberHUD").classList.remove("hidden");
 
       const player = new Audio();
       player.preload = "auto";
       player.volume = globalMasterVolume;
 
+      player.ontimeupdate = () => {
+        if (sessionId !== activeAudioSessionId) return;
+        if (player.duration) {
+          const pct = (player.currentTime / player.duration) * 100;
+          document.getElementById("savedTrackSeekSlider").value = pct;
+          document.getElementById("savedCurrentTime").innerText = formatTime(player.currentTime);
+          document.getElementById("savedTotalDuration").innerText = formatTime(player.duration);
+        }
+      };
+
       player.onplaying = () => {
+        if (sessionId !== activeAudioSessionId) return;
         document.getElementById("radioStatusTag").innerText = `🎵 ${song.title}`;
         const pauseBtn = document.getElementById("radioPauseBtn");
         pauseBtn.classList.remove("hidden");
@@ -1229,12 +1282,13 @@
       };
 
       player.onended = () => {
-        // Auto-play next song in loop
+        if (sessionId !== activeAudioSessionId) return;
         const nextIndex = (currentPlayingSongIndex + 1) % SAVED_SONGS_LIST.length;
         playSavedSong(nextIndex);
       };
 
       player.onerror = () => {
+        if (sessionId !== activeAudioSessionId) return;
         showRadioErrorToast(`Error loading ${song.title}.`);
         document.getElementById("radioStatusTag").innerText = "Idle";
       };
@@ -1242,6 +1296,21 @@
       player.src = song.file;
       activeRadioPlayer = player;
       player.play().catch(e => console.warn("Saved audio autoplay check:", e));
+    }
+
+    function onSavedSeekSliderInput(val) {
+      if (activeRadioPlayer && activeRadioPlayer.duration) {
+        activeRadioPlayer.currentTime = (val / 100) * activeRadioPlayer.duration;
+      }
+    }
+
+    function seekSavedSongDelta(deltaSeconds) {
+      if (activeRadioPlayer && activeRadioPlayer.duration) {
+        activeRadioPlayer.currentTime = Math.min(
+          activeRadioPlayer.duration,
+          Math.max(0, activeRadioPlayer.currentTime + deltaSeconds)
+        );
+      }
     }
 
     // --- ATTACHMENT DRAWER TOGGLE ---
@@ -1900,7 +1969,6 @@
       }
     }
 
-    // --- iMessage STYLE VISUAL TYPING BUBBLE ---
     function showTypingBubble(senderName) {
       const bubble = document.getElementById("typingIndicatorBubble");
       const label = document.getElementById("typingUserLabel");
@@ -2179,16 +2247,11 @@
     }
 
     function executeRadioStream(lang) {
-      currentPlayingSongIndex = -1;
-      clearTimeout(radioErrorRecoveryTimeout);
+      stopAndKillActiveAudio();
+      const sessionId = activeAudioSessionId;
 
-      if (activeRadioPlayer) {
-        activeRadioPlayer.onabort = null;
-        activeRadioPlayer.onerror = null;
-        activeRadioPlayer.pause();
-        activeRadioPlayer.src = "";
-        activeRadioPlayer = null;
-      }
+      currentPlayingSongIndex = -1;
+      document.getElementById("savedScrubberHUD").classList.add("hidden");
 
       document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
       const streamUrl = `/api/radio?channel=${encodeURIComponent(lang.toLowerCase())}`;
@@ -2197,14 +2260,15 @@
       player.preload = "auto";
       player.volume = globalMasterVolume;
 
-      const fallbackNoticeTimer = setTimeout(() => {
+      activeLiveSessionTimer = setTimeout(() => {
+        if (sessionId !== activeAudioSessionId) return;
         showRadioErrorToast(`Establishing connection to ${lang}... Streaming Lo-Fi fallback.`);
         document.getElementById("radioStatusTag").innerText = `Lo-Fi (${lang})`;
       }, 15000);
 
       player.onplaying = () => {
-        clearTimeout(fallbackNoticeTimer);
-        clearTimeout(radioErrorRecoveryTimeout);
+        if (sessionId !== activeAudioSessionId) return;
+        clearTimeout(activeLiveSessionTimer);
         document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
         const pauseBtn = document.getElementById("radioPauseBtn");
         pauseBtn.classList.remove("hidden");
@@ -2212,9 +2276,11 @@
       };
 
       player.onerror = () => {
+        if (sessionId !== activeAudioSessionId) return;
         if (!player.src || player.src === "") return;
-        clearTimeout(fallbackNoticeTimer);
+        clearTimeout(activeLiveSessionTimer);
         radioErrorRecoveryTimeout = setTimeout(() => {
+          if (sessionId !== activeAudioSessionId) return;
           showRadioErrorToast(`Re-synchronizing ${lang} relay...`);
           player.src = `${streamUrl}&t=${Date.now()}`;
           player.play().catch(() => {});
