@@ -150,6 +150,43 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans min-h-screen flex flex-col justify-between select-none antialiased">
 
+  <!-- ==================== IMPORTANT DOMAIN CHANGE NOTIFICATION MODAL (2X/DAY) ==================== -->
+  <div id="domainNoticeModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-md bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto shadow-sm">
+        🚀
+      </div>
+
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Important Migration Notice
+        </div>
+        
+        <h3 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white tracking-tight">
+          Domain Migrated to <span class="text-brand underline underline-offset-4">meshage.pages.dev</span>
+        </h3>
+
+        <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed text-left space-y-2">
+          <p>
+            ● The terminal domain has officially transitioned to <strong>meshage.pages.dev</strong>.
+          </p>
+          <p>
+            ● The legacy link <strong>nomesh.pages.dev</strong> will stop redirecting in <strong>10 days</strong>.
+          </p>
+          <p class="text-[11px] text-slate-400 dark:text-slate-400">
+            ✓ <em>No worries:</em> Searching or typing <strong>nomesh</strong> in your browser automatically opens <strong>meshage.pages.dev</strong> right away. Please update your bookmarks.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-1">
+        <button id="closeDomainNoticeBtn" onclick="closeDomainNotice()" disabled class="w-full py-3 bg-brand text-white text-xs font-bold rounded-2xl transition hover:opacity-90 shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
+          <span id="closeNoticeTimerLabel">Please wait 2s...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- LOW VOLUME TOAST -->
   <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
@@ -908,6 +945,46 @@
       document.title = ORIGINAL_TITLE;
     });
 
+    // --- IMPORTANT MIGRATION MODAL (TWICE A DAY ENGINE WITH 2S ENFORCED DELAY) ---
+    function checkAndShowDomainNotice() {
+      const STORAGE_KEY = "domain_migration_notice_views";
+      const now = Date.now();
+      const twelveHours = 12 * 60 * 60 * 1000;
+      
+      let viewLogs = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      // Filter out log entries older than 24 hours
+      viewLogs = viewLogs.filter(timestamp => now - timestamp < 24 * 60 * 60 * 1000);
+
+      if (viewLogs.length < 2) {
+        // Display modal
+        const modal = document.getElementById("domainNoticeModal");
+        modal.classList.remove("hidden");
+        parseTwemoji(modal);
+
+        viewLogs.push(now);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(viewLogs));
+
+        const closeBtn = document.getElementById("closeDomainNoticeBtn");
+        const timerLabel = document.getElementById("closeNoticeTimerLabel");
+        let remaining = 2;
+
+        const countdown = setInterval(() => {
+          remaining--;
+          if (remaining > 0) {
+            timerLabel.innerText = `Please wait ${remaining}s...`;
+          } else {
+            clearInterval(countdown);
+            closeBtn.removeAttribute("disabled");
+            timerLabel.innerText = "Understood & Proceed ↵";
+          }
+        }, 1000);
+      }
+    }
+
+    function closeDomainNotice() {
+      document.getElementById("domainNoticeModal").classList.add("hidden");
+    }
+
     // --- REALTIME PING & NETWORK QUALITY MONITOR ---
     async function checkNetworkPing() {
       const pingMeter = document.getElementById("pingMeter");
@@ -1275,6 +1352,9 @@
       const savedColor = localStorage.getItem('lan_color_grade') || 'blue';
       setColorGrading(savedColor);
       parseTwemoji(document.body);
+
+      // Check migration popup state
+      checkAndShowDomainNotice();
 
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
@@ -2449,7 +2529,7 @@
       for (let item of items) {
         if (item.kind === "file") {
           const file = item.getAsFile();
-          if (item.type.startsWith("image/")) {
+          if (file.type.startsWith("image/")) {
             processAndSendImage(file);
           } else {
             processDocumentUpload(file);
