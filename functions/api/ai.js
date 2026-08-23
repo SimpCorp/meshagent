@@ -12,16 +12,12 @@ export async function onRequestPost(context) {
   try {
     const { messages } = await context.request.json();
     
-    // Check all common key variants
-    const apiKey = context.env.GROQ_API_KEY || 
-                   context.env.groq_api_key || 
-                   context.env.groq_api || 
-                   context.env.GROQ_API;
+    const rawKey = context.env.GROQ_API_KEY;
+    const apiKey = typeof rawKey === "string" ? rawKey.trim() : "";
 
     if (!apiKey) {
-      const detectedKeys = Object.keys(context.env || {}).join(", ") || "none";
       return new Response(JSON.stringify({ 
-        error: `GROQ_API_KEY missing. Environment keys detected: [${detectedKeys}]. Please commit a change to GitHub to trigger a fresh build.` 
+        error: "GROQ_API_KEY exists but contains an empty value. Re-enter the secret value in Cloudflare Settings." 
       }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
