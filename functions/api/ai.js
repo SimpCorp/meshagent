@@ -11,10 +11,18 @@ const SYSTEM_PROMPT = `You are Sophie, the sarcastic, humorous, and dry-witted c
 export async function onRequestPost(context) {
   try {
     const { messages } = await context.request.json();
-    const apiKey = context.env.GROQ_API_KEY;
+    
+    // Check all common key variants
+    const apiKey = context.env.GROQ_API_KEY || 
+                   context.env.groq_api_key || 
+                   context.env.groq_api || 
+                   context.env.GROQ_API;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "GROQ_API_KEY is not configured in Cloudflare." }), {
+      const detectedKeys = Object.keys(context.env || {}).join(", ") || "none";
+      return new Response(JSON.stringify({ 
+        error: `GROQ_API_KEY missing. Environment keys detected: [${detectedKeys}]. Please commit a change to GitHub to trigger a fresh build.` 
+      }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
       });
