@@ -174,14 +174,12 @@
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Desktop View Standard Heights */
     @media (min-width: 640px) {
       #chatView {
         height: 84vh;
       }
     }
 
-    /* Mobile iOS & Android Dynamic Viewport Constraints */
     @media (max-width: 639px) {
       #chatView {
         height: calc(100dvh - 58px);
@@ -192,12 +190,10 @@
         border-bottom: none;
       }
       
-      /* 16px minimum font on mobile inputs to eliminate iOS Safari forced auto-zoom */
       input[type="text"], input[type="password"], input[type="number"], textarea, select {
         font-size: 16px !important;
       }
 
-      /* Sticky bottom inputs handling virtual keyboards */
       #dmForm {
         padding-bottom: max(0.75rem, var(--sab));
       }
@@ -277,7 +273,6 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <!-- Color Grading Picker -->
       <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-5 h-5 rounded-full flex items-center justify-center transition" title="Blue Accent">
           <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
@@ -287,7 +282,6 @@
         </button>
       </div>
 
-      <!-- Network Switcher -->
       <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px]">SSSIHL-STUDENT</button>
         <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px]">
@@ -295,12 +289,10 @@
         </button>
       </div>
 
-      <!-- Theme Switcher -->
       <button id="themeToggle" class="w-7 h-7 rounded-full border border-slate-300 dark:border-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-darkMuted transition">
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
-      <!-- Nav Action Button -->
       <button id="navLaunchBtn" onclick="handleNavAction()" class="px-3.5 py-1 rounded-full bg-brand text-white text-[11px] font-semibold hover:opacity-90 transition shadow-sm">
         Enter Terminal
       </button>
@@ -335,7 +327,6 @@
       </div>
     </div>
 
-    <!-- Feature Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
@@ -383,26 +374,37 @@
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
-      <!-- CAMPUS RADIO & MASTER VOLUME -->
+      <!-- CAMPUS RADIO & SAVED SONGS PLAYER -->
       <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/40 dark:bg-darkCard/40 space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Radio</span>
+            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase">Campus Audio</span>
           </div>
           <div class="flex items-center gap-1.5">
             <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200" title="Pause/Play Stream">
               ⏸
             </button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800">Idle</span>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[120px]">Idle</span>
           </div>
         </div>
         
-        <div class="grid grid-cols-4 gap-1">
+        <!-- Live Radio Buttons View -->
+        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1">
           <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">ENG</button>
           <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">HIN</button>
           <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">S.IND</button>
           <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center">OTH</button>
+          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-brand/10 text-brand dark:bg-brand/20 border border-brand/30 text-[10px] font-bold transition text-center hover:bg-brand hover:text-white" title="Browse Saved MP3s">📁 SAVED</button>
+        </div>
+
+        <!-- Saved Songs Search & Selection Mini-Drawer -->
+        <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5 smooth-transition">
+          <div class="flex items-center gap-1">
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition" title="Back to Live Stations">← Live</button>
+            <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-[10px] focus:outline-none focus:border-brand">
+          </div>
+          <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
         </div>
 
         <!-- Master Volume Control -->
@@ -457,12 +459,10 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2">
-          <!-- Haptic Poke Button -->
           <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
-          <!-- Call Button -->
           <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 sm:px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
             <span>📞</span> <span class="hidden sm:inline">Call</span>
           </button>
@@ -944,6 +944,12 @@
     let activeRadioPlayer = null;
     let radioErrorRecoveryTimeout = null;
 
+    // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
+    const SAVED_SONGS_LIST = [
+      { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" }
+    ];
+    let currentPlayingSongIndex = -1;
+
     // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
     let activeBurnerDuration = 0;
@@ -1138,6 +1144,104 @@
       document.getElementById('radioErrorMsg').innerText = msg;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), 4000);
+    }
+
+    // --- SAVED LOCAL SONGS DRAWER MANAGEMENT ---
+    function toggleSavedMusicView() {
+      const btnRow = document.getElementById("liveRadioButtonsRow");
+      const drawer = document.getElementById("savedMusicDrawer");
+      
+      if (drawer.classList.contains("hidden")) {
+        btnRow.classList.add("hidden");
+        drawer.classList.remove("hidden");
+        renderSavedSongsList();
+        setTimeout(() => {
+          const inp = document.getElementById("savedSongSearchInput");
+          if (inp) inp.focus();
+        }, 50);
+      } else {
+        drawer.classList.add("hidden");
+        btnRow.classList.remove("hidden");
+      }
+    }
+
+    function renderSavedSongsList(filterText = "") {
+      const listContainer = document.getElementById("savedSongsList");
+      listContainer.innerHTML = "";
+
+      const query = filterText.toLowerCase().trim();
+      const filtered = SAVED_SONGS_LIST.filter(s => s.title.toLowerCase().includes(query));
+
+      if (filtered.length === 0) {
+        listContainer.innerHTML = `<div class="p-2 text-center text-[10px] text-slate-400">No songs match search.</div>`;
+        return;
+      }
+
+      filtered.forEach((song, idx) => {
+        const isCurrent = currentPlayingSongIndex === idx;
+        const item = document.createElement("div");
+        item.className = `p-1.5 rounded-lg flex items-center justify-between transition cursor-pointer text-[10px] ${
+          isCurrent 
+            ? "bg-brand/10 text-brand font-bold border border-brand/20" 
+            : "hover:bg-slate-100 dark:hover:bg-darkMuted text-slate-700 dark:text-slate-300 font-medium"
+        }`;
+        
+        item.innerHTML = `
+          <span class="truncate flex items-center gap-1.5">
+            <span class="text-[9px] opacity-60">🎵</span>
+            <span class="truncate">${song.title}</span>
+          </span>
+          <span class="shrink-0 text-[10px] ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
+        `;
+
+        item.onclick = () => playSavedSong(idx);
+        listContainer.appendChild(item);
+      });
+    }
+
+    function filterSavedSongs() {
+      const q = document.getElementById("savedSongSearchInput").value;
+      renderSavedSongsList(q);
+    }
+
+    function playSavedSong(index) {
+      if (index < 0 || index >= SAVED_SONGS_LIST.length) return;
+      currentPlayingSongIndex = index;
+      const song = SAVED_SONGS_LIST[index];
+
+      clearTimeout(radioErrorRecoveryTimeout);
+      if (activeRadioPlayer) {
+        activeRadioPlayer.pause();
+        activeRadioPlayer.src = "";
+        activeRadioPlayer = null;
+      }
+
+      const player = new Audio();
+      player.preload = "auto";
+      player.volume = globalMasterVolume;
+
+      player.onplaying = () => {
+        document.getElementById("radioStatusTag").innerText = `🎵 ${song.title}`;
+        const pauseBtn = document.getElementById("radioPauseBtn");
+        pauseBtn.classList.remove("hidden");
+        pauseBtn.innerText = "⏸";
+        renderSavedSongsList(document.getElementById("savedSongSearchInput").value);
+      };
+
+      player.onended = () => {
+        // Auto-play next song in loop
+        const nextIndex = (currentPlayingSongIndex + 1) % SAVED_SONGS_LIST.length;
+        playSavedSong(nextIndex);
+      };
+
+      player.onerror = () => {
+        showRadioErrorToast(`Error loading ${song.title}.`);
+        document.getElementById("radioStatusTag").innerText = "Idle";
+      };
+
+      player.src = song.file;
+      activeRadioPlayer = player;
+      player.play().catch(e => console.warn("Saved audio autoplay check:", e));
     }
 
     // --- ATTACHMENT DRAWER TOGGLE ---
@@ -2046,7 +2150,7 @@
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- REVERSE-PROXIED CAMPUS RADIO WITH AUTO-RECONNECT BUFFER ---
+    // --- REVERSE-PROXIED CAMPUS RADIO ---
     function requestRadioChannel(lang) {
       if (!hasShownRadioEarphoneWarning) {
         hasShownRadioEarphoneWarning = true;
@@ -2075,6 +2179,7 @@
     }
 
     function executeRadioStream(lang) {
+      currentPlayingSongIndex = -1;
       clearTimeout(radioErrorRecoveryTimeout);
 
       if (activeRadioPlayer) {
@@ -2086,22 +2191,19 @@
       }
 
       document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
-      const streamUrl = `/api/radio?channel=${lang.toLowerCase()}`;
+      const streamUrl = `/api/radio?channel=${encodeURIComponent(lang.toLowerCase())}`;
       
       const player = new Audio();
       player.preload = "auto";
       player.volume = globalMasterVolume;
 
-      player.onerror = () => {
-        if (!player.src || player.src === "") return;
-        radioErrorRecoveryTimeout = setTimeout(() => {
-          showRadioErrorToast(`Re-synchronizing ${lang} audio relay...`);
-          player.src = `${streamUrl}&t=${Date.now()}`;
-          player.play().catch(() => {});
-        }, 2000);
-      };
+      const fallbackNoticeTimer = setTimeout(() => {
+        showRadioErrorToast(`Establishing connection to ${lang}... Streaming Lo-Fi fallback.`);
+        document.getElementById("radioStatusTag").innerText = `Lo-Fi (${lang})`;
+      }, 15000);
 
       player.onplaying = () => {
+        clearTimeout(fallbackNoticeTimer);
         clearTimeout(radioErrorRecoveryTimeout);
         document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
         const pauseBtn = document.getElementById("radioPauseBtn");
@@ -2109,12 +2211,19 @@
         pauseBtn.innerText = "⏸";
       };
 
+      player.onerror = () => {
+        if (!player.src || player.src === "") return;
+        clearTimeout(fallbackNoticeTimer);
+        radioErrorRecoveryTimeout = setTimeout(() => {
+          showRadioErrorToast(`Re-synchronizing ${lang} relay...`);
+          player.src = `${streamUrl}&t=${Date.now()}`;
+          player.play().catch(() => {});
+        }, 3000);
+      };
+
       player.src = streamUrl;
       activeRadioPlayer = player;
-      
-      player.play().catch((err) => {
-        console.warn("Stream playback waiting for direct user gesture:", err);
-      });
+      player.play().catch(() => {});
     }
 
     function toggleRadioPlayback() {
@@ -2124,11 +2233,9 @@
       if (activeRadioPlayer.paused) {
         activeRadioPlayer.play();
         btn.innerText = "⏸";
-        document.getElementById("radioStatusTag").innerText = "Live Stream";
       } else {
         activeRadioPlayer.pause();
         btn.innerText = "▶";
-        document.getElementById("radioStatusTag").innerText = "Paused";
       }
     }
 
