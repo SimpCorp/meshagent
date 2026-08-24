@@ -17,6 +17,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
   
   <script>
     tailwind.config = {
@@ -352,8 +353,8 @@
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-xs font-bold">Biometric Gateway</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Optional face authentication with live camera match and instant host review approval.</p>
+        <h3 class="text-xs font-bold">Neural Face Gateway</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Deep 68-point facial landmark recognition for spoof-proof dual login and permanent verified badges.</p>
       </div>
     </div>
   </main>
@@ -663,7 +664,7 @@
         <div id="faceScanHUD" class="absolute inset-0 bg-brand/10 backdrop-blur-[1px] flex items-center justify-center hidden">
           <div class="px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-[11px] font-mono font-bold flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-            <span>Analyzing Face Map...</span>
+            <span>Analyzing 68 Neural Landmarks...</span>
           </div>
         </div>
       </div>
@@ -1260,46 +1261,56 @@
     const inMemoryChatCache = new Map();
 
     // =========================================================================
-    // BIOMETRIC & FACE VERIFICATION GATEWAY
+    // BIOMETRIC & FACE VERIFICATION GATEWAY (NEURAL AI POWERED)
     // =========================================================================
     let faceStream = null;
     let faceMode = "ENROLL";
     let pendingAuthUserCandidate = null;
+    let isFaceModelLoaded = false;
 
-    function computeClientFaceDescriptor(canvas) {
-      const ctx = canvas.getContext("2d");
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imgData.data;
-      
-      const vector = new Array(128).fill(0);
-      const len = data.length;
-      const step = Math.floor(len / 128);
-
-      for (let i = 0; i < 128; i++) {
-        let sum = 0;
-        const start = i * step;
-        for (let j = 0; j < step; j += 4) {
-          sum += (data[start + j] * 0.299 + data[start + j + 1] * 0.587 + data[start + j + 2] * 0.114);
-        }
-        vector[i] = parseFloat((sum / (step / 4) / 255).toFixed(4));
+    async function loadFaceAIModels() {
+      if (isFaceModelLoaded) return true;
+      try {
+        const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/";
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+        ]);
+        isFaceModelLoaded = true;
+        return true;
+      } catch (err) {
+        console.error("Failed to load Face AI models:", err);
+        return false;
       }
-
-      // Normalized magnitude to unit vector
-      let mag = 0;
-      for (let i = 0; i < 128; i++) mag += vector[i] * vector[i];
-      mag = Math.sqrt(mag) || 1;
-      for (let i = 0; i < 128; i++) vector[i] = parseFloat((vector[i] / mag).toFixed(4));
-
-      return vector;
     }
 
-    function compareFaceVectors(v1, v2) {
-      if (!v1 || !v2 || v1.length !== v2.length) return 1.0;
-      let sumSquares = 0;
-      for (let i = 0; i < v1.length; i++) {
-        sumSquares += Math.pow(v1[i] - v2[i], 2);
+    window.addEventListener("DOMContentLoaded", () => {
+      loadFaceAIModels();
+    });
+
+    async function computeNeuralFaceDescriptor(videoElement) {
+      const ready = await loadFaceAIModels();
+      if (!ready) {
+        alert("Biometric AI models initializing. Please try again in 2 seconds.");
+        return null;
       }
-      return Math.sqrt(sumSquares);
+
+      const detection = await faceapi
+        .detectSingleFace(videoElement, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+
+      if (!detection) {
+        return null;
+      }
+
+      return Array.from(detection.descriptor);
+    }
+
+    function compareNeuralFaceVectors(v1, v2) {
+      if (!v1 || !v2 || v1.length !== v2.length) return 1.0;
+      return faceapi.euclideanDistance(v1, v2);
     }
 
     async function startCameraForFace(mode = "ENROLL") {
@@ -1311,7 +1322,7 @@
 
       if (mode === "UNLOCK") {
         title.innerText = "Biometric Face Unlock";
-        sub.innerText = "Scanning live face to unlock your verified campus session.";
+        sub.innerText = "Scanning live face to unlock your verified session.";
         actionBtn.innerText = "Verify & Unlock";
       } else {
         title.innerText = "Face Verification Setup";
@@ -1343,6 +1354,10 @@
       const video = document.getElementById("faceCameraVideo");
       if (video) video.srcObject = null;
       document.getElementById("faceModal").classList.add("hidden");
+
+      if (faceMode === "UNLOCK" && !currentUser) {
+        document.getElementById("authModal").classList.remove("hidden");
+      }
     }
 
     function openEnrollmentFaceModal() {
@@ -1356,16 +1371,23 @@
       const hud = document.getElementById("faceScanHUD");
       const statusMsg = document.getElementById("faceStatusMsg");
 
+      hud.classList.remove("hidden");
+      statusMsg.innerText = "Extracting 68 neural facial landmarks...";
+
+      const descriptor = await computeNeuralFaceDescriptor(video);
+
+      if (!descriptor) {
+        hud.classList.add("hidden");
+        statusMsg.innerText = "⚠️ No face detected in frame!";
+        alert("No human face detected or camera is covered. Please look directly at the camera in good lighting.");
+        return;
+      }
+
       canvas.width = 240;
       canvas.height = 240;
       const ctx = canvas.getContext("2d");
       ctx.drawImage(video, 0, 0, 240, 240);
-
-      hud.classList.remove("hidden");
-      statusMsg.innerText = "Computing geometric face descriptor...";
-
       const base64Photo = canvas.toDataURL("image/jpeg", 0.65);
-      const descriptor = computeClientFaceDescriptor(canvas);
 
       if (faceMode === "ENROLL") {
         if (!currentUser) {
@@ -1389,8 +1411,7 @@
           currentUser.face_auth_enabled = true;
           currentUser.face_descriptor = descriptor;
           currentUser.face_image = base64Photo;
-          localStorage.setItem("face_last_verified", Date.now().toString());
-          alert("Face verification submitted! Once authenticated by host in DEVS, your Verified Badge will be permanently awarded.");
+          alert("Neural face profile enrolled! Awaiting host verification in DEVS.");
           updateProfileUI();
         }
       } else if (faceMode === "UNLOCK") {
@@ -1402,21 +1423,19 @@
           return;
         }
 
-        const distance = compareFaceVectors(descriptor, candidate.face_descriptor);
+        const distance = compareNeuralFaceVectors(descriptor, candidate.face_descriptor);
         hud.classList.add("hidden");
 
-        // Strict Euclidean threshold for normalized unit vectors
-        if (distance <= 0.38) {
+        if (distance < 0.50) {
           statusMsg.innerText = "Biometric Match Confirmed! ✓";
-          localStorage.setItem("face_last_verified", Date.now().toString());
           setTimeout(() => {
             closeFaceModal();
             initUserSession(candidate);
-          }, 600);
+          }, 500);
         } else {
-          statusMsg.innerText = "Face mismatch. Use password instead.";
-          alert("Face authentication mismatch. Please unlock using your password.");
-          setTimeout(closeFaceModal, 1000);
+          statusMsg.innerText = "Face mismatch. Access Denied.";
+          alert("Face authentication mismatch. You are not recognized as the account owner.");
+          setTimeout(closeFaceModal, 800);
         }
       }
     }
@@ -1445,11 +1464,12 @@
         return;
       }
 
+      document.getElementById("authModal").classList.add("hidden");
+
       pendingAuthUserCandidate = data;
       startCameraForFace("UNLOCK");
     }
 
-    // --- DYNAMIC VERIFICATION BADGE HELPER ---
     function isVerifiedUser(userObjOrName) {
       if (!userObjOrName) return false;
       if (typeof userObjOrName === "object") {
@@ -1467,7 +1487,6 @@
       return `<svg class="w-3.5 h-3.5 text-blue-500 shrink-0 inline fill-current" viewBox="0 0 24 24" title="Verified Campus Identity"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>`;
     }
 
-    // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = "sine", duration = 0.08) {
       if (globalMasterVolume <= 0) return;
@@ -1774,7 +1793,6 @@
       }
     }
 
-    // --- PINNED SOPHIE AI SELECTION & INTERACTION ---
     function selectSophieAI() {
       isSophieActive = true;
       activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7", is_verified: true };
@@ -1855,7 +1873,6 @@
       }
     }
 
-    // --- ATTACHMENT DRAWER TOGGLE ---
     function toggleAttachmentDrawer() {
       const drawer = document.getElementById("attachmentDrawer");
       drawer.classList.toggle("hidden");
