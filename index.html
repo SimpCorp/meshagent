@@ -200,7 +200,7 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
-  <!-- ==================== IMPORTANT DOMAIN CHANGE NOTIFICATION MODAL ==================== -->
+  <!-- ==================== MIGRATION NOTIFICATION MODAL ==================== -->
   <div id="domainNoticeModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-md bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
       <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto shadow-sm">
@@ -252,7 +252,7 @@
     <span>📡</span> <span id="radioErrorMsg">Stream connection failed. Retrying...</span>
   </div>
 
-  <!-- POKE / ATTENTION HUD NOTIFICATION -->
+  <!-- POKE NOTIFICATION -->
   <div id="pokeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-brand text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20 animate-bounce">
     <span>⚡</span> <span id="pokeToastText">@peer poked you!</span>
   </div>
@@ -399,7 +399,7 @@
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Sophie</p>
                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">AI BOT</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Campus LLM • 24/7 Online</p>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Sarcastic Campus LLM • 24/7 Online</p>
             </div>
           </div>
           <span class="text-[10px] text-purple-500 font-bold group-hover:translate-x-0.5 transition">Ask →</span>
@@ -1057,7 +1057,7 @@
     // CRYPTOGRAPHIC SUBTLECRYPTO ZERO-KNOWLEDGE E2EE SUITE
     // =========================================================================
     const cryptoSubtle = window.crypto.subtle;
-    const activeCryptoKeyMap = new Map(); // In-memory symmetric CryptoKeys
+    const activeCryptoKeyMap = new Map();
 
     function arrayBufferToBase64(buffer) {
       let binary = '';
@@ -1116,7 +1116,6 @@
       const key = await deriveMeshCryptoKey(channelSecret, saltStr);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       
-      // Add random padding to defeat ISP packet size fingerprinting
       const paddedPayload = {
         ...payloadObj,
         _pad: Array.from(window.crypto.getRandomValues(new Uint8Array(Math.floor(Math.random() * 64) + 16)))
@@ -1135,7 +1134,11 @@
         is_e2ee: true,
         iv: arrayBufferToBase64(iv.buffer),
         data: arrayBufferToBase64(ciphertextBuffer),
-        salt: saltStr
+        salt: saltStr,
+        sender: payloadObj.sender,
+        recipient: payloadObj.recipient,
+        id: payloadObj.id,
+        network: payloadObj.network
       };
     }
 
@@ -1159,7 +1162,7 @@
         delete decryptedObj._pad;
         return decryptedObj;
       } catch (err) {
-        console.warn("E2EE Decryption Authentication Failed (Tampered or Wrong Key):", err);
+        console.warn("E2EE Decryption Authentication Failed (Tampered or Key Mismatch):", err);
         return null;
       }
     }
@@ -1168,7 +1171,6 @@
       if (!targetPeer || targetPeer === "GLOBAL_LOUNGE") {
         return `campus_lounge_mesh_${currentNetwork}`;
       }
-      // Symmetric pair key derivation based on alphabetized handle pair
       const pair = [currentUser.username, targetPeer].sort().join("::");
       return `pair_secret_${pair}_${currentNetwork}`;
     }
@@ -1561,7 +1563,7 @@
       document.getElementById("activeChatPeerAvatar").innerText = "🤖";
       document.getElementById("activeChatPeerName").innerText = "Sophie";
       document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
-      document.getElementById("activeChatPeerMeta").innerText = "Campus LLM • 24/7 Online";
+      document.getElementById("activeChatPeerMeta").innerText = "Sarcastic Campus LLM • 24/7 Online";
 
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
@@ -2404,11 +2406,14 @@
           }
         })
         .on("broadcast", { event: "direct_msg" }, async ({ payload }) => {
-          // Decrypt direct message envelope
-          const decrypted = await decryptPayloadE2EE(payload, getChannelEncryptionSecret(payload.sender));
-          if (!decrypted) return;
+          if (!payload) return;
+          
+          // Verify intended recipient
+          if (payload.recipient === currentUser.username) {
+            const secret = getChannelEncryptionSecret(payload.sender);
+            const decrypted = await decryptPayloadE2EE(payload, secret);
+            if (!decrypted) return;
 
-          if (decrypted.recipient === currentUser.username) {
             saveMessageToSession(decrypted.sender, decrypted);
             soundRecv();
             
@@ -3386,7 +3391,7 @@
       if (isSophieActive) {
         if (text) handleSophieInteraction(text);
       } else if (channel) {
-        // Perform Zero-Knowledge E2EE encryption before transmission
+        // Zero-Knowledge 256-bit AES-GCM Encrypted Transmission
         const secret = getChannelEncryptionSecret(activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
         const encryptedEnvelope = await encryptPayloadE2EE(payload, secret);
 
