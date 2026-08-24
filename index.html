@@ -940,7 +940,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- Quick Unlock -->
+      <!-- Quick Unlock (Cached Sessions) -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -977,10 +977,26 @@
         </div>
       </div>
 
-      <!-- Step 1 Course -->
+      <!-- Step 1 Course & Direct Sign-In Shortcut -->
       <div id="stepCourse" class="space-y-3">
-        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
-        <h3 class="text-base font-bold">Select your stream</h3>
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
+          <button onclick="toggleToLogin()" class="text-xs font-bold text-brand hover:underline">
+            Sign In ➔
+          </button>
+        </div>
+        
+        <div class="p-3 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-900 dark:text-white">Have an existing account?</p>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">Sign in directly with your username & passkey.</p>
+          </div>
+          <button onclick="toggleToLogin()" class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shrink-0 shadow-sm active:scale-95">
+            Sign In
+          </button>
+        </div>
+
+        <h3 class="text-base font-bold pt-1">Or create new: Select stream</h3>
         <div class="grid grid-cols-1 gap-1.5">
           <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
             <span>BCom (Hons)</span> <span class="text-slate-400">→</span>
@@ -998,7 +1014,6 @@
             <span>B.S F.E.D.A</span> <span class="text-slate-400">→</span>
           </button>
         </div>
-        <p class="text-center text-xs text-slate-500 cursor-pointer hover:underline pt-1" onclick="toggleToLogin()">Already have an account? Sign In</p>
       </div>
 
       <!-- Step 2 Year -->
@@ -1014,9 +1029,14 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- Step 3 Handle & Password -->
+      <!-- Step 3 Handle & Password (Sign Up or Sign In) -->
       <div id="stepAuth" class="space-y-3 hidden">
-        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 3 of 3</span>
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] text-brand font-bold uppercase tracking-wide" id="authStepBadge">Step 3 of 3</span>
+          <button id="toggleAuthModeBtn" onclick="toggleAuthMode()" class="text-xs font-bold text-brand hover:underline">
+            Already have an account? Sign In
+          </button>
+        </div>
         <h3 class="text-base font-bold" id="authHeading">Create your profile</h3>
         <div class="space-y-2">
           <div>
@@ -1025,7 +1045,7 @@
           </div>
           <div>
             <label class="text-[11px] font-medium text-slate-400">Password</label>
-            <input id="inputPass" type="password" placeholder="Passkey for future logins" onkeydown="if(event.key==='Enter') submitAuth()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+            <input id="inputPass" type="password" placeholder="Passkey for login" onkeydown="if(event.key==='Enter') submitAuth()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
           <p id="authError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
@@ -2082,6 +2102,13 @@
     function selectYear(y) {
       selectedYear = y;
       document.getElementById("stepYear").classList.add("hidden");
+      
+      isLoginMode = false;
+      document.getElementById("authStepBadge").innerText = "Step 3 of 3";
+      document.getElementById("authHeading").innerText = "Create your profile";
+      document.getElementById("authActionBtn").innerText = "Create Account & Join ↵";
+      document.getElementById("toggleAuthModeBtn").innerText = "Already have an account? Sign In";
+      
       document.getElementById("stepAuth").classList.remove("hidden");
       setTimeout(() => {
         const userInp = document.getElementById("inputUser");
@@ -2099,13 +2126,28 @@
     function toggleToLogin() {
       isLoginMode = true;
       document.getElementById("stepCourse").classList.add("hidden");
+      document.getElementById("stepYear").classList.add("hidden");
+      document.getElementById("stepQuickUnlock").classList.add("hidden");
       document.getElementById("stepAuth").classList.remove("hidden");
-      document.getElementById("authHeading").innerText = "Sign In";
+      
+      document.getElementById("authStepBadge").innerText = "Sign In";
+      document.getElementById("authHeading").innerText = "Sign in to your account";
       document.getElementById("authActionBtn").innerText = "Authenticate ↵";
+      document.getElementById("toggleAuthModeBtn").innerText = "Need an account? Sign Up";
+      
       setTimeout(() => {
         const userInp = document.getElementById("inputUser");
         if (userInp) userInp.focus();
       }, 50);
+    }
+
+    function toggleAuthMode() {
+      if (isLoginMode) {
+        document.getElementById("stepAuth").classList.add("hidden");
+        document.getElementById("stepCourse").classList.remove("hidden");
+      } else {
+        toggleToLogin();
+      }
     }
 
     async function submitQuickUnlock() {
@@ -3061,7 +3103,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * aud.duration;
+        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
       }
     }
 
