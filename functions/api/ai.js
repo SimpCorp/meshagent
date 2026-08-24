@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Function - /api/ai
- * Proxies prompts securely to Groq Cloud with Sophie's sarcastic persona.
+ * Proxies prompts securely to Groq Cloud with Sophie's persona.
  */
 
 const SYSTEM_PROMPT = `You are Sophie, the sarcastic, humorous, and dry-witted campus AI in LAN CHAT (inspired by Gork on X).
@@ -17,7 +17,7 @@ export async function onRequestPost(context) {
 
     if (!apiKey) {
       return new Response(JSON.stringify({ 
-        error: "GROQ_API_KEY is not configured in Cloudflare." 
+        error: "GROQ_API_KEY is not configured in Cloudflare Settings." 
       }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
@@ -36,10 +36,10 @@ export async function onRequestPost(context) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         messages: payload,
-        temperature: 0.8,
-        max_tokens: 450
+        temperature: 0.7,
+        max_completion_tokens: 450
       })
     });
 
