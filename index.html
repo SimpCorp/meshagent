@@ -364,7 +364,13 @@
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
-          <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
+          <div class="flex items-center gap-1.5">
+            <!-- MANAGE USERS ADMIN BUTTON (VISIBLE ONLY IN DEVS) -->
+            <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-devGreen/15 text-devGreen border border-devGreen/30 hover:bg-devGreen/25 transition shadow-sm">
+              ⚙ Manage Users
+            </button>
+            <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
+          </div>
         </div>
 
         <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
@@ -492,7 +498,12 @@
               ?
             </div>
             <div class="truncate max-w-[120px] sm:max-w-[180px]">
-              <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate">Select a peer</p>
+              <div class="flex items-center gap-1">
+                <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate">Select a peer</p>
+                <span id="activePeerVerifiedIcon" class="hidden inline-flex items-center justify-center">
+                  <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
+                </span>
+              </div>
               <p id="activeChatPeerMeta" class="text-[10px] text-slate-400 truncate">No active session</p>
             </div>
           </div>
@@ -628,6 +639,72 @@
     </section>
   </main>
 
+  <!-- ==================== ADMIN USER MANAGEMENT MODAL (DEVS ONLY) ==================== -->
+  <div id="adminUserModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-2xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+      <button onclick="closeAdminUserManagerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-devGreen"></span>
+          <div>
+            <h3 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white">Registered Users Directory</h3>
+            <p class="text-[10px] text-slate-400 font-mono">Host Administration & Impersonation Prevention</p>
+          </div>
+        </div>
+        <button onclick="fetchAndRenderAdminUsers()" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition active:scale-95">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <!-- Users Table Scroll Container -->
+      <div id="adminUsersListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scroll">
+        <div class="p-6 text-center text-xs text-slate-400">Loading registered accounts...</div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <button onclick="closeAdminUserManagerModal()" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold rounded-xl transition hover:opacity-90">
+          Close Directory
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BAN REASON SELECTION MODAL -->
+  <div id="banReasonModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
+      <div class="space-y-1 text-center">
+        <div class="w-10 h-10 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl mx-auto">🚫</div>
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Ban @<span id="targetBanUsername">user</span></h3>
+        <p class="text-[11px] text-slate-400">Select or enter the reason for banning this account.</p>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <label class="text-[11px] font-bold text-slate-500">Preset Reason:</label>
+        <select id="banPresetSelect" onchange="onBanPresetChange(this.value)" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand text-slate-800 dark:text-slate-200">
+          <option value="Impersonation of official campus student or administration.">Impersonation</option>
+          <option value="Violation of campus code of conduct & harassment.">Harassment / Misconduct</option>
+          <option value="Spam / Malicious Automated Relay.">Spam / Bot Behavior</option>
+          <option value="OTHER">Other (Custom Reason)</option>
+        </select>
+
+        <div id="customBanReasonBox" class="hidden space-y-1 pt-1">
+          <label class="text-[11px] font-bold text-slate-500">Custom Reason:</label>
+          <input id="customBanReasonInput" type="text" placeholder="Explain why this user is banned..." class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeBanReasonModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
+          Cancel
+        </button>
+        <button onclick="confirmExecuteBan()" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition shadow-md active:scale-95">
+          Execute Ban
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== WEBRTC CALL HUD ==================== -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
@@ -685,7 +762,12 @@
           ?
         </div>
         <div>
-          <h3 id="inspectUsername" class="text-base font-extrabold text-slate-900 dark:text-white">@username</h3>
+          <div class="flex items-center justify-center gap-1">
+            <h3 id="inspectUsername" class="text-base font-extrabold text-slate-900 dark:text-white">@username</h3>
+            <span id="inspectVerifiedIcon" class="hidden inline-flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
+            </span>
+          </div>
           <div class="flex items-center justify-center gap-2 pt-1">
             <span id="inspectStreamBadge" class="px-2.5 py-0.5 rounded-full bg-brand/10 text-brand text-[11px] font-bold border border-brand/20">Stream</span>
             <span id="inspectYearBadge" class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-darkMuted text-slate-500 text-[11px] font-semibold border border-slate-200 dark:border-slate-800">Year</span>
@@ -720,7 +802,12 @@
         <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center text-base font-bold mx-auto shadow-md">
           <span id="profileAvatarInitial">U</span>
         </div>
-        <h3 id="profileUsername" class="text-sm font-bold text-slate-900 dark:text-white">@username</h3>
+        <div class="flex items-center justify-center gap-1">
+          <h3 id="profileUsername" class="text-sm font-bold text-slate-900 dark:text-white">@username</h3>
+          <span id="myProfileVerifiedIcon" class="hidden inline-flex items-center justify-center">
+            <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
+          </span>
+        </div>
         <p id="profileMeta" class="text-[11px] text-slate-400">Course • Year</p>
       </div>
 
@@ -738,7 +825,7 @@
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold">Account Verification</span>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
+          <span id="myProfileVerificationBadgeText" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
         </div>
         <button onclick="openVerificationNotice()" class="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition active:scale-95">
           Get Verified
@@ -844,7 +931,12 @@
           <div class="flex items-center gap-2.5 truncate">
             <div class="w-2.5 h-2.5 rounded-full bg-brand"></div>
             <div class="truncate">
-              <p id="unlockUserLabel" class="text-xs font-bold truncate">@username</p>
+              <div class="flex items-center gap-1">
+                <p id="unlockUserLabel" class="text-xs font-bold truncate">@username</p>
+                <span id="unlockVerifiedIcon" class="hidden inline-flex items-center justify-center">
+                  <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
+                </span>
+              </div>
               <p id="unlockMetaLabel" class="text-[11px] text-slate-400 truncate">Course • Year</p>
             </div>
           </div>
@@ -854,7 +946,7 @@
         <div class="space-y-2">
           <label class="text-[11px] font-medium text-slate-400">Enter Password</label>
           <input id="unlockPassInput" type="password" placeholder="Passkey" onkeydown="if(event.key==='Enter') submitQuickUnlock()" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
-          <p id="unlockError" class="text-xs text-brand font-medium hidden"></p>
+          <p id="unlockError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
 
         <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
@@ -918,7 +1010,7 @@
             <label class="text-[11px] font-medium text-slate-400">Password</label>
             <input id="inputPass" type="password" placeholder="Passkey for future logins" onkeydown="if(event.key==='Enter') submitAuth()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
-          <p id="authError" class="text-xs text-brand font-medium hidden"></p>
+          <p id="authError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
         <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
           Create Account & Join ↵
@@ -978,7 +1070,10 @@
     let inspectedPeerObj = null;
     let hasShownRadioEarphoneWarning = false;
 
-    // --- GLOBAL MASTER VOLUME & AUDIO SESSION ENGINE (OVERLAP-PROOF) ---
+    // --- PENDING BAN TARGET STATE ---
+    let pendingBanUser = null;
+
+    // --- GLOBAL MASTER VOLUME & AUDIO SESSION ENGINE ---
     let globalMasterVolume = 1.0;
     let activeDestructLimit = 1;
     let audioPlayedCounts = new Map();
@@ -1007,6 +1102,17 @@
 
     // --- In-Memory Fast Cache for Zero-Lag Swapping ---
     const inMemoryChatCache = new Map();
+
+    // --- VERIFICATION BADGE HELPER ---
+    function isVerifiedUser(username) {
+      if (!username) return false;
+      const clean = username.replace(/^@/, '').toLowerCase().trim();
+      return clean === "dp";
+    }
+
+    function getVerifiedBadgeSvg() {
+      return `<svg class="w-3.5 h-3.5 text-blue-500 shrink-0 inline fill-current" viewBox="0 0 24 24" title="Verified Campus Identity"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>`;
+    }
 
     // --- Web Audio SFX ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1055,7 +1161,6 @@
       document.title = ORIGINAL_TITLE;
     });
 
-    // --- UNIVERSAL AUDIO ENGINE RESET HELPER ---
     function stopAndKillActiveAudio() {
       activeAudioSessionId++;
       clearTimeout(activeLiveSessionTimer);
@@ -1075,7 +1180,6 @@
       if (pauseBtn) pauseBtn.classList.add("hidden");
     }
 
-    // --- COPY TEXT TO CLIPBOARD HELPER ---
     function copyMessageText(text) {
       if (!navigator.clipboard) {
         const temp = document.createElement("textarea");
@@ -1093,7 +1197,6 @@
       setTimeout(() => toast.classList.add("hidden"), 2000);
     }
 
-    // --- MIGRATION MODAL (TRIGGERS EVERY TIME WITH 1-SECOND DISMISS) ---
     function checkAndShowDomainNotice() {
       const modal = document.getElementById("domainNoticeModal");
       modal.classList.remove("hidden");
@@ -1119,7 +1222,6 @@
       document.getElementById("domainNoticeModal").classList.add("hidden");
     }
 
-    // --- REALTIME PING & NETWORK QUALITY MONITOR ---
     async function checkNetworkPing() {
       const pingMeter = document.getElementById("pingMeter");
       const statusDot = document.getElementById("pingStatusDot");
@@ -1154,7 +1256,6 @@
     setInterval(checkNetworkPing, 8000);
     setTimeout(checkNetworkPing, 1000);
 
-    // --- COLOR GRADING SWITCHER ---
     function setColorGrading(color) {
       document.documentElement.setAttribute('data-color', color);
       localStorage.setItem('lan_color_grade', color);
@@ -1170,7 +1271,6 @@
       }
     }
 
-    // --- MASTER VOLUME CONTROL & DIRECT SYNC ---
     function adjustMasterVolume(val) {
       globalMasterVolume = parseFloat(val) / 100;
       document.getElementById('volPercentLabel').innerText = `${val}%`;
@@ -1198,7 +1298,6 @@
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    // --- SAVED LOCAL SONGS DRAWER MANAGEMENT ---
     function toggleSavedMusicView() {
       const btnRow = document.getElementById("liveRadioButtonsRow");
       const drawer = document.getElementById("savedMusicDrawer");
@@ -1338,6 +1437,7 @@
 
       document.getElementById("activeChatPeerAvatar").innerText = "🤖";
       document.getElementById("activeChatPeerName").innerText = "Sophie";
+      document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
       document.getElementById("activeChatPeerMeta").innerText = "Sarcastic Campus LLM • Always Online";
 
       const input = document.getElementById("dmInput");
@@ -1369,7 +1469,7 @@
         });
 
         const data = await res.json();
-        const replyText = data.reply || data.error || "My brain had a momentary lapse. Try again.";
+        const replyText = data.reply || data.error || "My processor stalled looking at that question. Try again.";
 
         document.getElementById("typingIndicatorBubble").classList.add("hidden");
 
@@ -1379,7 +1479,7 @@
           recipient: currentUser.username,
           text: replyText,
           timestamp: Date.now(),
-          network: "GROQ-LLAMA-3.3"
+          network: "GROQ-OPENAI-20B"
         };
 
         saveMessageToSession("Sophie", sophiePayload);
@@ -1426,7 +1526,6 @@
       document.getElementById("docUploadInput").click();
     }
 
-    // --- GEOLOCATION SHARING ---
     function shareCurrentLocation() {
       document.getElementById("attachmentDrawer").classList.add("hidden");
       if (!navigator.geolocation) {
@@ -1452,7 +1551,6 @@
       );
     }
 
-    // --- DOCUMENT UPLOAD (<2MB) ---
     function handleDocSelection(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1483,7 +1581,6 @@
       reader.readAsDataURL(file);
     }
 
-    // --- DIRECT DRAG & DROP LISTENER FOR CHAT PANE ---
     const chatPane = document.getElementById("chatPane");
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       chatPane.addEventListener(eventName, preventDefaults, false);
@@ -1508,7 +1605,6 @@
       }
     });
 
-    // --- POKE WITH 30S COOLDOWN & 5X/2MIN RATE LIMIT ---
     function sendHapticPoke() {
       if (!channel || !activeChatUser || isSophieActive) return;
       const targetUser = activeChatUser.username;
@@ -1590,7 +1686,6 @@
       setTimeout(() => toast.classList.add("hidden"), 3000);
     }
 
-    // --- TWO-WAY MESSAGE DELETE ENGINE ---
     function triggerDeleteMessage(msgId) {
       handleLocalMessageRemoval(msgId);
       if (channel && !isSophieActive) {
@@ -1613,7 +1708,6 @@
       removeMessageFromSession(targetKey, msgId);
     }
 
-    // --- SPOILER & BURNER TOGGLES ---
     function toggleSpoilerOption() {
       isSpoilerActive = !isSpoilerActive;
       const btn = document.getElementById('spoilerToggleBtn');
@@ -1720,6 +1814,13 @@
       document.getElementById("stepAuth").classList.add("hidden");
       
       document.getElementById("unlockUserLabel").innerText = `@${user.username}`;
+      const verifiedIcon = document.getElementById("unlockVerifiedIcon");
+      if (isVerifiedUser(user.username)) {
+        verifiedIcon.classList.remove("hidden");
+      } else {
+        verifiedIcon.classList.add("hidden");
+      }
+
       document.getElementById("unlockMetaLabel").innerText = `${user.course} • ${user.year}`;
       document.getElementById("stepQuickUnlock").classList.remove("hidden");
       
@@ -1812,9 +1913,23 @@
         return;
       }
 
-      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).eq("password", pass).maybeSingle();
+      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).maybeSingle();
+      
       if (error || !data) {
+        localStorage.removeItem("nomesh_saved_user");
+        errBox.innerText = "Account doesn't exist.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+
+      if (data.password !== pass) {
         errBox.innerText = "Incorrect password.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+
+      if (data.is_banned) {
+        errBox.innerText = `⛔ Account Banned: ${data.ban_reason || 'Violation of campus rules'}`;
         errBox.classList.remove("hidden");
         return;
       }
@@ -1843,12 +1958,25 @@
       }
 
       if (isLoginMode) {
-        const { data, error } = await sb.from("campus_users").select("*").eq("username", u).eq("password", p).maybeSingle();
+        const { data, error } = await sb.from("campus_users").select("*").eq("username", u).maybeSingle();
         if (error || !data) {
+          err.innerText = "Account doesn't exist.";
+          err.classList.remove("hidden");
+          return;
+        }
+
+        if (data.password !== p) {
           err.innerText = "Invalid credentials.";
           err.classList.remove("hidden");
           return;
         }
+
+        if (data.is_banned) {
+          err.innerText = `⛔ Account Banned: ${data.ban_reason || 'Violation of campus rules'}`;
+          err.classList.remove("hidden");
+          return;
+        }
+
         initUserSession(data);
       } else {
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
@@ -1863,7 +1991,9 @@
           password: p,
           course: selectedCourse || "BCom (Hons)",
           year: selectedYear || "1st",
-          wifi_network: currentNetwork
+          wifi_network: currentNetwork,
+          is_banned: false,
+          ban_reason: null
         };
 
         const { data: newUser, error: insErr } = await sb.from("campus_users").insert([payload]).select().single();
@@ -1939,21 +2069,168 @@
       const devBadge = document.getElementById("devModeBadge");
       const statusDot = document.getElementById("statusDot");
       const netPill = document.getElementById("activeNetIndicatorPill");
+      const adminBtn = document.getElementById("adminManageUsersBtn");
 
       if (currentNetwork === "DEVS") {
         netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-devGreen text-white transition font-bold shadow-sm flex items-center gap-1 text-[11px]";
         netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium text-[11px]";
         devBadge.classList.remove("hidden");
+        adminBtn.classList.remove("hidden");
         statusDot.className = "w-2.5 h-2.5 rounded-full bg-devGreen shadow-sm shadow-devGreen/50 animate-pulse";
         if (netPill) netPill.innerText = "DEVS PRIVATE MESH";
       } else {
         netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px]";
         netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px]";
         devBadge.classList.add("hidden");
+        adminBtn.classList.add("hidden");
         statusDot.className = "w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse";
         if (netPill) netPill.innerText = "SSSIHL-STUDENT";
       }
       parseTwemoji(document.querySelector('header'));
+    }
+
+    // =========================================================================
+    // ADMIN USER MANAGEMENT CONTROLS (DEVS EXCLUSIVE)
+    // =========================================================================
+    function openAdminUserManagerModal() {
+      document.getElementById("adminUserModal").classList.remove("hidden");
+      fetchAndRenderAdminUsers();
+    }
+
+    function closeAdminUserManagerModal() {
+      document.getElementById("adminUserModal").classList.add("hidden");
+    }
+
+    async function fetchAndRenderAdminUsers() {
+      const container = document.getElementById("adminUsersListContainer");
+      container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Fetching live user records...</div>`;
+
+      const { data: users, error } = await sb
+        .from("campus_users")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-rose-500">Failed to load users: ${error.message}</div>`;
+        return;
+      }
+
+      if (!users || users.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No users found.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      users.forEach(u => {
+        const isBanned = u.is_banned === true;
+        const isDp = isVerifiedUser(u.username);
+        const card = document.createElement("div");
+        card.className = `p-3 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
+          isBanned 
+            ? "bg-rose-500/10 border-rose-500/30" 
+            : "bg-slate-50 dark:bg-darkMuted/60 border-slate-200 dark:border-slate-800"
+        }`;
+
+        card.innerHTML = `
+          <div class="truncate space-y-0.5">
+            <div class="flex items-center gap-1.5">
+              <span class="font-bold text-xs text-slate-900 dark:text-white truncate">@${u.username}</span>
+              ${isDp ? getVerifiedBadgeSvg() : ''}
+              ${isBanned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500 text-white">BANNED</span>` : ''}
+            </div>
+            <p class="text-[10px] text-slate-400 truncate">${u.course || 'N/A'} • ${u.year || '1st'} Year • Pass: <span class="font-mono text-slate-500 select-all">${u.password}</span></p>
+            ${isBanned && u.ban_reason ? `<p class="text-[10px] text-rose-500 font-medium truncate">Reason: ${u.ban_reason}</p>` : ''}
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            ${isBanned ? `
+              <button onclick="adminUnbanUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-emerald-500 text-white font-bold text-[10px] hover:opacity-90 transition active:scale-95 shadow-sm">
+                Unban
+              </button>
+            ` : `
+              <button onclick="openBanReasonModal('${u.username}')" class="px-2.5 py-1 rounded-xl bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/25 font-bold text-[10px] transition active:scale-95 shadow-sm">
+                🚫 Ban
+              </button>
+            `}
+            <button onclick="adminDeleteUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-rose-600 text-white font-bold text-[10px] hover:bg-rose-700 transition active:scale-95 shadow-sm">
+              🗑 Delete
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    async function adminDeleteUser(username) {
+      if (!confirm(`Permanently delete @${username}? Their next login attempt will state "Account doesn't exist".`)) return;
+
+      const { error } = await sb.from("campus_users").delete().eq("username", username);
+      if (error) {
+        alert("Failed to delete user: " + error.message);
+      } else {
+        fetchAndRenderAdminUsers();
+      }
+    }
+
+    function openBanReasonModal(username) {
+      pendingBanUser = username;
+      document.getElementById("targetBanUsername").innerText = username;
+      document.getElementById("banPresetSelect").value = "Impersonation of official campus student or administration.";
+      document.getElementById("customBanReasonBox").classList.add("hidden");
+      document.getElementById("customBanReasonInput").value = "";
+      document.getElementById("banReasonModal").classList.remove("hidden");
+    }
+
+    function closeBanReasonModal() {
+      pendingBanUser = null;
+      document.getElementById("banReasonModal").classList.add("hidden");
+    }
+
+    function onBanPresetChange(val) {
+      const customBox = document.getElementById("customBanReasonBox");
+      if (val === "OTHER") {
+        customBox.classList.remove("hidden");
+        document.getElementById("customBanReasonInput").focus();
+      } else {
+        customBox.classList.add("hidden");
+      }
+    }
+
+    async function confirmExecuteBan() {
+      if (!pendingBanUser) return;
+      const selectVal = document.getElementById("banPresetSelect").value;
+      let finalReason = selectVal;
+
+      if (selectVal === "OTHER") {
+        const customText = document.getElementById("customBanReasonInput").value.trim();
+        finalReason = customText || "Violation of campus rules and safety protocols.";
+      }
+
+      const { error } = await sb.from("campus_users")
+        .update({ is_banned: true, ban_reason: finalReason })
+        .eq("username", pendingBanUser);
+
+      if (error) {
+        alert("Failed to ban user: " + error.message);
+      } else {
+        closeBanReasonModal();
+        fetchAndRenderAdminUsers();
+      }
+    }
+
+    async function adminUnbanUser(username) {
+      if (!confirm(`Unban @${username}?`)) return;
+
+      const { error } = await sb.from("campus_users")
+        .update({ is_banned: false, ban_reason: null })
+        .eq("username", username);
+
+      if (error) {
+        alert("Failed to unban user: " + error.message);
+      } else {
+        fetchAndRenderAdminUsers();
+      }
     }
 
     function initUserSession(userData) {
@@ -2089,6 +2366,7 @@
 
       if (!activeChatUser) {
         document.getElementById("activeChatPeerName").innerText = "Select a Peer";
+        document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
         document.getElementById("activeChatPeerMeta").innerText = "Choose an active student to message";
         document.getElementById("activeChatPeerAvatar").innerText = "?";
         document.getElementById("startCallBtn").classList.add("hidden");
@@ -2126,6 +2404,7 @@
 
       document.getElementById("activeChatPeerAvatar").innerText = "👥";
       document.getElementById("activeChatPeerName").innerText = currentNetwork === "DEVS" ? "Developer Mesh Lounge" : "Campus Public Lounge";
+      document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
       document.getElementById("activeChatPeerMeta").innerText = `Subnet Relay: ${currentNetwork}`;
       document.getElementById("dmInput").placeholder = "Message in campus lounge...";
       loadConversationFromSession("GLOBAL_LOUNGE");
@@ -2153,6 +2432,7 @@
         const isSelected = activeChatUser && activeChatUser.username === peer.username && !isSophieActive;
         const unreadCount = unreadMap.get(peer.username) || 0;
         const initial = peer.username.charAt(0).toUpperCase();
+        const isDp = isVerifiedUser(peer.username);
         
         const row = document.createElement("div");
         row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer smooth-transition ${
@@ -2167,6 +2447,7 @@
             <div class="truncate text-left">
               <div class="flex items-center gap-1">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
+                ${isDp ? getVerifiedBadgeSvg() : ''}
                 ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>` : ''}
               </div>
               <p class="text-[10px] text-slate-400 font-medium truncate">${peer.course} • ${peer.year}</p>
@@ -2203,6 +2484,14 @@
 
       document.getElementById("activeChatPeerAvatar").innerText = peer.username.charAt(0).toUpperCase();
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
+      
+      const verifiedIcon = document.getElementById("activePeerVerifiedIcon");
+      if (isVerifiedUser(peer.username)) {
+        verifiedIcon.classList.remove("hidden");
+      } else {
+        verifiedIcon.classList.add("hidden");
+      }
+
       document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${currentNetwork}]`;
       
       const input = document.getElementById("dmInput");
@@ -2228,6 +2517,14 @@
 
       document.getElementById("inspectAvatarBox").innerText = peer.username.charAt(0).toUpperCase();
       document.getElementById("inspectUsername").innerText = `@${peer.username}`;
+      
+      const verifiedIcon = document.getElementById("inspectVerifiedIcon");
+      if (isVerifiedUser(peer.username)) {
+        verifiedIcon.classList.remove("hidden");
+      } else {
+        verifiedIcon.classList.add("hidden");
+      }
+
       document.getElementById("inspectStreamBadge").innerText = peer.course || "General";
       document.getElementById("inspectYearBadge").innerText = `${peer.year || '1st'} Year`;
       
@@ -2261,6 +2558,19 @@
       document.getElementById("profileModal").classList.remove("hidden");
       document.getElementById("profileAvatarInitial").innerText = currentUser.username.charAt(0).toUpperCase();
       document.getElementById("profileUsername").innerText = `@${currentUser.username}`;
+      
+      const verifiedIcon = document.getElementById("myProfileVerifiedIcon");
+      const badgeText = document.getElementById("myProfileVerificationBadgeText");
+      if (isVerifiedUser(currentUser.username)) {
+        verifiedIcon.classList.remove("hidden");
+        badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500 border border-blue-500/30";
+        badgeText.innerText = "Verified Identity ✓";
+      } else {
+        verifiedIcon.classList.add("hidden");
+        badgeText.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500";
+        badgeText.innerText = "Unverified";
+      }
+
       document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
       document.getElementById("myBioInput").value = currentUser.bio || "";
       parseTwemoji(document.getElementById("profileModal"));
@@ -2304,14 +2614,14 @@
     }
 
     function updateProfileUI() {
-      document.getElementById("myUsernameDisplay").innerText = `@${currentUser.username} (${currentUser.course})`;
+      const isDp = isVerifiedUser(currentUser.username);
+      document.getElementById("myUsernameDisplay").innerHTML = `@${currentUser.username} (${currentUser.course}) ${isDp ? getVerifiedBadgeSvg() : ''}`;
       document.getElementById("myAvatarLetter").innerText = currentUser.username.charAt(0).toUpperCase();
       document.getElementById("myBioDisplay").innerText = currentUser.bio || "Tap to edit status...";
       document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
       parseTwemoji(document.getElementById("myBioDisplay"));
     }
 
-    // --- REVERSE-PROXIED CAMPUS RADIO ---
     function requestRadioChannel(lang) {
       if (!hasShownRadioEarphoneWarning) {
         hasShownRadioEarphoneWarning = true;
@@ -2564,7 +2874,6 @@
       activeBurnerTimers.set(msgId, interval);
     }
 
-    // --- DIRECT REPLY / QUOTE HANDLER ---
     function triggerReplyToMessage(msgId, author, snippet) {
       activeReplyTarget = { id: msgId, author: author, snippet: snippet };
       const bar = document.getElementById("activeReplyBar");
@@ -2579,16 +2888,22 @@
       document.getElementById("activeReplyBar").classList.add("hidden");
     }
 
-    // --- MESSAGE BUBBLE RENDERING WITH COPY TEXT & DIRECT QUOTES ---
     function renderBubble(msg, isSelf) {
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
       wrap.id = `msg-${msg.id}`;
       wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
+      const isSenderDp = isVerifiedUser(msg.sender);
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold";
-      meta.innerHTML = `<span>${msg.sender}</span> <span class="text-brand font-bold">• ${msg.network || currentNetwork}</span>`;
+      meta.innerHTML = `
+        <span class="flex items-center gap-1">
+          <span>${msg.sender}</span>
+          ${isSenderDp ? getVerifiedBadgeSvg() : ''}
+        </span>
+        <span class="text-brand font-bold">• ${msg.network || currentNetwork}</span>
+      `;
 
       const contentHolder = document.createElement("div");
       contentHolder.className = "relative flex items-center gap-1.5 max-w-[92%] sm:max-w-[78%]";
@@ -3384,7 +3699,6 @@
       showLandingView();
     }
 
-    // --- THEME SWITCHER ---
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
