@@ -353,7 +353,7 @@
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
         <h3 class="text-xs font-bold">Biometric Gateway</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Optional face authentication with 8-hour session bypass and instant host review approval.</p>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Optional face authentication with live camera match and instant host review approval.</p>
       </div>
     </div>
   </main>
@@ -368,7 +368,6 @@
         <div class="flex justify-between items-center">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
           <div class="flex items-center gap-1.5">
-            <!-- MANAGE USERS ADMIN BUTTON (VISIBLE ONLY IN DEVS) -->
             <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-devGreen/15 text-devGreen border border-devGreen/30 hover:bg-devGreen/25 transition shadow-sm">
               ⚙ Manage Users
             </button>
@@ -700,7 +699,6 @@
         </button>
       </div>
 
-      <!-- Users Table Scroll Container -->
       <div id="adminUsersListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scroll">
         <div class="p-6 text-center text-xs text-slate-400">Loading registered accounts...</div>
       </div>
@@ -1195,7 +1193,7 @@
         delete decryptedObj._pad;
         return decryptedObj;
       } catch (err) {
-        console.warn("E2EE Decryption Authentication Failed (Tampered or Key Mismatch):", err);
+        console.warn("E2EE Decryption Authentication Failed:", err);
         return null;
       }
     }
@@ -1204,7 +1202,7 @@
       if (!targetPeer || targetPeer === "GLOBAL_LOUNGE") {
         return `campus_lounge_mesh_${currentNetwork}`;
       }
-      const pair = [currentUser.username, targetPeer].sort().join("::");
+      const pair = [currentUser.username.toLowerCase(), targetPeer.toLowerCase()].sort().join("::");
       return `pair_secret_${pair}_${currentNetwork}`;
     }
 
@@ -1265,7 +1263,7 @@
     // BIOMETRIC & FACE VERIFICATION GATEWAY
     // =========================================================================
     let faceStream = null;
-    let faceMode = "ENROLL"; // "ENROLL" or "UNLOCK"
+    let faceMode = "ENROLL";
     let pendingAuthUserCandidate = null;
 
     function computeClientFaceDescriptor(canvas) {
@@ -1285,6 +1283,13 @@
         }
         vector[i] = parseFloat((sum / (step / 4) / 255).toFixed(4));
       }
+
+      // Normalized magnitude to unit vector
+      let mag = 0;
+      for (let i = 0; i < 128; i++) mag += vector[i] * vector[i];
+      mag = Math.sqrt(mag) || 1;
+      for (let i = 0; i < 128; i++) vector[i] = parseFloat((vector[i] / mag).toFixed(4));
+
       return vector;
     }
 
@@ -1306,8 +1311,8 @@
 
       if (mode === "UNLOCK") {
         title.innerText = "Biometric Face Unlock";
-        sub.innerText = "Scanning live face to unlock 8-hour verified session.";
-        actionBtn.innerText = "Authenticate Face";
+        sub.innerText = "Scanning live face to unlock your verified campus session.";
+        actionBtn.innerText = "Verify & Unlock";
       } else {
         title.innerText = "Face Verification Setup";
         sub.innerText = "Take a clear selfie. The host will review and grant your Verified Badge.";
@@ -1373,7 +1378,7 @@
           face_image: base64Photo,
           face_descriptor: descriptor,
           face_auth_enabled: true
-        }).eq("username", currentUser.username);
+        }).ilike("username", currentUser.username);
 
         hud.classList.add("hidden");
         closeFaceModal();
@@ -1400,7 +1405,8 @@
         const distance = compareFaceVectors(descriptor, candidate.face_descriptor);
         hud.classList.add("hidden");
 
-        if (distance < 1.1) {
+        // Strict Euclidean threshold for normalized unit vectors
+        if (distance <= 0.38) {
           statusMsg.innerText = "Biometric Match Confirmed! ✓";
           localStorage.setItem("face_last_verified", Date.now().toString());
           setTimeout(() => {
@@ -1419,10 +1425,11 @@
       const saved = JSON.parse(localStorage.getItem("nomesh_saved_user") || "{}");
       if (!saved.username) return;
 
-      const lastVerified = localStorage.getItem("face_last_verified");
-      const eightHours = 8 * 60 * 60 * 1000;
+      const { data, error } = await sb.from("campus_users")
+        .select("*")
+        .ilike("username", saved.username.trim())
+        .maybeSingle();
 
-      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).maybeSingle();
       if (error || !data) {
         alert("Account records not found.");
         return;
@@ -1433,13 +1440,8 @@
         return;
       }
 
-      if (lastVerified && (Date.now() - parseInt(lastVerified, 10)) < eightHours) {
-        initUserSession(data);
-        return;
-      }
-
       if (!data.face_auth_enabled || !data.face_descriptor) {
-        alert("Face unlock is not set up on this account yet. Please unlock with your password and enable it in Settings.");
+        alert("Face unlock is not enrolled for this account yet. Please unlock with your password and setup face in settings.");
         return;
       }
 
@@ -2018,7 +2020,7 @@
     }
 
     function handleIncomingPoke(payload) {
-      if (payload.to !== currentUser.username) return;
+      if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
 
       if (navigator.vibrate) {
         navigator.vibrate([100, 50, 100, 50, 150]);
@@ -2266,10 +2268,12 @@
         return;
       }
 
-      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).maybeSingle();
+      const { data, error } = await sb.from("campus_users")
+        .select("*")
+        .ilike("username", (saved.username || "").trim())
+        .maybeSingle();
       
       if (error || !data) {
-        localStorage.removeItem("nomesh_saved_user");
         errBox.innerText = "Account doesn't exist.";
         errBox.classList.remove("hidden");
         return;
@@ -2313,7 +2317,11 @@
       }
 
       if (isLoginMode) {
-        const { data, error } = await sb.from("campus_users").select("*").eq("username", u).maybeSingle();
+        const { data, error } = await sb.from("campus_users")
+          .select("*")
+          .ilike("username", u)
+          .maybeSingle();
+
         if (error || !data) {
           err.innerText = "Account doesn't exist.";
           err.classList.remove("hidden");
@@ -2335,7 +2343,11 @@
         localStorage.setItem("face_last_verified", Date.now().toString());
         initUserSession(data);
       } else {
-        const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
+        const { data: userCheck } = await sb.from("campus_users")
+          .select("username")
+          .ilike("username", u)
+          .maybeSingle();
+
         if (userCheck) {
           err.innerText = "Handle taken. Choose another.";
           err.classList.remove("hidden");
@@ -2544,13 +2556,13 @@
     }
 
     async function adminApproveUserVerification(username) {
-      const { error } = await sb.from("campus_users").update({ is_verified: true }).eq("username", username);
+      const { error } = await sb.from("campus_users").update({ is_verified: true }).ilike("username", username);
       if (error) alert("Failed to approve verification: " + error.message);
       else fetchAndRenderAdminUsers();
     }
 
     async function adminRevokeUserVerification(username) {
-      const { error } = await sb.from("campus_users").update({ is_verified: false }).eq("username", username);
+      const { error } = await sb.from("campus_users").update({ is_verified: false }).ilike("username", username);
       if (error) alert("Failed to revoke verification: " + error.message);
       else fetchAndRenderAdminUsers();
     }
@@ -2558,7 +2570,7 @@
     async function adminDeleteUser(username) {
       if (!confirm(`Permanently delete @${username}? Their next login attempt will state "Account doesn't exist".`)) return;
 
-      const { error } = await sb.from("campus_users").delete().eq("username", username);
+      const { error } = await sb.from("campus_users").delete().ilike("username", username);
       if (error) {
         alert("Failed to delete user: " + error.message);
       } else {
@@ -2602,7 +2614,7 @@
 
       const { error } = await sb.from("campus_users")
         .update({ is_banned: true, ban_reason: finalReason })
-        .eq("username", pendingBanUser);
+        .ilike("username", pendingBanUser);
 
       if (error) {
         alert("Failed to ban user: " + error.message);
@@ -2617,7 +2629,7 @@
 
       const { error } = await sb.from("campus_users")
         .update({ is_banned: false, ban_reason: null })
-        .eq("username", username);
+        .ilike("username", username);
 
       if (error) {
         alert("Failed to unban user: " + error.message);
@@ -2658,7 +2670,9 @@
           onlineUsersMap.clear();
 
           Object.keys(state).forEach((key) => {
-            if (key !== currentUser.username) onlineUsersMap.set(key, state[key][0]);
+            if (key.toLowerCase() !== currentUser.username.toLowerCase()) {
+              onlineUsersMap.set(key, state[key][0]);
+            }
           });
           if (onlineUsersMap.size > prevCount) soundPeer();
           renderUsersList();
@@ -2676,7 +2690,7 @@
         .on("broadcast", { event: "direct_msg" }, async ({ payload }) => {
           if (!payload) return;
           
-          if (payload.recipient === currentUser.username) {
+          if (payload.recipient && payload.recipient.toLowerCase() === currentUser.username.toLowerCase()) {
             const secret = getChannelEncryptionSecret(payload.sender);
             const decrypted = await decryptPayloadE2EE(payload, secret);
             if (!decrypted) return;
@@ -2690,7 +2704,7 @@
               payload: { id: decrypted.id, from: currentUser.username, to: decrypted.sender }
             });
 
-            if (activeChatUser && activeChatUser.username === decrypted.sender && !isSophieActive) {
+            if (activeChatUser && activeChatUser.username.toLowerCase() === decrypted.sender.toLowerCase() && !isSophieActive) {
               renderBubble(decrypted, false);
             } else {
               const currentUnread = unreadMap.get(decrypted.sender) || 0;
@@ -2700,7 +2714,7 @@
           }
         })
         .on("broadcast", { event: "msg_ack" }, ({ payload }) => {
-          if (payload.to === currentUser.username) {
+          if (payload.to.toLowerCase() === currentUser.username.toLowerCase()) {
             const checkEl = document.getElementById(`ack-${payload.id}`);
             if (checkEl) checkEl.innerText = "✓✓";
           }
@@ -2715,7 +2729,7 @@
           handleIncomingPoke(payload);
         })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
-          if (activeChatUser && payload.sender === activeChatUser.username && payload.recipient === currentUser.username && !isSophieActive) {
+          if (activeChatUser && payload.sender.toLowerCase() === activeChatUser.username.toLowerCase() && payload.recipient.toLowerCase() === currentUser.username.toLowerCase() && !isSophieActive) {
             showTypingBubble(payload.sender);
           }
         })
@@ -2833,7 +2847,7 @@
 
       container.innerHTML = "";
       peers.forEach(peer => {
-        const isSelected = activeChatUser && activeChatUser.username === peer.username && !isSophieActive;
+        const isSelected = activeChatUser && activeChatUser.username.toLowerCase() === peer.username.toLowerCase() && !isSophieActive;
         const unreadCount = unreadMap.get(peer.username) || 0;
         const initial = peer.username.charAt(0).toUpperCase();
         const isPeerVerified = isVerifiedUser(peer);
@@ -3111,7 +3125,7 @@
       document.getElementById("radioStatusTag").innerText = `Idle`;
     }
 
-    function getSessionKey(peerName) { return `chat_${currentUser.username}_with_${peerName}`; }
+    function getSessionKey(peerName) { return `chat_${currentUser.username.toLowerCase()}_with_${peerName.toLowerCase()}`; }
 
     function saveMessageToSession(peerName, messageObj) {
       const key = getSessionKey(peerName);
@@ -3153,7 +3167,7 @@
         return;
       }
 
-      history.forEach(msg => renderBubble(msg, msg.sender === currentUser.username));
+      history.forEach(msg => renderBubble(msg, msg.sender.toLowerCase() === currentUser.username.toLowerCase()));
       scrollChatToBottom();
     }
 
@@ -3952,7 +3966,7 @@
     }
 
     async function handleIncomingWebRTCSignal({ payload }) {
-      if (payload.to !== currentUser.username) return;
+      if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
 
       if (payload.type === "offer") {
         pendingOffer = payload;
