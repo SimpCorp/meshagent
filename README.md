@@ -1,2 +1,2 @@
 # meshagent
-Brindavan LAN chat
+privacy first approach - IRC
