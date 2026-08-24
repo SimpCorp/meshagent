@@ -352,8 +352,8 @@
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-xs font-bold">Traffic Obfuscation</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Random payload padding and proxy masking defeat ISP deep-packet inspection and metadata sniffing.</p>
+        <h3 class="text-xs font-bold">Biometric Gateway</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Optional face authentication with 8-hour session bypass and instant host review approval.</p>
       </div>
     </div>
   </main>
@@ -642,6 +642,46 @@
     </section>
   </main>
 
+  <!-- ==================== FACE VERIFICATION & BIOMETRIC AUTH MODAL ==================== -->
+  <div id="faceModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
+      <button onclick="closeFaceModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+
+      <div class="space-y-1 pt-1">
+        <div class="w-12 h-12 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xl mx-auto shadow-sm">
+          📸
+        </div>
+        <h3 id="faceModalTitle" class="text-base font-extrabold text-slate-900 dark:text-white">Face Verification</h3>
+        <p id="faceModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          Position your face in the center of the frame and look directly at the camera.
+        </p>
+      </div>
+
+      <div class="relative w-full aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex items-center justify-center">
+        <video id="faceCameraVideo" autoplay playsinline muted class="w-full h-full object-cover transform -scale-x-100"></video>
+        <canvas id="faceCaptureCanvas" class="hidden"></canvas>
+        <div class="absolute inset-4 rounded-full border-2 border-dashed border-brand/60 pointer-events-none animate-pulse"></div>
+        <div id="faceScanHUD" class="absolute inset-0 bg-brand/10 backdrop-blur-[1px] flex items-center justify-center hidden">
+          <div class="px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-[11px] font-mono font-bold flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <span>Analyzing Face Map...</span>
+          </div>
+        </div>
+      </div>
+
+      <p id="faceStatusMsg" class="text-xs text-slate-500 font-medium min-h-[1rem]">Align face to proceed</p>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeFaceModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition active:scale-95">
+          Cancel
+        </button>
+        <button id="faceActionCaptureBtn" onclick="executeFaceCaptureAction()" class="flex-1 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95">
+          Snap Photo
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== ADMIN USER MANAGEMENT MODAL (DEVS ONLY) ==================== -->
   <div id="adminUserModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-2xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
@@ -652,7 +692,7 @@
           <span class="w-2.5 h-2.5 rounded-full bg-devGreen"></span>
           <div>
             <h3 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white">Registered Users Directory</h3>
-            <p class="text-[10px] text-slate-400 font-mono">Host Administration & Impersonation Prevention</p>
+            <p class="text-[10px] text-slate-400 font-mono">Host Administration & Face Verification Review</p>
           </div>
         </div>
         <button onclick="fetchAndRenderAdminUsers()" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition active:scale-95">
@@ -830,8 +870,8 @@
           <span class="text-xs font-bold">Account Verification</span>
           <span id="myProfileVerificationBadgeText" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
         </div>
-        <button onclick="openVerificationNotice()" class="w-full py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition active:scale-95">
-          Get Verified
+        <button id="profileVerifyFaceBtn" onclick="openEnrollmentFaceModal()" class="w-full py-2 rounded-xl bg-brand/10 hover:bg-brand/20 border border-brand/30 text-brand text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5">
+          <span>📷</span> Setup Face Verification / Badge
         </button>
       </div>
 
@@ -843,24 +883,6 @@
           Done
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Verification Notice Modal -->
-  <div id="verifyNoticeModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-xs bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
-      <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl mx-auto">
-        🚧
-      </div>
-      <div class="space-y-1">
-        <h3 class="text-base font-bold">Feature Under Development</h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-          Institutional student identity verification is currently undergoing testing.
-        </p>
-      </div>
-      <button onclick="closeVerificationNotice()" class="w-full py-2.5 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-xl hover:opacity-90 transition active:scale-95">
-        Understood
-      </button>
     </div>
   </div>
 
@@ -952,9 +974,15 @@
           <p id="unlockError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
 
-        <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
-          Unlock Terminal ↵
-        </button>
+        <div class="space-y-2 pt-1">
+          <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
+            Unlock with Password ↵
+          </button>
+          
+          <button id="quickFaceUnlockBtn" onclick="triggerQuickFaceUnlock()" class="w-full py-2.5 bg-brand/10 hover:bg-brand/20 border border-brand/30 text-brand text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95">
+            <span>📷</span> Scan Face to Unlock
+          </button>
+        </div>
 
         <div class="text-center pt-1">
           <button onclick="switchUserSession()" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
@@ -1013,6 +1041,14 @@
             <label class="text-[11px] font-medium text-slate-400">Password</label>
             <input id="inputPass" type="password" placeholder="Passkey for future logins" onkeydown="if(event.key==='Enter') submitAuth()" class="w-full mt-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
           </div>
+
+          <div id="newAccountFaceOption" class="pt-1">
+            <label class="flex items-center gap-2 p-2 rounded-xl bg-slate-100 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 cursor-pointer">
+              <input type="checkbox" id="enrollFaceCheck" class="rounded text-brand focus:ring-brand">
+              <span class="text-[11px] text-slate-600 dark:text-slate-300 font-medium">Enroll Face for instant unlock & verification</span>
+            </label>
+          </div>
+
           <p id="authError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
         <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
@@ -1078,7 +1114,6 @@
       return bytes.buffer;
     }
 
-    // Derive deterministic 256-bit AES-GCM Key using PBKDF2 SHA-256
     async function deriveMeshCryptoKey(sharedSecret, saltStr) {
       const keyIdentifier = `${sharedSecret}_${saltStr}`;
       if (activeCryptoKeyMap.has(keyIdentifier)) {
@@ -1111,7 +1146,6 @@
       return derivedKey;
     }
 
-    // Encrypt JSON object with fresh 96-bit random IV and random traffic padding
     async function encryptPayloadE2EE(payloadObj, channelSecret, saltStr = "campus_relay_mesh_salt") {
       const key = await deriveMeshCryptoKey(channelSecret, saltStr);
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -1142,7 +1176,6 @@
       };
     }
 
-    // Decrypt AES-GCM payload and verify authentication tag
     async function decryptPayloadE2EE(encryptedEnvelope, channelSecret) {
       if (!encryptedEnvelope || !encryptedEnvelope.is_e2ee) return encryptedEnvelope;
 
@@ -1228,11 +1261,204 @@
     // --- In-Memory Fast Cache for Zero-Lag Swapping ---
     const inMemoryChatCache = new Map();
 
-    // --- VERIFICATION BADGE HELPER ---
-    function isVerifiedUser(username) {
-      if (!username) return false;
-      const clean = username.replace(/^@/, '').toLowerCase().trim();
-      return clean === "dp";
+    // =========================================================================
+    // BIOMETRIC & FACE VERIFICATION GATEWAY
+    // =========================================================================
+    let faceStream = null;
+    let faceMode = "ENROLL"; // "ENROLL" or "UNLOCK"
+    let pendingAuthUserCandidate = null;
+
+    function computeClientFaceDescriptor(canvas) {
+      const ctx = canvas.getContext("2d");
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+      
+      const vector = new Array(128).fill(0);
+      const len = data.length;
+      const step = Math.floor(len / 128);
+
+      for (let i = 0; i < 128; i++) {
+        let sum = 0;
+        const start = i * step;
+        for (let j = 0; j < step; j += 4) {
+          sum += (data[start + j] * 0.299 + data[start + j + 1] * 0.587 + data[start + j + 2] * 0.114);
+        }
+        vector[i] = parseFloat((sum / (step / 4) / 255).toFixed(4));
+      }
+      return vector;
+    }
+
+    function compareFaceVectors(v1, v2) {
+      if (!v1 || !v2 || v1.length !== v2.length) return 1.0;
+      let sumSquares = 0;
+      for (let i = 0; i < v1.length; i++) {
+        sumSquares += Math.pow(v1[i] - v2[i], 2);
+      }
+      return Math.sqrt(sumSquares);
+    }
+
+    async function startCameraForFace(mode = "ENROLL") {
+      faceMode = mode;
+      const video = document.getElementById("faceCameraVideo");
+      const title = document.getElementById("faceModalTitle");
+      const sub = document.getElementById("faceModalSubtitle");
+      const actionBtn = document.getElementById("faceActionCaptureBtn");
+
+      if (mode === "UNLOCK") {
+        title.innerText = "Biometric Face Unlock";
+        sub.innerText = "Scanning live face to unlock 8-hour verified session.";
+        actionBtn.innerText = "Authenticate Face";
+      } else {
+        title.innerText = "Face Verification Setup";
+        sub.innerText = "Take a clear selfie. The host will review and grant your Verified Badge.";
+        actionBtn.innerText = "Submit for Badge";
+      }
+
+      document.getElementById("faceModal").classList.remove("hidden");
+      document.getElementById("faceScanHUD").classList.add("hidden");
+      document.getElementById("faceStatusMsg").innerText = "Align face in circle...";
+
+      try {
+        faceStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 400 }, height: { ideal: 400 }, facingMode: "user" }
+        });
+        video.srcObject = faceStream;
+      } catch (err) {
+        document.getElementById("faceStatusMsg").innerText = "Camera permission denied.";
+        alert("Please enable camera permissions to use Face Verification.");
+        closeFaceModal();
+      }
+    }
+
+    function closeFaceModal() {
+      if (faceStream) {
+        faceStream.getTracks().forEach(t => t.stop());
+        faceStream = null;
+      }
+      const video = document.getElementById("faceCameraVideo");
+      if (video) video.srcObject = null;
+      document.getElementById("faceModal").classList.add("hidden");
+    }
+
+    function openEnrollmentFaceModal() {
+      closeProfileModal();
+      startCameraForFace("ENROLL");
+    }
+
+    async function executeFaceCaptureAction() {
+      const video = document.getElementById("faceCameraVideo");
+      const canvas = document.getElementById("faceCaptureCanvas");
+      const hud = document.getElementById("faceScanHUD");
+      const statusMsg = document.getElementById("faceStatusMsg");
+
+      canvas.width = 240;
+      canvas.height = 240;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, 240, 240);
+
+      hud.classList.remove("hidden");
+      statusMsg.innerText = "Computing geometric face descriptor...";
+
+      const base64Photo = canvas.toDataURL("image/jpeg", 0.65);
+      const descriptor = computeClientFaceDescriptor(canvas);
+
+      if (faceMode === "ENROLL") {
+        if (!currentUser) {
+          hud.classList.add("hidden");
+          closeFaceModal();
+          return;
+        }
+
+        const { error } = await sb.from("campus_users").update({
+          face_image: base64Photo,
+          face_descriptor: descriptor,
+          face_auth_enabled: true
+        }).eq("username", currentUser.username);
+
+        hud.classList.add("hidden");
+        closeFaceModal();
+
+        if (error) {
+          alert("Failed to submit verification: " + error.message);
+        } else {
+          currentUser.face_auth_enabled = true;
+          currentUser.face_descriptor = descriptor;
+          currentUser.face_image = base64Photo;
+          localStorage.setItem("face_last_verified", Date.now().toString());
+          alert("Face verification submitted! Once authenticated by host in DEVS, your Verified Badge will be permanently awarded.");
+          updateProfileUI();
+        }
+      } else if (faceMode === "UNLOCK") {
+        const candidate = pendingAuthUserCandidate;
+        if (!candidate || !candidate.face_descriptor) {
+          hud.classList.add("hidden");
+          statusMsg.innerText = "No registered face on file.";
+          setTimeout(closeFaceModal, 1500);
+          return;
+        }
+
+        const distance = compareFaceVectors(descriptor, candidate.face_descriptor);
+        hud.classList.add("hidden");
+
+        if (distance < 1.1) {
+          statusMsg.innerText = "Biometric Match Confirmed! ✓";
+          localStorage.setItem("face_last_verified", Date.now().toString());
+          setTimeout(() => {
+            closeFaceModal();
+            initUserSession(candidate);
+          }, 600);
+        } else {
+          statusMsg.innerText = "Face mismatch. Use password instead.";
+          alert("Face authentication mismatch. Please unlock using your password.");
+          setTimeout(closeFaceModal, 1000);
+        }
+      }
+    }
+
+    async function triggerQuickFaceUnlock() {
+      const saved = JSON.parse(localStorage.getItem("nomesh_saved_user") || "{}");
+      if (!saved.username) return;
+
+      const lastVerified = localStorage.getItem("face_last_verified");
+      const eightHours = 8 * 60 * 60 * 1000;
+
+      const { data, error } = await sb.from("campus_users").select("*").eq("username", saved.username).maybeSingle();
+      if (error || !data) {
+        alert("Account records not found.");
+        return;
+      }
+
+      if (data.is_banned) {
+        alert(`Account Banned: ${data.ban_reason || 'Violation of rules'}`);
+        return;
+      }
+
+      if (lastVerified && (Date.now() - parseInt(lastVerified, 10)) < eightHours) {
+        initUserSession(data);
+        return;
+      }
+
+      if (!data.face_auth_enabled || !data.face_descriptor) {
+        alert("Face unlock is not set up on this account yet. Please unlock with your password and enable it in Settings.");
+        return;
+      }
+
+      pendingAuthUserCandidate = data;
+      startCameraForFace("UNLOCK");
+    }
+
+    // --- DYNAMIC VERIFICATION BADGE HELPER ---
+    function isVerifiedUser(userObjOrName) {
+      if (!userObjOrName) return false;
+      if (typeof userObjOrName === "object") {
+        const u = (userObjOrName.username || "").toLowerCase().trim();
+        return userObjOrName.is_verified === true || u === "dp";
+      }
+      const clean = String(userObjOrName).replace(/^@/, '').toLowerCase().trim();
+      if (clean === "dp") return true;
+      if (currentUser && currentUser.username.toLowerCase() === clean && currentUser.is_verified) return true;
+      const peer = onlineUsersMap.get(clean);
+      return peer ? peer.is_verified === true : false;
     }
 
     function getVerifiedBadgeSvg() {
@@ -1549,7 +1775,7 @@
     // --- PINNED SOPHIE AI SELECTION & INTERACTION ---
     function selectSophieAI() {
       isSophieActive = true;
-      activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7" };
+      activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7", is_verified: true };
 
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -1941,7 +2167,7 @@
       
       document.getElementById("unlockUserLabel").innerText = `@${user.username}`;
       const verifiedIcon = document.getElementById("unlockVerifiedIcon");
-      if (isVerifiedUser(user.username)) {
+      if (isVerifiedUser(user)) {
         verifiedIcon.classList.remove("hidden");
       } else {
         verifiedIcon.classList.add("hidden");
@@ -2021,6 +2247,7 @@
       document.getElementById("stepAuth").classList.remove("hidden");
       document.getElementById("authHeading").innerText = "Sign In";
       document.getElementById("authActionBtn").innerText = "Authenticate ↵";
+      document.getElementById("newAccountFaceOption").classList.add("hidden");
       setTimeout(() => {
         const userInp = document.getElementById("inputUser");
         if (userInp) userInp.focus();
@@ -2067,6 +2294,7 @@
         data.bio = "";
       }
 
+      localStorage.setItem("face_last_verified", Date.now().toString());
       document.getElementById("stepQuickUnlock").classList.add("hidden");
       initUserSession(data);
     }
@@ -2074,6 +2302,7 @@
     async function submitAuth() {
       const u = document.getElementById("inputUser").value.trim();
       const p = document.getElementById("inputPass").value.trim();
+      const wantsFace = document.getElementById("enrollFaceCheck").checked;
       const err = document.getElementById("authError");
       err.classList.add("hidden");
 
@@ -2103,6 +2332,7 @@
           return;
         }
 
+        localStorage.setItem("face_last_verified", Date.now().toString());
         initUserSession(data);
       } else {
         const { data: userCheck } = await sb.from("campus_users").select("username").eq("username", u).maybeSingle();
@@ -2119,7 +2349,9 @@
           year: selectedYear || "1st",
           wifi_network: currentNetwork,
           is_banned: false,
-          ban_reason: null
+          ban_reason: null,
+          is_verified: isVerifiedUser(u),
+          face_auth_enabled: false
         };
 
         const { data: newUser, error: insErr } = await sb.from("campus_users").insert([payload]).select().single();
@@ -2130,7 +2362,13 @@
           err.classList.remove("hidden");
           return;
         }
+        
+        localStorage.setItem("face_last_verified", Date.now().toString());
         initUserSession(newUser);
+
+        if (wantsFace) {
+          setTimeout(openEnrollmentFaceModal, 500);
+        }
       }
     }
 
@@ -2216,7 +2454,7 @@
     }
 
     // =========================================================================
-    // ADMIN USER MANAGEMENT CONTROLS (DEVS EXCLUSIVE)
+    // ADMIN USER MANAGEMENT & VERIFICATION CONTROLS (DEVS EXCLUSIVE)
     // =========================================================================
     function openAdminUserManagerModal() {
       document.getElementById("adminUserModal").classList.remove("hidden");
@@ -2249,43 +2487,72 @@
       container.innerHTML = "";
       users.forEach(u => {
         const isBanned = u.is_banned === true;
-        const isDp = isVerifiedUser(u.username);
+        const isVerified = isVerifiedUser(u);
+        const hasFaceRequest = u.face_image && !u.is_verified;
+        
         const card = document.createElement("div");
-        card.className = `p-3 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition ${
+        card.className = `p-3.5 rounded-2xl border flex flex-col gap-2.5 transition ${
           isBanned 
             ? "bg-rose-500/10 border-rose-500/30" 
-            : "bg-slate-50 dark:bg-darkMuted/60 border-slate-200 dark:border-slate-800"
+            : (hasFaceRequest ? "bg-amber-500/5 border-amber-500/30" : "bg-slate-50 dark:bg-darkMuted/60 border-slate-200 dark:border-slate-800")
         }`;
 
         card.innerHTML = `
-          <div class="truncate space-y-0.5">
-            <div class="flex items-center gap-1.5">
-              <span class="font-bold text-xs text-slate-900 dark:text-white truncate">@${u.username}</span>
-              ${isDp ? getVerifiedBadgeSvg() : ''}
-              ${isBanned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500 text-white">BANNED</span>` : ''}
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5 truncate">
+              ${u.face_image ? `<img src="${u.face_image}" class="w-9 h-9 rounded-full object-cover border border-brand shrink-0 cursor-pointer shadow-sm" onclick="window.open('${u.face_image}')">` : `<div class="w-9 h-9 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center font-bold text-xs shrink-0">${u.username.charAt(0).toUpperCase()}</div>`}
+              <div class="truncate space-y-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-xs text-slate-900 dark:text-white truncate">@${u.username}</span>
+                  ${isVerified ? getVerifiedBadgeSvg() : ''}
+                  ${isBanned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500 text-white">BANNED</span>` : ''}
+                  ${hasFaceRequest ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">PHOTO SUBMITTED</span>` : ''}
+                </div>
+                <p class="text-[10px] text-slate-400 truncate">${u.course || 'N/A'} • ${u.year || '1st'} Year • Pass: <span class="font-mono text-slate-500 select-all">${u.password}</span></p>
+                ${isBanned && u.ban_reason ? `<p class="text-[10px] text-rose-500 font-medium truncate">Reason: ${u.ban_reason}</p>` : ''}
+              </div>
             </div>
-            <p class="text-[10px] text-slate-400 truncate">${u.course || 'N/A'} • ${u.year || '1st'} Year • Pass: <span class="font-mono text-slate-500 select-all">${u.password}</span></p>
-            ${isBanned && u.ban_reason ? `<p class="text-[10px] text-rose-500 font-medium truncate">Reason: ${u.ban_reason}</p>` : ''}
-          </div>
 
-          <div class="flex items-center gap-1.5 shrink-0">
-            ${isBanned ? `
-              <button onclick="adminUnbanUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-emerald-500 text-white font-bold text-[10px] hover:opacity-90 transition active:scale-95 shadow-sm">
-                Unban
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${!isVerified ? `
+                <button onclick="adminApproveUserVerification('${u.username}')" class="px-2.5 py-1 rounded-xl bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-700 transition active:scale-95 shadow-sm">
+                  ✓ Approve Badge
+                </button>
+              ` : `
+                <button onclick="adminRevokeUserVerification('${u.username}')" class="px-2.5 py-1 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-[10px] hover:bg-slate-300 transition active:scale-95">
+                  Revoke Badge
+                </button>
+              `}
+              ${isBanned ? `
+                <button onclick="adminUnbanUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-emerald-500 text-white font-bold text-[10px] hover:opacity-90 transition active:scale-95 shadow-sm">
+                  Unban
+                </button>
+              ` : `
+                <button onclick="openBanReasonModal('${u.username}')" class="px-2.5 py-1 rounded-xl bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/25 font-bold text-[10px] transition active:scale-95 shadow-sm">
+                  🚫 Ban
+                </button>
+              `}
+              <button onclick="adminDeleteUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-rose-600 text-white font-bold text-[10px] hover:bg-rose-700 transition active:scale-95 shadow-sm">
+                🗑 Delete
               </button>
-            ` : `
-              <button onclick="openBanReasonModal('${u.username}')" class="px-2.5 py-1 rounded-xl bg-amber-500/15 text-amber-500 border border-amber-500/30 hover:bg-amber-500/25 font-bold text-[10px] transition active:scale-95 shadow-sm">
-                🚫 Ban
-              </button>
-            `}
-            <button onclick="adminDeleteUser('${u.username}')" class="px-2.5 py-1 rounded-xl bg-rose-600 text-white font-bold text-[10px] hover:bg-rose-700 transition active:scale-95 shadow-sm">
-              🗑 Delete
-            </button>
+            </div>
           </div>
         `;
 
         container.appendChild(card);
       });
+    }
+
+    async function adminApproveUserVerification(username) {
+      const { error } = await sb.from("campus_users").update({ is_verified: true }).eq("username", username);
+      if (error) alert("Failed to approve verification: " + error.message);
+      else fetchAndRenderAdminUsers();
+    }
+
+    async function adminRevokeUserVerification(username) {
+      const { error } = await sb.from("campus_users").update({ is_verified: false }).eq("username", username);
+      if (error) alert("Failed to revoke verification: " + error.message);
+      else fetchAndRenderAdminUsers();
     }
 
     async function adminDeleteUser(username) {
@@ -2366,7 +2633,8 @@
         username: userData.username,
         course: userData.course,
         year: userData.year,
-        bio: userData.bio || ""
+        bio: userData.bio || "",
+        is_verified: userData.is_verified || false
       }));
 
       closeAuthModal();
@@ -2408,7 +2676,6 @@
         .on("broadcast", { event: "direct_msg" }, async ({ payload }) => {
           if (!payload) return;
           
-          // Verify intended recipient
           if (payload.recipient === currentUser.username) {
             const secret = getChannelEncryptionSecret(payload.sender);
             const decrypted = await decryptPayloadE2EE(payload, secret);
@@ -2467,7 +2734,8 @@
           course: currentUser.course,
           year: currentUser.year,
           network: currentNetwork,
-          bio: currentUser.bio || ""
+          bio: currentUser.bio || "",
+          is_verified: isVerifiedUser(currentUser)
         });
       }
     }
@@ -2568,7 +2836,7 @@
         const isSelected = activeChatUser && activeChatUser.username === peer.username && !isSophieActive;
         const unreadCount = unreadMap.get(peer.username) || 0;
         const initial = peer.username.charAt(0).toUpperCase();
-        const isDp = isVerifiedUser(peer.username);
+        const isPeerVerified = isVerifiedUser(peer);
         
         const row = document.createElement("div");
         row.className = `w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer smooth-transition ${
@@ -2583,7 +2851,7 @@
             <div class="truncate text-left">
               <div class="flex items-center gap-1">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
-                ${isDp ? getVerifiedBadgeSvg() : ''}
+                ${isPeerVerified ? getVerifiedBadgeSvg() : ''}
                 ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>` : ''}
               </div>
               <p class="text-[10px] text-slate-400 font-medium truncate">${peer.course} • ${peer.year}</p>
@@ -2622,7 +2890,7 @@
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
       
       const verifiedIcon = document.getElementById("activePeerVerifiedIcon");
-      if (isVerifiedUser(peer.username)) {
+      if (isVerifiedUser(peer)) {
         verifiedIcon.classList.remove("hidden");
       } else {
         verifiedIcon.classList.add("hidden");
@@ -2655,7 +2923,7 @@
       document.getElementById("inspectUsername").innerText = `@${peer.username}`;
       
       const verifiedIcon = document.getElementById("inspectVerifiedIcon");
-      if (isVerifiedUser(peer.username)) {
+      if (isVerifiedUser(peer)) {
         verifiedIcon.classList.remove("hidden");
       } else {
         verifiedIcon.classList.add("hidden");
@@ -2697,7 +2965,7 @@
       
       const verifiedIcon = document.getElementById("myProfileVerifiedIcon");
       const badgeText = document.getElementById("myProfileVerificationBadgeText");
-      if (isVerifiedUser(currentUser.username)) {
+      if (isVerifiedUser(currentUser)) {
         verifiedIcon.classList.remove("hidden");
         badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500 border border-blue-500/30";
         badgeText.innerText = "Verified Identity ✓";
@@ -2733,7 +3001,8 @@
         username: currentUser.username,
         course: currentUser.course,
         year: currentUser.year,
-        bio: newBio
+        bio: newBio,
+        is_verified: currentUser.is_verified || false
       }));
 
       await broadcastPresence();
@@ -2741,17 +3010,9 @@
       setTimeout(() => notice.classList.add("hidden"), 2000);
     }
 
-    function openVerificationNotice() {
-      document.getElementById("verifyNoticeModal").classList.remove("hidden");
-    }
-
-    function closeVerificationNotice() {
-      document.getElementById("verifyNoticeModal").classList.add("hidden");
-    }
-
     function updateProfileUI() {
-      const isDp = isVerifiedUser(currentUser.username);
-      document.getElementById("myUsernameDisplay").innerHTML = `@${currentUser.username} (${currentUser.course}) ${isDp ? getVerifiedBadgeSvg() : ''}`;
+      const isSelfVerified = isVerifiedUser(currentUser);
+      document.getElementById("myUsernameDisplay").innerHTML = `@${currentUser.username} (${currentUser.course}) ${isSelfVerified ? getVerifiedBadgeSvg() : ''}`;
       document.getElementById("myAvatarLetter").innerText = currentUser.username.charAt(0).toUpperCase();
       document.getElementById("myBioDisplay").innerText = currentUser.bio || "Tap to edit status...";
       document.getElementById("navLaunchBtn").innerText = `@${currentUser.username}`;
@@ -3030,13 +3291,13 @@
       wrap.id = `msg-${msg.id}`;
       wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
 
-      const isSenderDp = isVerifiedUser(msg.sender);
+      const isSenderVerified = isVerifiedUser(msg.sender);
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold";
       meta.innerHTML = `
         <span class="flex items-center gap-1">
           <span>${msg.sender}</span>
-          ${isSenderDp ? getVerifiedBadgeSvg() : ''}
+          ${isSenderVerified ? getVerifiedBadgeSvg() : ''}
         </span>
         <span class="text-brand font-bold">• ${msg.network || currentNetwork}</span>
       `;
@@ -3391,7 +3652,6 @@
       if (isSophieActive) {
         if (text) handleSophieInteraction(text);
       } else if (channel) {
-        // Zero-Knowledge 256-bit AES-GCM Encrypted Transmission
         const secret = getChannelEncryptionSecret(activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
         const encryptedEnvelope = await encryptPayloadE2EE(payload, secret);
 
