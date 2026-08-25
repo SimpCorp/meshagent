@@ -36,54 +36,67 @@ export async function onRequest(context) {
       return new Response(null, { status: 404 });
     }
 
-    // --- 2. PROXIED STREAM (Direct Binary Pipe) ---
+    // --- 2. PROXIED STREAM (Direct InnerTube Extraction + Range Piping) ---
     if (streamId) {
-      const videoId = encodeURIComponent(streamId);
-      const relayEndpoints = [
-        `https://pipedapi.kavin.rocks/streams/${videoId}`,
-        `https://api.piped.privacydev.net/streams/${videoId}`,
-        `https://piped-api.lunar.icu/streams/${videoId}`
-      ];
+      const videoId = streamId;
 
-      for (const endpoint of relayEndpoints) {
-        try {
-          const metaRes = await fetch(endpoint, {
-            headers: { "User-Agent": "Mozilla/5.0" },
-            signal: AbortSignal.timeout(3500)
-          });
-          if (!metaRes.ok) continue;
-          const meta = await metaRes.json();
-
-          const videoStreams = (meta.videoStreams || []).filter(s => !s.videoOnly && s.mimeType?.includes("mp4"));
-          const target = videoStreams.find(s => s.quality === "360p") || videoStreams.find(s => s.quality === "720p") || videoStreams[0];
-
-          if (target && target.url) {
-            const range = request.headers.get("Range");
-            const fetchHeaders = {
-              "User-Agent": "Mozilla/5.0",
-              ...(range ? { "Range": range } : {})
-            };
-
-            const streamRes = await fetch(target.url, { headers: fetchHeaders });
-            if (streamRes.ok || streamRes.status === 206) {
-              const respHeaders = new Headers(streamRes.headers);
-              respHeaders.set("Access-Control-Allow-Origin", "*");
-              respHeaders.set("Content-Type", "video/mp4");
-              return new Response(streamRes.body, {
-                status: streamRes.status,
-                headers: respHeaders
-              });
+      // Query YouTube's internal InnerTube Player API from Cloudflare edge
+      const innertubeRes = await fetch(`https://www.youtube.com/youtubei/v1/player`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        },
+        body: JSON.stringify({
+          context: {
+            client: {
+              clientName: "WEB",
+              clientVersion: "2.20240501.00.00",
+              hl: "en",
+              gl: "US"
             }
-          }
-        } catch (err) {
-          continue;
-        }
+          },
+          videoId: videoId
+        }),
+        signal: AbortSignal.timeout(6000)
+      });
+
+      if (!innertubeRes.ok) {
+        return new Response(JSON.stringify({ success: false, error: "InnerTube API connection failed at edge." }), { headers: jsonHeaders, status: 502 });
       }
 
-      return new Response(JSON.stringify({ success: false, error: "Stream unavailable from upstream relays." }), {
-        headers: jsonHeaders,
-        status: 502
-      });
+      const playerData = await innertubeRes.json();
+      const formats = playerData?.streamingData?.formats || [];
+      const adaptiveFormats = playerData?.streamingData?.adaptiveFormats || [];
+      
+      const allFormats = [...formats, ...adaptiveFormats];
+      const mp4Stream = allFormats.find(f => f.mimeType?.includes("video/mp4") && f.url);
+
+      if (!mp4Stream || !mp4Stream.url) {
+        return new Response(JSON.stringify({ success: false, error: "No accessible MP4 stream format found for this video ID." }), { headers: jsonHeaders, status: 404 });
+      }
+
+      // Forward client byte-range request for smooth seeking and buffering past 0:00
+      const rangeHeader = request.headers.get("Range");
+      const upstreamHeaders = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        ...(rangeHeader ? { "Range": rangeHeader } : {})
+      };
+
+      const videoByteRes = await fetch(mp4Stream.url, { headers: upstreamHeaders });
+
+      if (videoByteRes.ok || videoByteRes.status === 206) {
+        const respHeaders = new Headers(videoByteRes.headers);
+        respHeaders.set("Access-Control-Allow-Origin", "*");
+        respHeaders.set("Content-Type", "video/mp4");
+        
+        return new Response(videoByteRes.body, {
+          status: videoByteRes.status,
+          headers: respHeaders
+        });
+      }
+
+      return new Response(JSON.stringify({ success: false, error: "Upstream video byte stream error." }), { headers: jsonHeaders, status: 502 });
     }
 
     // --- 3. ZERO-LEAK SEARCH SCRAPER ---
@@ -99,18 +112,14 @@ export async function onRequest(context) {
       });
 
       if (!searchRes.ok) {
-        return new Response(JSON.stringify({ success: false, error: `Upstream returned status ${searchRes.status}` }), {
-          headers: jsonHeaders
-        });
+        return new Response(JSON.stringify({ success: false, error: `Upstream search failed with status ${searchRes.status}` }), { headers: jsonHeaders });
       }
 
       const html = await searchRes.text();
       const match = html.match(/var ytInitialData = ({.*?});<\/script>/s) || html.match(/ytInitialData = ({.*?});/s);
 
       if (!match || !match[1]) {
-        return new Response(JSON.stringify({ success: false, error: "Unable to parse video results from response." }), {
-          headers: jsonHeaders
-        });
+        return new Response(JSON.stringify({ success: false, error: "Unable to parse video metadata from response." }), { headers: jsonHeaders });
       }
 
       const parsed = JSON.parse(match[1]);
@@ -145,15 +154,9 @@ export async function onRequest(context) {
       }
     }
 
-    return new Response(JSON.stringify({ success: false, error: "Missing parameter 'q', 'stream', or 'thumb'" }), {
-      headers: jsonHeaders,
-      status: 400
-    });
+    return new Response(JSON.stringify({ success: false, error: "Missing parameters." }), { headers: jsonHeaders, status: 400 });
 
-  } catch (globalErr) {
-    return new Response(JSON.stringify({ success: false, error: "Edge runtime exception: " + globalErr.message }), {
-      headers: jsonHeaders,
-      status: 500
-    });
+  } catch (err) {
+    return new Response(JSON.stringify({ success: false, error: "Edge worker exception: " + err.message }), { headers: jsonHeaders, status: 500 });
   }
 }
