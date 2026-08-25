@@ -319,7 +319,7 @@
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
           <p class="font-bold text-emerald-600 dark:text-emerald-400">System Continuously Maintained & Bug-Free</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">This platform is maintained and updated on a frequent basis. <span class="font-semibold text-slate-700 dark:text-slate-200">Last bug fix: Zero-Leak Video Proxy & AES-GCM in working condition.</span></p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">This platform is maintained and updated on a frequent basis. <span class="font-semibold text-slate-700 dark:text-slate-200">Last bug fix: Multi-Engine Video Relay & Origin-Bound Zero-Noise Ping.</span></p>
         </div>
       </div>
 
@@ -417,7 +417,7 @@
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">STREAM</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Zero-Tracker Video Search</p>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Multi-Engine Stream Proxy • YouTube & Other</p>
             </div>
           </div>
           <span class="text-[10px] text-red-500 font-bold group-hover:translate-x-0.5 transition">Search →</span>
@@ -576,6 +576,17 @@
 
       <!-- Message Customization Sub-Bar -->
       <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none">
+        
+        <!-- Video Source Toggle (Visible Only In Vams Session) -->
+        <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
+          <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">
+            YouTube
+          </button>
+          <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">
+            OTHER
+          </button>
+        </div>
+
         <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition text-[10px] sm:text-[11px]">
           <span>⚠️</span> Spoiler
         </button>
@@ -1237,6 +1248,7 @@
     let activeChatUser = null;
     let isSophieActive = false;
     let isVideoBotActive = false;
+    let activeVideoSourceEngine = "youtube"; // "youtube" | "other"
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -1471,6 +1483,9 @@
       document.getElementById("domainNoticeModal").classList.add("hidden");
     }
 
+    // =========================================================================
+    // ORIGIN-BOUND ROUNDTRIP PING (0 CONSOLE ERRORS & CLEAN STATUS)
+    // =========================================================================
     async function checkNetworkPing() {
       const pingMeter = document.getElementById("pingMeter");
       const statusDot = document.getElementById("pingStatusDot");
@@ -1672,6 +1687,7 @@
     function selectSophieAI() {
       isSophieActive = true;
       isVideoBotActive = false;
+      document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7", is_verified: true };
 
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
@@ -1751,11 +1767,26 @@
     }
 
     // =========================================================================
-    // VAMS VIDEO BOT LOGIC & ZERO-LEAK STREAM ENGINE
+    // VAMS MULTI-ENGINE VIDEO BOT LOGIC & ZERO-LEAK STREAM PROXY
     // =========================================================================
+    function setVideoSourceEngine(engine) {
+      activeVideoSourceEngine = engine;
+      const ytBtn = document.getElementById("vSourceYtBtn");
+      const otherBtn = document.getElementById("vSourceOtherBtn");
+
+      if (engine === "youtube") {
+        ytBtn.className = "px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm";
+        otherBtn.className = "px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition";
+      } else {
+        otherBtn.className = "px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm";
+        ytBtn.className = "px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition";
+      }
+    }
+
     function selectVideoBot() {
       isVideoBotActive = true;
       isSophieActive = false;
+      document.getElementById("videoSourceToggleGroup").classList.remove("hidden");
       activeChatUser = { username: "Vams", course: "Video Hub", year: "24/7", is_verified: true };
 
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
@@ -1770,7 +1801,7 @@
       document.getElementById("activeChatPeerAvatar").innerText = "🎬";
       document.getElementById("activeChatPeerName").innerText = "Vams";
       document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
-      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Video Stream Proxy • 100% Encrypted";
+      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Stream Proxy • YouTube & Alternative Platforms";
 
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
@@ -1782,11 +1813,12 @@
       loadConversationFromSession("Vams");
     }
 
-    async function handleVideoBotInteraction(queryText) {
+    async function handleVideoBotInteraction(queryText, offset = 0, targetSource = null) {
       showTypingBubble("Vams");
+      const engine = targetSource || activeVideoSourceEngine;
 
       try {
-        const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}`);
+        const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}&source=${engine}&offset=${offset}`);
         const contentType = res.headers.get("content-type") || "";
 
         let data;
@@ -1800,14 +1832,14 @@
         document.getElementById("typingIndicatorBubble").classList.add("hidden");
 
         if (!data.success || !data.results || data.results.length === 0) {
-          const errDetail = data.error || "No matching videos found.";
+          const errDetail = data.error || `No matching videos found on ${engine.toUpperCase()}.`;
           const errPayload = {
             id: "msg_" + Math.random().toString(36).substr(2, 9),
             sender: "Vams",
             recipient: currentUser.username,
-            text: `⚠️ **Search Notice:** ${errDetail}\n\n*Tip:* Try alternative keywords or shorter titles.`,
+            text: `⚠️ **Search Notice (${engine.toUpperCase()}):** ${errDetail}\n\n*Tip:* Switch to **OTHER** in bottom sub-bar or try another search query.`,
             timestamp: Date.now(),
-            network: "RELAY-ERROR"
+            network: "RELAY-NOTICE"
           };
           saveMessageToSession("Vams", errPayload);
           if (isVideoBotActive) renderBubble(errPayload, false);
@@ -1819,6 +1851,12 @@
           sender: "Vams",
           recipient: currentUser.username,
           videoList: data.results,
+          searchContext: {
+            query: queryText,
+            source: engine,
+            offset: offset,
+            hasNext: data.hasNext
+          },
           timestamp: Date.now(),
           network: "PROXY-RELAY"
         };
@@ -1843,6 +1881,11 @@
       }
     }
 
+    function paginateVideoResults(encodedQuery, nextOffset, sourceEngine) {
+      const query = decodeURIComponent(encodedQuery);
+      handleVideoBotInteraction(query, nextOffset, sourceEngine);
+    }
+
     function playInlineVideo(btnElement, videoId) {
       const container = document.getElementById(`video-box-${videoId}`);
       if (!container) return;
@@ -1850,7 +1893,6 @@
       btnElement.innerText = "Buffering Stream...";
       btnElement.disabled = true;
 
-      // Purely relative endpoint — 0 DNS/SNI leaks to foreign domains
       const streamProxyUrl = `/api/video?stream=${encodeURIComponent(videoId)}`;
 
       container.innerHTML = `
@@ -1875,10 +1917,10 @@
       container.innerHTML = `
         <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-left space-y-1">
           <p class="text-[11px] font-bold text-rose-500 flex items-center gap-1">
-            <span>⚠️</span> Stream Proxy Error
+            <span>⚠️</span> Upstream Format Stalled
           </p>
           <p class="text-[10px] text-slate-400 leading-relaxed">
-            Cloudflare edge proxy could not decode or pipe this video format. Try another search result.
+            This stream format requires alternate decoding. Toggle to **OTHER** platform above or select the next search result.
           </p>
         </div>
       `;
@@ -2820,6 +2862,7 @@
     function selectDirectTab() {
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
 
@@ -2849,6 +2892,7 @@
     function selectLoungeChannel() {
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -2930,6 +2974,7 @@
       if (!peer) return;
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = peer;
       unreadMap.delete(peer.username);
       
@@ -3386,19 +3431,30 @@
         contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap">${msg.text}</div>`;
       } else if (msg.videoList) {
         rawSnippetText = "🎬 Video Search Results";
+        const ctx = msg.searchContext || { query: "", source: "youtube", offset: 0, hasNext: false };
+        const currentOffset = ctx.offset || 0;
+        const nextOffset = currentOffset + 3;
+        const prevOffset = Math.max(0, currentOffset - 3);
+        const encodedQ = encodeURIComponent(ctx.query || "");
+        const engineLabel = (ctx.source || "youtube").toUpperCase();
+
         contentHtml = `
           <div class="p-3 flex flex-col gap-3 min-w-[260px] sm:min-w-[340px]">
             <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-              <span>Top 3 Results</span>
-              <span class="text-[9px] font-mono text-emerald-500 font-bold">100% Proxied via Edge</span>
+              <span>Results (${currentOffset + 1}–${currentOffset + msg.videoList.length}) • ${engineLabel}</span>
+              <span class="text-[9px] font-mono text-emerald-500 font-bold">100% Proxied</span>
             </div>
+            
             <div class="space-y-3">
               ${msg.videoList.map(v => `
                 <div id="video-box-${v.id}" class="p-2.5 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
                   <div class="flex gap-2.5 items-start">
                     <img src="${v.thumbnail}" class="w-20 aspect-video object-cover rounded-lg border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-900">
                     <div class="truncate flex-1">
-                      <p class="text-xs font-bold truncate text-slate-900 dark:text-white" title="${v.title}">${v.title}</p>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand/10 text-brand border border-brand/20">${v.source || engineLabel}</span>
+                        <p class="text-xs font-bold truncate text-slate-900 dark:text-white" title="${v.title}">${v.title}</p>
+                      </div>
                       <p class="text-[10px] text-slate-400 truncate">${v.uploader} • ${v.duration}</p>
                     </div>
                   </div>
@@ -3407,6 +3463,21 @@
                   </button>
                 </div>
               `).join('')}
+            </div>
+
+            <!-- Page 3x Index Navigation Bar -->
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold">
+              ${currentOffset > 0 ? `
+                <button onclick="paginateVideoResults('${encodedQ}', ${prevOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95">
+                  ← Prev 3
+                </button>
+              ` : `<span></span>`}
+
+              ${ctx.hasNext ? `
+                <button onclick="paginateVideoResults('${encodedQ}', ${nextOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto">
+                  Next 3 (${nextOffset + 1}–${nextOffset + 3}) →
+                </button>
+              ` : `<span></span>`}
             </div>
           </div>
         `;
@@ -3735,7 +3806,7 @@
       if (isSophieActive) {
         if (text) handleSophieInteraction(text);
       } else if (isVideoBotActive) {
-        if (text) handleVideoBotInteraction(text);
+        if (text) handleVideoBotInteraction(text, 0, activeVideoSourceEngine);
       } else if (channel) {
         const secret = getChannelEncryptionSecret(activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
         const encryptedEnvelope = await encryptPayloadE2EE(payload, secret);
