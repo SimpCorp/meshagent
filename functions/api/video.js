@@ -16,7 +16,7 @@ export async function onRequest(context) {
   }
 
   try {
-    // --- 1. PROXIED THUMBNAIL (0 client leaks) ---
+    // --- 1. PROXIED THUMBNAIL ---
     if (thumbId) {
       try {
         const imgRes = await fetch(`https://i.ytimg.com/vi/${encodeURIComponent(thumbId)}/hqdefault.jpg`, {
@@ -36,67 +36,108 @@ export async function onRequest(context) {
       return new Response(null, { status: 404 });
     }
 
-    // --- 2. PROXIED STREAM (Direct InnerTube Extraction + Range Piping) ---
+    // --- 2. PROXIED STREAM (Cipherless Client Extraction) ---
     if (streamId) {
       const videoId = streamId;
 
-      // Query YouTube's internal InnerTube Player API from Cloudflare edge
-      const innertubeRes = await fetch(`https://www.youtube.com/youtubei/v1/player`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        },
-        body: JSON.stringify({
-          context: {
-            client: {
-              clientName: "WEB",
-              clientVersion: "2.20240501.00.00",
-              hl: "en",
-              gl: "US"
-            }
+      // Embedded TV / Native profiles that receive direct unencrypted stream URLs
+      const clientPayloads = [
+        {
+          client: {
+            clientName: "TVHTML5_SIMPLY_EMBEDDED",
+            clientVersion: "2.0",
+            hl: "en",
+            gl: "US"
           },
-          videoId: videoId
-        }),
-        signal: AbortSignal.timeout(6000)
-      });
+          thirdParty: {
+            embedUrl: "https://www.youtube.com"
+          }
+        },
+        {
+          client: {
+            clientName: "ANDROID_VR",
+            clientVersion: "1.60.19",
+            deviceMake: "Oculus",
+            deviceModel: "Quest 3",
+            androidSdkVersion: 32,
+            hl: "en",
+            gl: "US"
+          }
+        }
+      ];
 
-      if (!innertubeRes.ok) {
-        return new Response(JSON.stringify({ success: false, error: "InnerTube API connection failed at edge." }), { headers: jsonHeaders, status: 502 });
+      let streamUrl = null;
+
+      for (const payload of clientPayloads) {
+        try {
+          const innertubeRes = await fetch(`https://www.youtube.com/youtubei/v1/player`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+              "X-YouTube-Client-Name": payload.client.clientName === "TVHTML5_SIMPLY_EMBEDDED" ? "85" : "28",
+              "X-YouTube-Client-Version": payload.client.clientVersion
+            },
+            body: JSON.stringify({
+              context: { client: payload.client, ...(payload.thirdParty ? { thirdParty: payload.thirdParty } : {}) },
+              videoId: videoId,
+              contentCheckOk: true,
+              racyCheckOk: true
+            }),
+            signal: AbortSignal.timeout(5000)
+          });
+
+          if (!innertubeRes.ok) continue;
+
+          const data = await innertubeRes.json();
+          const formats = data?.streamingData?.formats || [];
+          const adaptive = data?.streamingData?.adaptiveFormats || [];
+          const all = [...formats, ...adaptive];
+
+          // Locate progressive/direct MP4 formats containing audio and video
+          const matched = all.find(f => f.url && f.mimeType?.includes("video/mp4") && (f.audioChannels || f.audioQuality));
+
+          if (matched && matched.url) {
+            streamUrl = matched.url;
+            break;
+          }
+        } catch (err) {
+          continue;
+        }
       }
 
-      const playerData = await innertubeRes.json();
-      const formats = playerData?.streamingData?.formats || [];
-      const adaptiveFormats = playerData?.streamingData?.adaptiveFormats || [];
-      
-      const allFormats = [...formats, ...adaptiveFormats];
-      const mp4Stream = allFormats.find(f => f.mimeType?.includes("video/mp4") && f.url);
-
-      if (!mp4Stream || !mp4Stream.url) {
-        return new Response(JSON.stringify({ success: false, error: "No accessible MP4 stream format found for this video ID." }), { headers: jsonHeaders, status: 404 });
+      if (!streamUrl) {
+        return new Response(JSON.stringify({ success: false, error: "Stream unavailable or restricted by policy." }), {
+          headers: jsonHeaders,
+          status: 404
+        });
       }
 
-      // Forward client byte-range request for smooth seeking and buffering past 0:00
+      // Forward client Range header for smooth seeking
       const rangeHeader = request.headers.get("Range");
       const upstreamHeaders = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
         ...(rangeHeader ? { "Range": rangeHeader } : {})
       };
 
-      const videoByteRes = await fetch(mp4Stream.url, { headers: upstreamHeaders });
+      const videoByteRes = await fetch(streamUrl, { headers: upstreamHeaders });
 
       if (videoByteRes.ok || videoByteRes.status === 206) {
         const respHeaders = new Headers(videoByteRes.headers);
         respHeaders.set("Access-Control-Allow-Origin", "*");
         respHeaders.set("Content-Type", "video/mp4");
-        
+        respHeaders.set("Accept-Ranges", "bytes");
+
         return new Response(videoByteRes.body, {
           status: videoByteRes.status,
           headers: respHeaders
         });
       }
 
-      return new Response(JSON.stringify({ success: false, error: "Upstream video byte stream error." }), { headers: jsonHeaders, status: 502 });
+      return new Response(JSON.stringify({ success: false, error: "Upstream stream pipe failure." }), {
+        headers: jsonHeaders,
+        status: 502
+      });
     }
 
     // --- 3. ZERO-LEAK SEARCH SCRAPER ---
@@ -112,14 +153,18 @@ export async function onRequest(context) {
       });
 
       if (!searchRes.ok) {
-        return new Response(JSON.stringify({ success: false, error: `Upstream search failed with status ${searchRes.status}` }), { headers: jsonHeaders });
+        return new Response(JSON.stringify({ success: false, error: `Upstream search returned status ${searchRes.status}` }), {
+          headers: jsonHeaders
+        });
       }
 
       const html = await searchRes.text();
       const match = html.match(/var ytInitialData = ({.*?});<\/script>/s) || html.match(/ytInitialData = ({.*?});/s);
 
       if (!match || !match[1]) {
-        return new Response(JSON.stringify({ success: false, error: "Unable to parse video metadata from response." }), { headers: jsonHeaders });
+        return new Response(JSON.stringify({ success: false, error: "Unable to parse video metadata." }), {
+          headers: jsonHeaders
+        });
       }
 
       const parsed = JSON.parse(match[1]);
@@ -157,6 +202,9 @@ export async function onRequest(context) {
     return new Response(JSON.stringify({ success: false, error: "Missing parameters." }), { headers: jsonHeaders, status: 400 });
 
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: "Edge worker exception: " + err.message }), { headers: jsonHeaders, status: 500 });
+    return new Response(JSON.stringify({ success: false, error: "Edge worker exception: " + err.message }), {
+      headers: jsonHeaders,
+      status: 500
+    });
   }
 }
