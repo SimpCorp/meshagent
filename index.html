@@ -405,6 +405,25 @@
         </div>
       </div>
 
+      <!-- PINNED 24/7 VAMS VIDEO BOT CARD -->
+      <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-red-500/5 to-transparent">
+        <div onclick="selectVideoBot()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-red-500/10 border border-red-500/20 shadow-sm group">
+          <div class="flex items-center gap-2.5 truncate">
+            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
+              🎬
+            </div>
+            <div class="truncate text-left">
+              <div class="flex items-center gap-1.5">
+                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">STREAM</span>
+              </div>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Zero-Tracker Video Search</p>
+            </div>
+          </div>
+          <span class="text-[10px] text-red-500 font-bold group-hover:translate-x-0.5 transition">Search →</span>
+        </div>
+      </div>
+
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
@@ -1217,6 +1236,7 @@
     let currentUser = null;
     let activeChatUser = null;
     let isSophieActive = false;
+    let isVideoBotActive = false;
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -1239,11 +1259,10 @@
     let activeAudioSessionId = 0;
 
     // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
-    // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
-const SAVED_SONGS_LIST = [
-  { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
-  { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" }
-];
+    const SAVED_SONGS_LIST = [
+      { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
+      { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" }
+    ];
     let currentPlayingSongIndex = -1;
 
     // --- SPOILER & BURNER STATE ---
@@ -1653,6 +1672,7 @@ const SAVED_SONGS_LIST = [
 
     function selectSophieAI() {
       isSophieActive = true;
+      isVideoBotActive = false;
       activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7", is_verified: true };
 
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
@@ -1728,6 +1748,120 @@ const SAVED_SONGS_LIST = [
         };
         saveMessageToSession("Sophie", errPayload);
         if (isSophieActive) renderBubble(errPayload, false);
+      }
+    }
+
+    // =========================================================================
+    // VAMS VIDEO BOT LOGIC & INLINE STREAM ENGINE
+    // =========================================================================
+    function selectVideoBot() {
+      isVideoBotActive = true;
+      isSophieActive = false;
+      activeChatUser = { username: "Vams", course: "Video Hub", year: "24/7", is_verified: true };
+
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
+
+      document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
+      document.getElementById("chatPane").classList.remove("hidden");
+      document.getElementById("chatPane").classList.add("flex");
+      document.getElementById("startCallBtn").classList.add("hidden");
+      document.getElementById("pokePeerBtn").classList.add("hidden");
+
+      document.getElementById("activeChatPeerAvatar").innerText = "🎬";
+      document.getElementById("activeChatPeerName").innerText = "Vams";
+      document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
+      document.getElementById("activeChatPeerMeta").innerText = "Private Video Stream Relay • Encrypted Tunnel";
+
+      const input = document.getElementById("dmInput");
+      const btn = document.getElementById("dmSendBtn");
+      input.removeAttribute("disabled");
+      btn.removeAttribute("disabled");
+      input.placeholder = "Ask Vams for a video (e.g. GTA VI Trailer)...";
+      input.focus();
+
+      loadConversationFromSession("Vams");
+    }
+
+    async function handleVideoBotInteraction(queryText) {
+      showTypingBubble("Vams");
+
+      try {
+        const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}`);
+        const data = await res.json();
+        document.getElementById("typingIndicatorBubble").classList.add("hidden");
+
+        if (!data.success || !data.results || data.results.length === 0) {
+          const errPayload = {
+            id: "msg_" + Math.random().toString(36).substr(2, 9),
+            sender: "Vams",
+            recipient: currentUser.username,
+            text: "No video results found for that query. Try different keywords.",
+            timestamp: Date.now(),
+            network: "RELAY"
+          };
+          saveMessageToSession("Vams", errPayload);
+          if (isVideoBotActive) renderBubble(errPayload, false);
+          return;
+        }
+
+        const videoResultsPayload = {
+          id: "msg_" + Math.random().toString(36).substr(2, 9),
+          sender: "Vams",
+          recipient: currentUser.username,
+          videoList: data.results,
+          timestamp: Date.now(),
+          network: "PROXY-RELAY"
+        };
+
+        saveMessageToSession("Vams", videoResultsPayload);
+        if (isVideoBotActive) {
+          renderBubble(videoResultsPayload, false);
+          soundRecv();
+        }
+      } catch (err) {
+        document.getElementById("typingIndicatorBubble").classList.add("hidden");
+        const errPayload = {
+          id: "msg_" + Math.random().toString(36).substr(2, 9),
+          sender: "Vams",
+          recipient: currentUser.username,
+          text: "Failed to connect to search relay: " + err.message,
+          timestamp: Date.now(),
+          network: "ERROR"
+        };
+        saveMessageToSession("Vams", errPayload);
+        if (isVideoBotActive) renderBubble(errPayload, false);
+      }
+    }
+
+    async function playInlineVideo(btnElement, videoId) {
+      const container = document.getElementById(`video-box-${videoId}`);
+      if (!container) return;
+
+      btnElement.innerText = "Loading Stream...";
+      btnElement.disabled = true;
+
+      try {
+        const res = await fetch(`/api/video?id=${encodeURIComponent(videoId)}`);
+        const data = await res.json();
+
+        if (!data.success || !data.streamUrl) {
+          alert("Unable to fetch direct stream for this video. Try another result.");
+          btnElement.innerText = "▶ Watch";
+          btnElement.disabled = false;
+          return;
+        }
+
+        container.innerHTML = `
+          <video controls autoplay playsinline class="w-full rounded-xl bg-black aspect-video object-contain shadow-md">
+            <source src="${data.streamUrl}" type="video/mp4">
+            Your browser does not support HTML5 video streaming.
+          </video>
+        `;
+      } catch (err) {
+        alert("Playback error: " + err.message);
+        btnElement.innerText = "▶ Watch";
+        btnElement.disabled = false;
       }
     }
 
@@ -1834,7 +1968,7 @@ const SAVED_SONGS_LIST = [
     });
 
     function sendHapticPoke() {
-      if (!channel || !activeChatUser || isSophieActive) return;
+      if (!channel || !activeChatUser || isSophieActive || isVideoBotActive) return;
       const targetUser = activeChatUser.username;
       const now = Date.now();
 
@@ -1916,7 +2050,7 @@ const SAVED_SONGS_LIST = [
 
     function triggerDeleteMessage(msgId) {
       handleLocalMessageRemoval(msgId);
-      if (channel && !isSophieActive) {
+      if (channel && !isSophieActive && !isVideoBotActive) {
         channel.send({
           type: "broadcast",
           event: "delete_msg",
@@ -1932,7 +2066,7 @@ const SAVED_SONGS_LIST = [
         setTimeout(() => el.remove(), 350);
       }
 
-      const targetKey = isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
+      const targetKey = isSophieActive ? "Sophie" : (isVideoBotActive ? "Vams" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE"));
       removeMessageFromSession(targetKey, msgId);
     }
 
@@ -2569,7 +2703,7 @@ const SAVED_SONGS_LIST = [
           if (!decrypted) return;
 
           saveMessageToSession("GLOBAL_LOUNGE", decrypted);
-          if (activeChatUser === null && !isSophieActive) {
+          if (activeChatUser === null && !isSophieActive && !isVideoBotActive) {
             renderBubble(decrypted, false);
             soundRecv();
           }
@@ -2591,7 +2725,7 @@ const SAVED_SONGS_LIST = [
               payload: { id: decrypted.id, from: currentUser.username, to: decrypted.sender }
             });
 
-            if (activeChatUser && activeChatUser.username.toLowerCase() === decrypted.sender.toLowerCase() && !isSophieActive) {
+            if (activeChatUser && activeChatUser.username.toLowerCase() === decrypted.sender.toLowerCase() && !isSophieActive && !isVideoBotActive) {
               renderBubble(decrypted, false);
             } else {
               const currentUnread = unreadMap.get(decrypted.sender) || 0;
@@ -2616,7 +2750,7 @@ const SAVED_SONGS_LIST = [
           handleIncomingPoke(payload);
         })
         .on("broadcast", { event: "typing_notice" }, ({ payload }) => {
-          if (activeChatUser && payload.sender.toLowerCase() === activeChatUser.username.toLowerCase() && payload.recipient.toLowerCase() === currentUser.username.toLowerCase() && !isSophieActive) {
+          if (activeChatUser && payload.sender.toLowerCase() === activeChatUser.username.toLowerCase() && payload.recipient.toLowerCase() === currentUser.username.toLowerCase() && !isSophieActive && !isVideoBotActive) {
             showTypingBubble(payload.sender);
           }
         })
@@ -2655,7 +2789,7 @@ const SAVED_SONGS_LIST = [
     }
 
     document.getElementById("dmInput").addEventListener("input", () => {
-      if (activeChatUser && channel && !isSophieActive) {
+      if (activeChatUser && channel && !isSophieActive && !isVideoBotActive) {
         channel.send({
           type: "broadcast",
           event: "typing_notice",
@@ -2666,6 +2800,7 @@ const SAVED_SONGS_LIST = [
 
     function selectDirectTab() {
       isSophieActive = false;
+      isVideoBotActive = false;
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
 
@@ -2682,7 +2817,7 @@ const SAVED_SONGS_LIST = [
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
             <div class="w-12 h-12 rounded-full bg-slate-200/60 dark:bg-darkMuted flex items-center justify-center text-lg font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory or talk to Sophie AI above.</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory, talk to Sophie AI, or search videos with Vams.</p>
           </div>
         `;
         parseTwemoji(document.getElementById("dmChatArea"));
@@ -2694,6 +2829,7 @@ const SAVED_SONGS_LIST = [
 
     function selectLoungeChannel() {
       isSophieActive = false;
+      isVideoBotActive = false;
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -2734,7 +2870,7 @@ const SAVED_SONGS_LIST = [
 
       container.innerHTML = "";
       peers.forEach(peer => {
-        const isSelected = activeChatUser && activeChatUser.username.toLowerCase() === peer.username.toLowerCase() && !isSophieActive;
+        const isSelected = activeChatUser && activeChatUser.username.toLowerCase() === peer.username.toLowerCase() && !isSophieActive && !isVideoBotActive;
         const unreadCount = unreadMap.get(peer.username) || 0;
         const initial = peer.username.charAt(0).toUpperCase();
         const isPeerVerified = isVerifiedUser(peer);
@@ -2774,6 +2910,7 @@ const SAVED_SONGS_LIST = [
     function selectPeerForChat(peer) {
       if (!peer) return;
       isSophieActive = false;
+      isVideoBotActive = false;
       activeChatUser = peer;
       unreadMap.delete(peer.username);
       
@@ -2841,7 +2978,7 @@ const SAVED_SONGS_LIST = [
     }
 
     function openActivePeerProfileModal() {
-      if (activeChatUser && !isSophieActive) {
+      if (activeChatUser && !isSophieActive && !isVideoBotActive) {
         inspectPeerProfile(activeChatUser.username);
       }
     }
@@ -3105,7 +3242,7 @@ const SAVED_SONGS_LIST = [
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
+        aud.currentTime = (val / 100) * aud.duration;
       }
     }
 
@@ -3228,6 +3365,32 @@ const SAVED_SONGS_LIST = [
 
       if (msg.text) {
         contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text">${msg.text}</div>`;
+      } else if (msg.videoList) {
+        rawSnippetText = "🎬 Video Search Results";
+        contentHtml = `
+          <div class="p-3 flex flex-col gap-3 min-w-[260px] sm:min-w-[340px]">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+              <span>Top 3 Results</span>
+              <span class="text-[9px] font-mono text-emerald-500">Proxied</span>
+            </div>
+            <div class="space-y-3">
+              ${msg.videoList.map(v => `
+                <div id="video-box-${v.id}" class="p-2 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+                  <div class="flex gap-2.5 items-start">
+                    <img src="${v.thumbnail}" class="w-20 aspect-video object-cover rounded-lg border border-slate-200 dark:border-slate-700 shrink-0">
+                    <div class="truncate flex-1">
+                      <p class="text-xs font-bold truncate text-slate-900 dark:text-white" title="${v.title}">${v.title}</p>
+                      <p class="text-[10px] text-slate-400 truncate">${v.uploader} • ${v.duration}</p>
+                    </div>
+                  </div>
+                  <button onclick="playInlineVideo(this, '${v.id}')" class="w-full py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition active:scale-95 shadow-sm flex items-center justify-center gap-1.5">
+                    <span>▶</span> Watch Stream
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
       } else if (msg.image) {
         rawSnippetText = "🖼️ Photo";
         contentHtml = `
@@ -3335,7 +3498,7 @@ const SAVED_SONGS_LIST = [
       }
 
       let deleteBtnHtml = "";
-      if (isSelf || isSophieActive) {
+      if (isSelf || isSophieActive || isVideoBotActive) {
         deleteBtnHtml = `
           <span class="w-[1px] h-3 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
           <button onclick="triggerDeleteMessage('${msg.id}')" title="Delete Everywhere" class="p-1 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition flex items-center justify-center">
@@ -3395,7 +3558,7 @@ const SAVED_SONGS_LIST = [
 
     function sendReaction(msgId, emoji) {
       applyReactionToDom(msgId, emoji, currentUser.username);
-      if (channel && !isSophieActive) {
+      if (channel && !isSophieActive && !isVideoBotActive) {
         channel.send({
           type: "broadcast",
           event: "reaction_msg",
@@ -3528,7 +3691,7 @@ const SAVED_SONGS_LIST = [
       const payload = {
         id: "msg_" + Math.random().toString(36).substr(2, 9),
         sender: currentUser.username,
-        recipient: isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : null),
+        recipient: isSophieActive ? "Sophie" : (isVideoBotActive ? "Vams" : (activeChatUser ? activeChatUser.username : null)),
         text,
         image,
         audio,
@@ -3543,7 +3706,7 @@ const SAVED_SONGS_LIST = [
         timestamp: Date.now()
       };
 
-      const targetKey = isSophieActive ? "Sophie" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
+      const targetKey = isSophieActive ? "Sophie" : (isVideoBotActive ? "Vams" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE"));
       saveMessageToSession(targetKey, payload);
       renderBubble(payload, true);
       soundSent();
@@ -3552,6 +3715,8 @@ const SAVED_SONGS_LIST = [
 
       if (isSophieActive) {
         if (text) handleSophieInteraction(text);
+      } else if (isVideoBotActive) {
+        if (text) handleVideoBotInteraction(text);
       } else if (channel) {
         const secret = getChannelEncryptionSecret(activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
         const encryptedEnvelope = await encryptPayloadE2EE(payload, secret);
@@ -3781,7 +3946,7 @@ const SAVED_SONGS_LIST = [
     }
 
     async function initiateAudioCall() {
-      if (!activeChatUser || !channel || isSophieActive) return;
+      if (!activeChatUser || !channel || isSophieActive || isVideoBotActive) return;
       
       const remoteAudio = document.getElementById("remoteAudioElement");
       remoteAudio.volume = globalMasterVolume;
