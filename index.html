@@ -1788,21 +1788,25 @@
 
       try {
         const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}`);
-        
-        if (!res.ok) {
-          throw new Error(`Edge Relay returned HTTP status ${res.status} (${res.statusText || 'Serverless Route Unreachable'}).`);
+        const contentType = res.headers.get("content-type") || "";
+
+        let data;
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const rawText = await res.text();
+          throw new Error(`Server returned non-JSON payload (${res.status}): ${rawText.substring(0, 100)}...`);
         }
 
-        const data = await res.json();
         document.getElementById("typingIndicatorBubble").classList.add("hidden");
 
         if (!data.success || !data.results || data.results.length === 0) {
-          const detailedErr = data.error || "Edge search query returned zero matches or was filtered upstream.";
+          const errDetail = data.error || "No matching videos found.";
           const errPayload = {
             id: "msg_" + Math.random().toString(36).substr(2, 9),
             sender: "Vams",
             recipient: currentUser.username,
-            text: `⚠️ **Search Failed:** ${detailedErr}\n\n*Suggestion:* Try shorter keywords (e.g., "GTA 6 Trailer" instead of full URLs).`,
+            text: `⚠️ **Search Notice:** ${errDetail}\n\n*Tip:* Try alternative keywords or shorter titles.`,
             timestamp: Date.now(),
             network: "RELAY-ERROR"
           };
@@ -1831,7 +1835,7 @@
           id: "msg_" + Math.random().toString(36).substr(2, 9),
           sender: "Vams",
           recipient: currentUser.username,
-          text: `🚨 **Relay Connection Error:** ${err.message}\n\n*Diagnostics:* Verify that \`functions/api/video.js\` is deployed in GitHub repository.`,
+          text: `🚨 **Relay Error:** ${err.message}`,
           timestamp: Date.now(),
           network: "FATAL-ERROR"
         };
