@@ -1477,8 +1477,8 @@
       const startTime = performance.now();
 
       try {
-        await fetch(`${SUPABASE_URL}/auth/v1/health`, {
-          method: "HEAD",
+        await fetch(`${SUPABASE_URL}/rest/v1/?apikey=${SUPABASE_ANON_KEY}`, {
+          method: "GET",
           headers: { apikey: SUPABASE_ANON_KEY },
           cache: "no-store"
         });
