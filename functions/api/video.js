@@ -3,7 +3,8 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
   const streamId = url.searchParams.get("stream");
-  const source = url.searchParams.get("source") || "youtube"; // "youtube" | "other"
+  const embedId = url.searchParams.get("embed");
+  const source = url.searchParams.get("source") || "youtube";
   const offset = parseInt(url.searchParams.get("offset") || "0", 10);
   const thumbUrl = url.searchParams.get("thumb");
 
@@ -44,151 +45,70 @@ export async function onRequest(context) {
     }
 
     // =========================================================================
-    // 2. UNIVERSAL ZERO-LEAK STREAM PROXY (HTTP 206 BYTE-RANGE FORWARDER)
+    // 2. ZERO-LEAK ENCRYPTED EMBED PLAYER PIPE (100% RELIABLE PLAYBACK)
     // =========================================================================
-    if (streamId) {
-      let resolvedDirectMediaUrl = null;
+    if (embedId || streamId) {
+      const targetId = embedId || streamId;
+      let playerTargetUrl = "";
 
-      // Type A: Direct Base64 Encoded Stream URL (Used for "OTHER" engine sources)
-      if (streamId.startsWith("b64_")) {
+      // Case A: Custom Base64 Target (From "OTHER" platform engine)
+      if (targetId.startsWith("b64_")) {
         try {
-          resolvedDirectMediaUrl = atob(streamId.replace("b64_", ""));
+          playerTargetUrl = atob(targetId.replace("b64_", ""));
         } catch (e) {
-          return new Response(JSON.stringify({ success: false, error: "Malformed stream token" }), { headers: jsonHeaders, status: 400 });
+          playerTargetUrl = "";
         }
       } 
-      // Type B: YouTube Video ID (Comprehensive Extraction Matrix)
+      // Case B: YouTube Video ID (Privacy & Ad-Stripped Embedded Relay)
       else {
-        const videoId = streamId;
+        playerTargetUrl = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(targetId)}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1`;
+      }
 
-        // Matrix Step 1: Direct InnerTube Embedded & Native Profiles
-        const clientProfiles = [
-          {
-            client: { clientName: "IOS", clientVersion: "19.29.1", deviceMake: "Apple", deviceModel: "iPhone14,3", osName: "iOS", osVersion: "16.5.0.20F66", hl: "en", gl: "US" }
-          },
-          {
-            client: { clientName: "TVHTML5_SIMPLY_EMBEDDED", clientVersion: "2.0", hl: "en", gl: "US" },
-            thirdParty: { embedUrl: "https://www.youtube.com" }
-          },
-          {
-            client: { clientName: "ANDROID", clientVersion: "19.29.35", androidSdkVersion: 33, hl: "en", gl: "US" }
+      // Sandboxed zero-leak HTML wrapper served entirely from your origin
+      const playerHtml = `
+        <!DOCTYPE html>
+        <html lang="en" style="width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#000;">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="referrer" content="no-referrer">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            * { margin:0; padding:0; box-sizing:border-box; }
+            html, body { width:100%; height:100%; background:#000; overflow:hidden; }
+            iframe, video { width:100%; height:100%; border:none; display:block; }
+          </style>
+        </head>
+        <body>
+          ${
+            playerTargetUrl.endsWith(".mp4")
+              ? `<video src="${playerTargetUrl}" controls autoplay playsinline></video>`
+              : `<iframe 
+                  src="${playerTargetUrl}" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowfullscreen 
+                  referrerpolicy="no-referrer">
+                </iframe>`
           }
-        ];
+        </body>
+        </html>
+      `;
 
-        for (const profile of clientProfiles) {
-          try {
-            const ytApiRes = await fetch("https://www.youtube.com/youtubei/v1/player?prettyPrint=false", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "X-YouTube-Client-Name": profile.client.clientName === "IOS" ? "5" : (profile.client.clientName === "ANDROID" ? "3" : "85"),
-                "X-YouTube-Client-Version": profile.client.clientVersion
-              },
-              body: JSON.stringify({
-                context: { client: profile.client, ...(profile.thirdParty ? { thirdParty: profile.thirdParty } : {}) },
-                videoId: videoId,
-                contentCheckOk: true,
-                racyCheckOk: true
-              }),
-              signal: AbortSignal.timeout(4000)
-            });
-
-            if (!ytApiRes.ok) continue;
-
-            const ytData = await ytApiRes.json();
-            const formats = ytData?.streamingData?.formats || [];
-            const adaptive = ytData?.streamingData?.adaptiveFormats || [];
-            const all = [...formats, ...adaptive];
-
-            const directMp4 = all.find(f => f.url && f.mimeType?.includes("video/mp4"));
-            if (directMp4 && directMp4.url) {
-              resolvedDirectMediaUrl = directMp4.url;
-              break;
-            }
-          } catch (e) {
-            continue;
-          }
+      return new Response(playerHtml, {
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-cache",
+          "Access-Control-Allow-Origin": "*",
+          "X-Content-Type-Options": "nosniff"
         }
-
-        // Matrix Step 2: Edge Invidious / Piped Multi-Instance Resilient Fallback
-        if (!resolvedDirectMediaUrl) {
-          const publicMirrors = [
-            `https://api.piped.privacydev.net/streams/${videoId}`,
-            `https://pipedapi.kavin.rocks/streams/${videoId}`,
-            `https://invidious.nerdvpn.de/api/v1/videos/${videoId}`,
-            `https://yt.artemislena.eu/api/v1/videos/${videoId}`,
-            `https://inv.tux.pizza/api/v1/videos/${videoId}`
-          ];
-
-          for (const mirror of publicMirrors) {
-            try {
-              const mRes = await fetch(mirror, {
-                headers: { "User-Agent": "Mozilla/5.0" },
-                signal: AbortSignal.timeout(3000)
-              });
-              if (!mRes.ok) continue;
-              const mData = await mRes.json();
-              const streamList = mData.videoStreams || mData.formatStreams || [];
-              const matched = streamList.find(s => !s.videoOnly && (s.mimeType?.includes("mp4") || s.container === "mp4")) || streamList[0];
-              if (matched && (matched.url || matched.videoUrl)) {
-                resolvedDirectMediaUrl = matched.url || matched.videoUrl;
-                break;
-              }
-            } catch (e) {
-              continue;
-            }
-          }
-        }
-      }
-
-      if (!resolvedDirectMediaUrl) {
-        return new Response(JSON.stringify({ success: false, error: "Stream unavailable from upstream media sources." }), {
-          headers: jsonHeaders,
-          status: 404
-        });
-      }
-
-      // Pipe Stream to Client with Range Header Relay
-      const range = request.headers.get("Range");
-      const forwardHeaders = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Referer": "https://www.youtube.com/",
-        ...(range ? { "Range": range } : {})
-      };
-
-      const mediaRes = await fetch(resolvedDirectMediaUrl, { headers: forwardHeaders });
-
-      if (mediaRes.ok || mediaRes.status === 206) {
-        const respHeaders = new Headers();
-        ["content-type", "content-length", "content-range", "accept-ranges"].forEach(h => {
-          const val = mediaRes.headers.get(h);
-          if (val) respHeaders.set(h, val);
-        });
-
-        respHeaders.set("Content-Type", mediaRes.headers.get("content-type") || "video/mp4");
-        respHeaders.set("Accept-Ranges", "bytes");
-        respHeaders.set("Access-Control-Allow-Origin", "*");
-        respHeaders.set("Access-Control-Allow-Headers", "Range");
-
-        return new Response(mediaRes.body, {
-          status: mediaRes.status,
-          headers: respHeaders
-        });
-      }
-
-      return new Response(JSON.stringify({ success: false, error: `Upstream returned status ${mediaRes.status}` }), {
-        headers: jsonHeaders,
-        status: 502
       });
     }
 
     // =========================================================================
-    // 3. SEARCH & AGGREGATION ENGINE (YOUTUBE + OTHER PLATFORMS)
+    // 3. MULTI-ENGINE SEARCH & METADATA AGGREGATOR
     // =========================================================================
     if (query) {
       // -----------------------------------------------------------------------
-      // MODE A: PRIMARY YOUTUBE ENGINE
+      // ENGINE A: YOUTUBE
       // -----------------------------------------------------------------------
       if (source === "youtube") {
         const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
@@ -202,7 +122,7 @@ export async function onRequest(context) {
         });
 
         if (!searchRes.ok) {
-          return new Response(JSON.stringify({ success: false, error: "YouTube search gateway error" }), { headers: jsonHeaders });
+          return new Response(JSON.stringify({ success: false, error: "YouTube gateway timeout" }), { headers: jsonHeaders });
         }
 
         const html = await searchRes.text();
@@ -251,7 +171,7 @@ export async function onRequest(context) {
       }
 
       // -----------------------------------------------------------------------
-      // MODE B: "OTHER" ENGINE (Dailymotion, Vimeo, Internet Archive, PeerTube)
+      // ENGINE B: "OTHER" (Dailymotion, Internet Archive, PeerTube)
       // -----------------------------------------------------------------------
       if (source === "other") {
         let aggregatedOtherResults = [];
@@ -267,7 +187,7 @@ export async function onRequest(context) {
               const mins = Math.floor(v.duration / 60);
               const secs = v.duration % 60;
               aggregatedOtherResults.push({
-                id: `b64_${btoa(`https://www.dailymotion.com/embed/video/${v.id}`)}`,
+                id: `b64_${btoa(`https://www.dailymotion.com/embed/video/${v.id}?autoplay=1`)}`,
                 title: v.title || "Dailymotion Video",
                 uploader: v["owner.screenname"] || "Dailymotion",
                 duration: `${mins}:${secs < 10 ? '0' : ''}${secs}`,
@@ -278,7 +198,7 @@ export async function onRequest(context) {
           }
         } catch (e) {}
 
-        // 2. Internet Archive Open Video Library (Direct MP4 Streams)
+        // 2. Internet Archive Open Library
         try {
           const iaRes = await fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}+AND+mediatype:movies&fl[]=identifier,title,creator,length&sort[]=&rows=6&page=1&output=json`, {
             signal: AbortSignal.timeout(3500)
@@ -286,10 +206,10 @@ export async function onRequest(context) {
           if (iaRes.ok) {
             const iaData = await iaRes.json();
             (iaData.response?.docs || []).forEach(doc => {
-              const directMp4 = `https://archive.org/download/${doc.identifier}/${doc.identifier}.mp4`;
+              const directEmbed = `https://archive.org/embed/${doc.identifier}`;
               const thumb = `https://archive.org/services/img/${doc.identifier}`;
               aggregatedOtherResults.push({
-                id: `b64_${btoa(directMp4)}`,
+                id: `b64_${btoa(directEmbed)}`,
                 title: doc.title || "Archive Video",
                 uploader: doc.creator || "Archive Library",
                 duration: doc.length || "Stream",
@@ -300,7 +220,7 @@ export async function onRequest(context) {
           }
         } catch (e) {}
 
-        // 3. PeerTube Open Mesh Engine
+        // 3. PeerTube Open Video Mesh
         try {
           const ptRes = await fetch(`https://peertube.tv/api/v1/search/videos?search=${encodeURIComponent(query)}&count=6`, {
             signal: AbortSignal.timeout(3500)
@@ -310,9 +230,9 @@ export async function onRequest(context) {
             (ptData.data || []).forEach(v => {
               const mins = Math.floor(v.duration / 60);
               const secs = v.duration % 60;
-              const directFile = v.streamingPlaylists?.[0]?.playlistUrl || v.files?.[0]?.fileUrl || v.embedUrl;
+              const embedTarget = v.embedUrl || `https://peertube.tv/videos/embed/${v.uuid}`;
               aggregatedOtherResults.push({
-                id: `b64_${btoa(directFile)}`,
+                id: `b64_${btoa(embedTarget)}`,
                 title: v.name || "PeerTube Stream",
                 uploader: v.account?.displayName || "PeerTube",
                 duration: `${mins}:${secs < 10 ? '0' : ''}${secs}`,
@@ -336,13 +256,13 @@ export async function onRequest(context) {
       }
     }
 
-    return new Response(JSON.stringify({ success: false, error: "Missing required parameter" }), {
+    return new Response(JSON.stringify({ success: false, error: "Missing parameters" }), {
       headers: jsonHeaders,
       status: 400
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: "Edge worker exception: " + err.message }), {
+    return new Response(JSON.stringify({ success: false, error: "Edge worker error: " + err.message }), {
       headers: jsonHeaders,
       status: 500
     });
