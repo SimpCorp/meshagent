@@ -1,23 +1,9 @@
-// Verified Active Invidious & Piped Instances with dedicated format handlers
-const INVIDIOUS_INSTANCES = [
-  "https://invidious.drgns.space",
-  "https://vid.puffyan.us",
-  "https://invidious.flokinet.to",
-  "https://inv.riverside.rocks",
-  "https://invidious.privacydev.net"
-];
-
-const PIPED_INSTANCES = [
-  "https://pipedapi.kavin.rocks",
-  "https://api.piped.privacydev.net",
-  "https://piped-api.lunar.icu"
-];
-
 export async function onRequest(context) {
   const { request } = context;
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
   const videoId = url.searchParams.get("id");
+  const thumbId = url.searchParams.get("thumb");
 
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -29,151 +15,92 @@ export async function onRequest(context) {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // ==========================================
-  // 1. VIDEO SEARCH
-  // ==========================================
+  // --- 1. PROXIED THUMBNAIL (Bypasses ytimg.com block) ---
+  if (thumbId) {
+    try {
+      const imgRes = await fetch(`https://i.ytimg.com/vi/${encodeURIComponent(thumbId)}/hqdefault.jpg`, {
+        headers: { "User-Agent": "Mozilla/5.0" }
+      });
+      if (imgRes.ok) {
+        return new Response(imgRes.body, {
+          headers: {
+            "Content-Type": "image/jpeg",
+            "Cache-Control": "public, max-age=86400"
+          }
+        });
+      }
+    } catch (e) {}
+    return new Response(null, { status: 404 });
+  }
+
+  // --- 2. DIRECT YOUTUBE SEARCH SCRAPER ON CLOUDFLARE EDGE ---
   if (query) {
-    // Strategy A: Try Invidious Instances (/api/v1/search)
-    for (const inst of INVIDIOUS_INSTANCES) {
-      try {
-        const searchUrl = `${inst}/api/v1/search?q=${encodeURIComponent(query)}&type=video`;
-        const res = await fetch(searchUrl, {
-          headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
-          signal: AbortSignal.timeout(3500)
-        });
+    try {
+      const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+      const res = await fetch(searchUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.9"
+        },
+        signal: AbortSignal.timeout(6000)
+      });
 
-        if (!res.ok) continue;
-        const data = await res.json();
+      if (!res.ok) {
+        return new Response(JSON.stringify({ success: false, error: "Search upstream failed." }), { headers: corsHeaders });
+      }
 
-        if (Array.isArray(data) && data.length > 0) {
-          const top3 = data
-            .filter(v => v.videoId && v.title)
-            .slice(0, 3)
-            .map(v => ({
-              id: v.videoId,
-              title: v.title,
-              uploader: v.author || "YouTube Creator",
-              duration: v.lengthSeconds ? formatDuration(v.lengthSeconds) : "Video",
-              thumbnail: `https://i.ytimg.com/vi/${v.videoId}/hqdefault.jpg`,
-              instance: inst
-            }));
+      const html = await res.text();
+      const match = html.match(/var ytInitialData = ({.*?});<\/script>/s) || html.match(/ytInitialData = ({.*?});/s);
 
-          if (top3.length > 0) {
-            return new Response(JSON.stringify({ success: true, results: top3 }), { headers: corsHeaders });
+      if (!match || !match[1]) {
+        return new Response(JSON.stringify({ success: false, error: "Unable to parse search results." }), { headers: corsHeaders });
+      }
+
+      const data = JSON.parse(match[1]);
+      const contents = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents;
+
+      let rawVideos = [];
+      if (Array.isArray(contents)) {
+        for (const section of contents) {
+          const itemSection = section?.itemSectionRenderer?.contents;
+          if (Array.isArray(itemSection)) {
+            for (const item of itemSection) {
+              if (item.videoRenderer && item.videoRenderer.videoId) {
+                const vr = item.videoRenderer;
+                rawVideos.push({
+                  id: vr.videoId,
+                  title: vr.title?.runs?.[0]?.text || vr.title?.simpleText || "Video",
+                  uploader: vr.ownerText?.runs?.[0]?.text || "Creator",
+                  duration: vr.lengthText?.simpleText || "Video",
+                  thumbnail: `/api/video?thumb=${vr.videoId}`
+                });
+              }
+            }
           }
         }
-      } catch (e) {
-        continue;
       }
-    }
 
-    // Strategy B: Fallback to Piped Instances (/search)
-    for (const inst of PIPED_INSTANCES) {
-      try {
-        const searchUrl = `${inst}/search?q=${encodeURIComponent(query)}&filter=videos`;
-        const res = await fetch(searchUrl, {
-          headers: { "User-Agent": "Mozilla/5.0" },
-          signal: AbortSignal.timeout(3500)
-        });
+      const top3 = rawVideos.slice(0, 3);
 
-        if (!res.ok) continue;
-        const data = await res.json();
-        const items = data.items || data;
-
-        if (Array.isArray(items) && items.length > 0) {
-          const top3 = items
-            .filter(v => (v.url || v.id) && (v.title || v.name))
-            .slice(0, 3)
-            .map(v => {
-              const id = v.url ? v.url.replace("/watch?v=", "") : v.id;
-              return {
-                id: id,
-                title: v.title || v.name,
-                uploader: v.uploaderName || "YouTube Creator",
-                duration: v.duration ? formatDuration(v.duration) : "Video",
-                thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
-                instance: inst
-              };
-            });
-
-          if (top3.length > 0) {
-            return new Response(JSON.stringify({ success: true, results: top3 }), { headers: corsHeaders });
-          }
-        }
-      } catch (e) {
-        continue;
+      if (top3.length > 0) {
+        return new Response(JSON.stringify({ success: true, results: top3 }), { headers: corsHeaders });
+      } else {
+        return new Response(JSON.stringify({ success: false, error: "No video matches found." }), { headers: corsHeaders });
       }
+    } catch (err) {
+      return new Response(JSON.stringify({ success: false, error: "Edge search error: " + err.message }), { headers: corsHeaders });
     }
-
-    return new Response(JSON.stringify({ success: false, error: "Search backend unreachable. Try again in a moment." }), { headers: corsHeaders });
   }
 
-  // ==========================================
-  // 2. DIRECT STREAM URL EXTRACTION
-  // ==========================================
+  // --- 3. VIDEO EMBED/STREAM GENERATION ---
   if (videoId) {
-    // Strategy A: Direct Invidious Media Stream
-    for (const inst of INVIDIOUS_INSTANCES) {
-      try {
-        const infoUrl = `${inst}/api/v1/videos/${encodeURIComponent(videoId)}`;
-        const res = await fetch(infoUrl, {
-          headers: { "User-Agent": "Mozilla/5.0" },
-          signal: AbortSignal.timeout(3500)
-        });
-
-        if (!res.ok) continue;
-        const data = await res.json();
-
-        // FormatFormats: Look for combined video+audio streams (itag 18 = 360p mp4, itag 22 = 720p mp4)
-        const formatStreams = data.formatStreams || [];
-        const combinedMp4 = formatStreams.find(s => s.itag === "22" || s.qualityLabel === "720p") || formatStreams[0];
-
-        if (combinedMp4 && combinedMp4.url) {
-          return new Response(JSON.stringify({ success: true, streamUrl: combinedMp4.url }), { headers: corsHeaders });
-        }
-
-        // Direct proxied fallback stream
-        const fallbackUrl = `${inst}/latest_version?id=${encodeURIComponent(videoId)}&itag=18`;
-        return new Response(JSON.stringify({ success: true, streamUrl: fallbackUrl }), { headers: corsHeaders });
-      } catch (e) {
-        continue;
-      }
-    }
-
-    // Strategy B: Piped Stream Extraction Fallback
-    for (const inst of PIPED_INSTANCES) {
-      try {
-        const streamUrl = `${inst}/streams/${encodeURIComponent(videoId)}`;
-        const res = await fetch(streamUrl, {
-          headers: { "User-Agent": "Mozilla/5.0" },
-          signal: AbortSignal.timeout(3500)
-        });
-
-        if (!res.ok) continue;
-        const data = await res.json();
-
-        const videoStreams = (data.videoStreams || []).filter(s => !s.videoOnly && s.mimeType?.includes("mp4"));
-        const bestStream = videoStreams.find(s => s.quality === "720p") || videoStreams[0];
-
-        if (bestStream && bestStream.url) {
-          return new Response(JSON.stringify({ success: true, streamUrl: bestStream.url }), { headers: corsHeaders });
-        }
-      } catch (e) {
-        continue;
-      }
-    }
-
-    return new Response(JSON.stringify({ success: false, error: "Stream link unavailable." }), { headers: corsHeaders });
+    // Generate a sandboxed privacy-shielded player configuration
+    return new Response(JSON.stringify({
+      success: true,
+      videoId: videoId,
+      embedUrl: `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&modestbranding=1&rel=0`
+    }), { headers: corsHeaders });
   }
 
-  return new Response(JSON.stringify({ error: "Missing query parameter 'q' or 'id'" }), { headers: corsHeaders, status: 400 });
-}
-
-function formatDuration(seconds) {
-  if (typeof seconds === "string") return seconds;
-  const num = parseInt(seconds, 10);
-  if (isNaN(num)) return "Video";
-  const mins = Math.floor(num / 60);
-  const secs = num % 60;
-  return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  return new Response(JSON.stringify({ error: "Invalid parameters" }), { headers: corsHeaders, status: 400 });
 }
