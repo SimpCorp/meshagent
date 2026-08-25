@@ -314,12 +314,11 @@
         Real-time direct messaging, two-way delete on read, background tab alerts, live location cards, and self-destruct media with client-side cryptographic isolation.
       </p>
 
-      <!-- PERSISTENT STATUS BADGE -->
       <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
           <p class="font-bold text-emerald-600 dark:text-emerald-400">System Continuously Maintained & Bug-Free</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">This platform is maintained and updated on a frequent basis. <span class="font-semibold text-slate-700 dark:text-slate-200">Last bug fix: Multi-Engine Video Relay & Origin-Bound Zero-Noise Ping.</span></p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Maintained with sandboxed zero-leak stream proxies & origin-bound ping telemetry.</p>
         </div>
       </div>
 
@@ -362,7 +361,7 @@
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full">
+    <section id="sidebarPane" class="w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0">
       
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
@@ -393,7 +392,7 @@
             <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
               🤖
             </div>
-            <div class="truncate text-left">
+            <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Sophie</p>
                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">AI BOT</span>
@@ -412,7 +411,7 @@
             <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
               🎬
             </div>
-            <div class="truncate text-left">
+            <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
                 <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">STREAM</span>
@@ -442,7 +441,6 @@
           </div>
         </div>
         
-        <!-- Live Radio Buttons Row -->
         <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1">
           <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">ENG</button>
           <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">HIN</button>
@@ -451,7 +449,6 @@
           <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95" title="Browse Saved Tracks">SAVED</button>
         </div>
 
-        <!-- Saved Songs Drawer with Scrubber -->
         <div id="savedMusicDrawer" class="hidden space-y-2 pt-0.5 smooth-transition">
           <div class="flex items-center gap-1">
             <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95" title="Back to Live Stations">← Live</button>
@@ -460,7 +457,6 @@
           
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
 
-          <!-- Saved Music Seeking & Scrubbing HUD -->
           <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1">
             <div class="flex items-center justify-between text-[9px] font-mono text-slate-400">
               <span id="savedCurrentTime">0:00</span>
@@ -474,7 +470,6 @@
           </div>
         </div>
 
-        <!-- Master Volume Control -->
         <div class="space-y-1 pt-0.5">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
@@ -494,7 +489,7 @@
           <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
             <span id="myAvatarLetter">U</span>
           </div>
-          <div class="truncate">
+          <div class="truncate min-w-0">
             <div class="flex items-center gap-1.5">
               <span id="myUsernameDisplay" class="font-bold text-slate-900 dark:text-white truncate text-xs">@me</span>
               <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
@@ -507,18 +502,18 @@
     </section>
 
     <!-- RIGHT SECTION: Chat Pane -->
-    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full">
+    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full min-w-0 overflow-hidden">
       
       <!-- Chat Header -->
-      <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10">
-        <div class="flex items-center gap-2">
-          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1">← Back</button>
+      <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10 shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1 shrink-0">← Back</button>
           
-          <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition">
+          <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition min-w-0">
             <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
               ?
             </div>
-            <div class="truncate max-w-[120px] sm:max-w-[180px]">
+            <div class="truncate max-w-[140px] sm:max-w-[200px] min-w-0">
               <div class="flex items-center gap-1">
                 <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate">Select a peer</p>
                 <span id="activePeerVerifiedIcon" class="hidden inline-flex items-center justify-center">
@@ -530,7 +525,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
@@ -546,7 +541,7 @@
       </div>
 
       <!-- Message History Scroll Area -->
-      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 custom-scroll relative"></div>
+      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 custom-scroll relative min-w-0"></div>
 
       <!-- iMessage Style Realtime Typing Indicator Bubble -->
       <div id="typingIndicatorBubble" class="hidden px-4 py-1.5 flex items-center gap-2 transition-all">
@@ -565,8 +560,8 @@
 
       <!-- Active Quote / Reply Preview Drawer -->
       <div id="activeReplyBar" class="hidden px-3 sm:px-4 py-1.5 sm:py-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-100/80 dark:bg-darkMuted/60 flex items-center justify-between text-xs z-10 smooth-transition">
-        <div class="flex items-center gap-2 truncate border-l-2 border-brand pl-2">
-          <div class="truncate">
+        <div class="flex items-center gap-2 truncate border-l-2 border-brand pl-2 min-w-0">
+          <div class="truncate min-w-0">
             <span class="font-bold text-[10px] sm:text-[11px] text-brand" id="replyAuthorLabel">Replying to @peer</span>
             <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[200px] sm:max-w-md" id="replySnippetLabel">Message snippet...</p>
           </div>
@@ -575,7 +570,7 @@
       </div>
 
       <!-- Message Customization Sub-Bar -->
-      <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none">
+      <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0">
         
         <!-- Video Source Toggle (Visible Only In Vams Session) -->
         <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
@@ -612,7 +607,7 @@
       </div>
 
       <!-- Message Form -->
-      <form id="dmForm" class="p-2.5 sm:p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10">
+      <form id="dmForm" class="p-2.5 sm:p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10 shrink-0">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
         <input type="file" id="docUploadInput" accept=".pdf,.txt,.doc,.docx" class="hidden" onchange="handleDocSelection(event)">
         
@@ -641,7 +636,7 @@
           <span id="voiceMicIcon" class="text-xs">🎤</span>
         </button>
 
-        <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-3.5 sm:px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition">
+        <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-3.5 sm:px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition min-w-0">
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-0.5">
         </div>
         
@@ -977,7 +972,7 @@
         <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div class="flex items-center gap-2.5 truncate">
             <div class="w-2.5 h-2.5 rounded-full bg-brand"></div>
-            <div class="truncate">
+            <div class="truncate min-w-0">
               <div class="flex items-center gap-1">
                 <p id="unlockUserLabel" class="text-xs font-bold truncate">@username</p>
                 <span id="unlockVerifiedIcon" class="hidden inline-flex items-center justify-center">
@@ -1059,7 +1054,7 @@
         <button onclick="backToStep('stepCourse')" class="text-xs text-slate-500 hover:text-slate-900 dark:hover:text-white pt-1">← Back</button>
       </div>
 
-      <!-- Step 3 Handle & Password (Sign Up or Sign In) -->
+      <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <div class="flex items-center justify-between">
           <span class="text-[11px] text-brand font-bold uppercase tracking-wide" id="authStepBadge">Step 3 of 3</span>
@@ -1103,7 +1098,7 @@
     </div>
   </div>
 
-  <!-- FOOTER WITH REAL-TIME PING MONITOR -->
+  <!-- FOOTER -->
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span id="pingStatusDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -1117,9 +1112,6 @@
   </footer>
 
   <script>
-    // =========================================================================
-    // CRYPTOGRAPHIC SUBTLECRYPTO ZERO-KNOWLEDGE E2EE SUITE
-    // =========================================================================
     const cryptoSubtle = window.crypto.subtle;
     const activeCryptoKeyMap = new Map();
 
@@ -1248,7 +1240,7 @@
     let activeChatUser = null;
     let isSophieActive = false;
     let isVideoBotActive = false;
-    let activeVideoSourceEngine = "youtube"; // "youtube" | "other"
+    let activeVideoSourceEngine = "youtube";
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -1258,10 +1250,7 @@
     let inspectedPeerObj = null;
     let hasShownRadioEarphoneWarning = false;
 
-    // --- PENDING BAN TARGET STATE ---
     let pendingBanUser = null;
-
-    // --- GLOBAL MASTER VOLUME & AUDIO SESSION ENGINE ---
     let globalMasterVolume = 1.0;
     let activeDestructLimit = 1;
     let audioPlayedCounts = new Map();
@@ -1270,30 +1259,23 @@
     let activeLiveSessionTimer = null;
     let activeAudioSessionId = 0;
 
-    // --- SAVED LOCAL SONGS REPOSITORY MANIFEST ---
     const SAVED_SONGS_LIST = [
       { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
       { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" }
     ];
     let currentPlayingSongIndex = -1;
 
-    // --- SPOILER & BURNER STATE ---
     let isSpoilerActive = false;
     let activeBurnerDuration = 0;
-
-    // --- ACTIVE REPLY STATE ---
     let activeReplyTarget = null;
-
-    // --- POKE RATE LIMITING & TAB FLASH ---
     const peerPokeHistory = new Map();
     let tabFlashInterval = null;
     const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
 
-    // --- In-Memory Fast Cache for Zero-Lag Swapping ---
     const inMemoryChatCache = new Map();
 
     // =========================================================================
-    // LIGHTWEIGHT BADGE PHOTO VERIFICATION
+    // BADGE PHOTO VERIFICATION
     // =========================================================================
     let badgeCameraStream = null;
 
@@ -1353,12 +1335,11 @@
         alert("Submission failed: " + error.message);
       } else {
         currentUser.face_image = base64Photo;
-        alert("Verification photo submitted! The host will review your photo in DEVS and award your Verified Badge.");
+        alert("Verification photo submitted! The host will review your photo in DEVS.");
         updateProfileUI();
       }
     }
 
-    // --- DYNAMIC VERIFICATION BADGE HELPER ---
     function isVerifiedUser(userObjOrName) {
       if (!userObjOrName) return false;
       if (typeof userObjOrName === "object") {
@@ -1483,9 +1464,6 @@
       document.getElementById("domainNoticeModal").classList.add("hidden");
     }
 
-    // =========================================================================
-    // ORIGIN-BOUND ROUNDTRIP PING (0 CONSOLE ERRORS & CLEAN STATUS)
-    // =========================================================================
     async function checkNetworkPing() {
       const pingMeter = document.getElementById("pingMeter");
       const statusDot = document.getElementById("pingStatusDot");
@@ -1539,10 +1517,7 @@
       document.getElementById('volPercentLabel').innerText = `${val}%`;
       
       document.querySelectorAll('audio').forEach(a => { a.volume = globalMasterVolume; });
-      
-      if (activeRadioPlayer) {
-        activeRadioPlayer.volume = globalMasterVolume;
-      }
+      if (activeRadioPlayer) activeRadioPlayer.volume = globalMasterVolume;
     }
 
     function checkVolumeAlert() {
@@ -1601,8 +1576,8 @@
         }`;
         
         item.innerHTML = `
-          <span class="truncate flex items-center gap-1.5">
-            <span class="text-[9px] opacity-60">🎵</span>
+          <span class="truncate flex items-center gap-1.5 min-w-0">
+            <span class="text-[9px] opacity-60 shrink-0">🎵</span>
             <span class="truncate">${song.title}</span>
           </span>
           <span class="shrink-0 text-[10px] ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
@@ -1708,7 +1683,7 @@
       const btn = document.getElementById("dmSendBtn");
       input.removeAttribute("disabled");
       btn.removeAttribute("disabled");
-      input.placeholder = "Ask Sophie something... if you dare";
+      input.placeholder = "Ask Sophie something...";
       input.focus();
 
       loadConversationFromSession("Sophie");
@@ -1733,7 +1708,7 @@
         });
 
         const data = await res.json();
-        const replyText = data.reply || data.error || "My processor stalled looking at that question. Try again.";
+        const replyText = data.reply || data.error || "Processor stalled. Try again.";
 
         document.getElementById("typingIndicatorBubble").classList.add("hidden");
 
@@ -1767,7 +1742,7 @@
     }
 
     // =========================================================================
-    // VAMS MULTI-ENGINE VIDEO BOT LOGIC & ZERO-LEAK STREAM PROXY
+    // VAMS MULTI-ENGINE VIDEO BOT LOGIC & SANDBOXED ZERO-LEAK EMBED
     // =========================================================================
     function setVideoSourceEngine(engine) {
       activeVideoSourceEngine = engine;
@@ -1801,7 +1776,7 @@
       document.getElementById("activeChatPeerAvatar").innerText = "🎬";
       document.getElementById("activeChatPeerName").innerText = "Vams";
       document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
-      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Stream Proxy • YouTube & Alternative Platforms";
+      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Stream Proxy • YouTube & Other";
 
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
@@ -1837,7 +1812,7 @@
             id: "msg_" + Math.random().toString(36).substr(2, 9),
             sender: "Vams",
             recipient: currentUser.username,
-            text: `⚠️ **Search Notice (${engine.toUpperCase()}):** ${errDetail}\n\n*Tip:* Switch to **OTHER** in bottom sub-bar or try another search query.`,
+            text: `⚠️ **Search Notice (${engine.toUpperCase()}):** ${errDetail}\n\n*Tip:* Switch between YouTube and OTHER above.`,
             timestamp: Date.now(),
             network: "RELAY-NOTICE"
           };
@@ -1890,38 +1865,20 @@
       const container = document.getElementById(`video-box-${videoId}`);
       if (!container) return;
 
-      btnElement.innerText = "Buffering Stream...";
+      btnElement.innerText = "Buffering...";
       btnElement.disabled = true;
 
-      const streamProxyUrl = `/api/video?stream=${encodeURIComponent(videoId)}`;
+      const embedProxyUrl = `/api/video?embed=${encodeURIComponent(videoId)}`;
 
       container.innerHTML = `
-        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-md border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-          <video 
-            controls 
-            autoplay 
-            playsinline 
-            preload="auto"
-            class="w-full h-full object-contain"
-            onerror="handleVideoPlayError(this, '${videoId}')">
-            <source src="${streamProxyUrl}" type="video/mp4">
-            Your browser does not support HTML5 video playback.
-          </video>
-        </div>
-      `;
-    }
-
-    function handleVideoPlayError(videoElem, videoId) {
-      const container = document.getElementById(`video-box-${videoId}`);
-      if (!container) return;
-      container.innerHTML = `
-        <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-left space-y-1">
-          <p class="text-[11px] font-bold text-rose-500 flex items-center gap-1">
-            <span>⚠️</span> Upstream Format Stalled
-          </p>
-          <p class="text-[10px] text-slate-400 leading-relaxed">
-            This stream format requires alternate decoding. Toggle to **OTHER** platform above or select the next search result.
-          </p>
+        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-md border border-slate-200 dark:border-slate-800">
+          <iframe 
+            src="${embedProxyUrl}" 
+            class="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen 
+            referrerpolicy="no-referrer">
+          </iframe>
         </div>
       `;
     }
@@ -1984,7 +1941,7 @@
     function processDocumentUpload(file) {
       const maxBytes = 2 * 1024 * 1024;
       if (file.size > maxBytes) {
-        alert("File size exceeds 2 MB limit for direct ephemeral sharing.");
+        alert("File size exceeds 2 MB limit.");
         return;
       }
 
@@ -2547,9 +2504,6 @@
       parseTwemoji(document.querySelector('header'));
     }
 
-    // =========================================================================
-    // ADMIN USER MANAGEMENT CONTROLS (DEVS EXCLUSIVE)
-    // =========================================================================
     function openAdminUserManagerModal() {
       document.getElementById("adminUserModal").classList.remove("hidden");
       fetchAndRenderAdminUsers();
@@ -2592,10 +2546,10 @@
         }`;
 
         card.innerHTML = `
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 truncate">
+          <div class="flex items-center justify-between gap-2 min-w-0">
+            <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
               ${u.face_image ? `<img src="${u.face_image}" class="w-9 h-9 rounded-full object-cover border border-brand shrink-0 cursor-pointer shadow-sm" onclick="window.open('${u.face_image}')">` : `<div class="w-9 h-9 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center font-bold text-xs shrink-0">${u.username.charAt(0).toUpperCase()}</div>`}
-              <div class="truncate space-y-0.5">
+              <div class="truncate space-y-0.5 min-w-0">
                 <div class="flex items-center gap-1.5">
                   <span class="font-bold text-xs text-slate-900 dark:text-white truncate">@${u.username}</span>
                   ${isVerified ? getVerifiedBadgeSvg() : ''}
@@ -2944,11 +2898,11 @@
         }`;
         
         row.innerHTML = `
-          <div class="flex items-center gap-2.5 truncate flex-1" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
+          <div class="flex items-center gap-2.5 truncate flex-1 min-w-0" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
             <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
               ${initial}
             </div>
-            <div class="truncate text-left">
+            <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
                 ${isPeerVerified ? getVerifiedBadgeSvg() : ''}
@@ -3391,7 +3345,7 @@
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
       wrap.id = `msg-${msg.id}`;
-      wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300`;
+      wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300 w-full min-w-0 max-w-full`;
 
       const isSenderVerified = isVerifiedUser(msg.sender);
       const meta = document.createElement("div");
@@ -3405,10 +3359,10 @@
       `;
 
       const contentHolder = document.createElement("div");
-      contentHolder.className = "relative flex items-center gap-1.5 max-w-[92%] sm:max-w-[78%]";
+      contentHolder.className = "relative flex items-center gap-1.5 max-w-[94%] sm:max-w-[85%] min-w-0";
 
       const bubble = document.createElement("div");
-      bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words ${
+      bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words min-w-0 max-w-full ${
         isSelf 
           ? "bg-brand text-white rounded-2xl rounded-br-sm font-medium" 
           : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
@@ -3417,7 +3371,7 @@
       let replySnippetHtml = "";
       if (msg.replyTo) {
         replySnippetHtml = `
-          <div class="px-3 pt-2 pb-1 border-b ${isSelf ? 'border-white/20 bg-black/10' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-darkBg/50'} text-[10px] space-y-0.5">
+          <div class="px-3 pt-2 pb-1 border-b ${isSelf ? 'border-white/20 bg-black/10' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-darkBg/50'} text-[10px] space-y-0.5 min-w-0">
             <span class="font-bold ${isSelf ? 'text-white/90' : 'text-brand'}">↳ @${msg.replyTo.author}</span>
             <p class="truncate opacity-80 italic">${msg.replyTo.snippet}</p>
           </div>
@@ -3428,7 +3382,7 @@
       let rawSnippetText = msg.text || "";
 
       if (msg.text) {
-        contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap">${msg.text}</div>`;
+        contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap break-words min-w-0">${msg.text}</div>`;
       } else if (msg.videoList) {
         rawSnippetText = "🎬 Video Search Results";
         const ctx = msg.searchContext || { query: "", source: "youtube", offset: 0, hasNext: false };
@@ -3439,20 +3393,20 @@
         const engineLabel = (ctx.source || "youtube").toUpperCase();
 
         contentHtml = `
-          <div class="p-3 flex flex-col gap-3 min-w-[260px] sm:min-w-[340px]">
-            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-              <span>Results (${currentOffset + 1}–${currentOffset + msg.videoList.length}) • ${engineLabel}</span>
-              <span class="text-[9px] font-mono text-emerald-500 font-bold">100% Proxied</span>
+          <div class="p-3 flex flex-col gap-3 w-full max-w-full min-w-0 overflow-hidden">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0">
+              <span class="truncate">Results (${currentOffset + 1}–${currentOffset + msg.videoList.length}) • ${engineLabel}</span>
+              <span class="text-[9px] font-mono text-emerald-500 font-bold shrink-0 ml-1">100% Proxied</span>
             </div>
             
-            <div class="space-y-3">
+            <div class="space-y-3 w-full min-w-0">
               ${msg.videoList.map(v => `
-                <div id="video-box-${v.id}" class="p-2.5 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
-                  <div class="flex gap-2.5 items-start">
+                <div id="video-box-${v.id}" class="p-2.5 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2 w-full min-w-0 overflow-hidden">
+                  <div class="flex gap-2.5 items-start min-w-0">
                     <img src="${v.thumbnail}" class="w-20 aspect-video object-cover rounded-lg border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-900">
-                    <div class="truncate flex-1">
-                      <div class="flex items-center gap-1.5">
-                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand/10 text-brand border border-brand/20">${v.source || engineLabel}</span>
+                    <div class="truncate flex-1 min-w-0">
+                      <div class="flex items-center gap-1.5 min-w-0">
+                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand/10 text-brand border border-brand/20 shrink-0">${v.source || engineLabel}</span>
                         <p class="text-xs font-bold truncate text-slate-900 dark:text-white" title="${v.title}">${v.title}</p>
                       </div>
                       <p class="text-[10px] text-slate-400 truncate">${v.uploader} • ${v.duration}</p>
@@ -3465,16 +3419,16 @@
               `).join('')}
             </div>
 
-            <!-- Page 3x Index Navigation Bar -->
-            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold">
+            <!-- 3x Index Navigation Bar -->
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0">
               ${currentOffset > 0 ? `
-                <button onclick="paginateVideoResults('${encodedQ}', ${prevOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95">
+                <button onclick="paginateVideoResults('${encodedQ}', ${prevOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
                   ← Prev 3
                 </button>
               ` : `<span></span>`}
 
               ${ctx.hasNext ? `
-                <button onclick="paginateVideoResults('${encodedQ}', ${nextOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto">
+                <button onclick="paginateVideoResults('${encodedQ}', ${nextOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto shrink-0">
                   Next 3 (${nextOffset + 1}–${nextOffset + 3}) →
                 </button>
               ` : `<span></span>`}
@@ -3484,7 +3438,7 @@
       } else if (msg.image) {
         rawSnippetText = "🖼️ Photo";
         contentHtml = `
-          <div class="p-1 relative group/img">
+          <div class="p-1 relative group/img max-w-full">
             <img src="${msg.image}" class="max-w-[240px] sm:max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">
             <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/85 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md hover:bg-slate-900">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -3499,7 +3453,7 @@
         const appleMapsUrl = `https://maps.apple.com/?q=${lat},${lng}`;
         
         contentHtml = `
-          <div class="p-3 sm:p-3.5 flex flex-col gap-2 min-w-[200px] sm:min-w-[220px]">
+          <div class="p-3 sm:p-3.5 flex flex-col gap-2 min-w-[200px] sm:min-w-[220px] max-w-full">
             <div class="flex items-center justify-between text-[11px] font-bold">
               <span class="flex items-center gap-1.5"><span>📍</span> Live Location</span>
               <span class="text-[9px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">±${accuracy}m</span>
@@ -3515,10 +3469,10 @@
         const { name, size, data } = msg.fileDoc;
         rawSnippetText = `📄 ${name}`;
         contentHtml = `
-          <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[200px] sm:min-w-[220px]">
-            <div class="flex items-center gap-2 truncate">
+          <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[200px] sm:min-w-[220px] max-w-full">
+            <div class="flex items-center gap-2 truncate flex-1 min-w-0">
               <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-xs sm:text-sm shrink-0">📄</div>
-              <div class="truncate text-left">
+              <div class="truncate text-left min-w-0">
                 <p class="text-xs font-bold truncate">${name}</p>
                 <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
               </div>
@@ -3535,7 +3489,7 @@
         const currentCount = audioPlayedCounts.get(msg.id) || 0;
         
         contentHtml = `
-          <div class="p-3 flex flex-col gap-2 min-w-[220px] sm:min-w-[280px]">
+          <div class="p-3 flex flex-col gap-2 min-w-[220px] sm:min-w-[280px] max-w-full">
             <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
               <span class="font-bold flex items-center gap-1">🔥 Voice Clip (<span id="burn-count-${msg.id}">${currentCount}/${limit} Plays</span>)</span>
               <span id="time-${msg.id}" class="font-mono">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
@@ -3559,7 +3513,7 @@
 
       if (msg.isSpoiler) {
         bubble.innerHTML = `
-          <div class="relative min-h-[44px] min-w-[140px] flex flex-col">
+          <div class="relative min-h-[44px] min-w-[140px] flex flex-col max-w-full">
             ${replySnippetHtml}
             <div class="spoiler-content w-full">${contentHtml}</div>
             <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/95 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer px-4 py-2 text-center z-10 backdrop-blur-md rounded-2xl">
