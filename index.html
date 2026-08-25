@@ -1477,9 +1477,8 @@
       const startTime = performance.now();
 
       try {
-        await fetch(`${SUPABASE_URL}/rest/v1/?apikey=${SUPABASE_ANON_KEY}`, {
-          method: "GET",
-          headers: { apikey: SUPABASE_ANON_KEY },
+        await fetch(`/?_ping=${Date.now()}`, {
+          method: "HEAD",
           cache: "no-store"
         });
         const duration = Math.round(performance.now() - startTime);
