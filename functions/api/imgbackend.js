@@ -1,173 +1,163 @@
-/**
- * imgbackend.js
- * High-performance, zero-memory-leak image processing & delivery backend.
- */
+export async function onRequest(context) {
+  const { request } = context;
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q");
+  const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+  const proxyImgUrl = url.searchParams.get("proxy_img");
 
-import express from 'express';
-import helmet from 'helmet';
-import compression from 'compression';
-import sharp from 'sharp';
-import multer from 'multer';
-import { pipeline } from 'node:stream/promises';
-import { createReadStream, createWriteStream, existsSync } from 'node:fs';
-import { mkdir, unlink, stat } from 'node:fs/promises';
-import path from 'node:path';
-import crypto from 'node:crypto';
+  const jsonHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Content-Type": "application/json"
+  };
 
-// --- CONFIGURATION & MEMORY SAFETY ---
-const PORT = process.env.PORT || 3000;
-const UPLOAD_DIR = path.resolve('storage/raw');
-const CACHE_DIR = path.resolve('storage/cache');
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
-const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif']);
-
-// Sharp memory & concurrency limits to prevent unbounded libvips thread/buffer growth
-sharp.cache({ memory: 256, files: 50, items: 200 }); // Max 256MB RAM cache for libvips
-sharp.concurrency(0); // Uses available CPU cores safely
-sharp.simd(true);      // Enables SIMD hardware acceleration
-
-await mkdir(UPLOAD_DIR, { recursive: true });
-await mkdir(CACHE_DIR, { recursive: true });
-
-const app = express();
-
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(compression());
-
-// --- ZERO-LEAK STORAGE ENGINE ---
-// Writes directly to disk instead of holding file Buffers in V8 heap memory
-const diskStorage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const hash = crypto.randomBytes(16).toString('hex');
-    cb(null, `${hash}${ext}`);
-  }
-});
-
-const upload = multer({
-  storage: diskStorage,
-  limits: { fileSize: MAX_FILE_SIZE, files: 1 },
-  fileFilter: (req, file, cb) => {
-    if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('UNSUPPORTED_MEDIA_TYPE'));
-    }
-  }
-});
-
-// --- HELPER: SAFE INT PARSING ---
-function parseParam(val, fallback, min, max) {
-  const n = parseInt(val, 10);
-  if (Number.isNaN(n)) return fallback;
-  return Math.min(Math.max(n, min), max);
-}
-
-// --- ROUTES ---
-
-/**
- * Upload single image stream directly to disk
- */
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No image file provided' });
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: jsonHeaders });
   }
 
-  return res.status(201).json({
-    id: req.file.filename,
-    size: req.file.size,
-    mimetype: req.file.mimetype
-  });
-});
-
-/**
- * On-demand image processing with streaming pipeline & aggressive caching
- * Parameters: /api/images/:id?w=800&h=600&q=80&fmt=webp&fit=cover
- */
-app.get('/api/images/:id', async (req, res) => {
-  const { id } = req.params;
-
-  // Sanitize path traversal
-  const safeId = path.basename(id);
-  const sourcePath = path.join(UPLOAD_DIR, safeId);
-
-  if (!existsSync(sourcePath)) {
-    return res.status(404).json({ error: 'Image not found' });
-  }
-
-  // Parse and normalize transform parameters
-  const width = parseParam(req.query.w, null, 1, 4000);
-  const height = parseParam(req.query.h, null, 1, 4000);
-  const quality = parseParam(req.query.q, 80, 1, 100);
-  const format = ['webp', 'jpeg', 'png', 'avif'].includes(req.query.fmt)
-    ? req.query.fmt
-    : 'webp';
-  const fit = ['cover', 'contain', 'fill', 'inside', 'outside'].includes(req.query.fit)
-    ? req.query.fit
-    : 'cover';
-
-  // Construct deterministic cache key
-  const cacheKey = crypto
-    .createHash('sha256')
-    .update(`${safeId}_w${width}_h${height}_q${quality}_f${format}_fit${fit}`)
-    .digest('hex');
-  const cachePath = path.join(CACHE_DIR, `${cacheKey}.${format}`);
-
-  // Set HTTP caching headers (1 Year Immutable)
-  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-  res.setHeader('Content-Type', `image/${format}`);
-
-  // Cache Hit: Stream existing transformed image directly
-  if (existsSync(cachePath)) {
-    const fileStats = await stat(cachePath);
-    res.setHeader('Content-Length', fileStats.size);
-    return pipeline(createReadStream(cachePath), res);
-  }
-
-  // Cache Miss: Transform via stream pipeline without buffering in V8 memory
   try {
-    const transformer = sharp({ failOn: 'none', limitInputPixels: 268402689 })
-      .resize({
-        width: width || undefined,
-        height: height || undefined,
-        fit,
-        withoutEnlargement: true
-      })
-      .toFormat(format, { quality, progressive: true, effort: 4 });
+    // =========================================================================
+    // 1. ZERO-LEAK BINARY IMAGE PROXY PIPE
+    // =========================================================================
+    if (proxyImgUrl) {
+      try {
+        const decodedUrl = decodeURIComponent(proxyImgUrl);
+        const imgRes = await fetch(decodedUrl, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+          },
+          signal: AbortSignal.timeout(5000)
+        });
 
-    // Stream directly from source file -> Sharp -> Cache File
-    const readStream = createReadStream(sourcePath);
-    const writeStream = createWriteStream(cachePath);
+        if (imgRes.ok) {
+          const contentType = imgRes.headers.get("content-type") || "image/jpeg";
+          return new Response(imgRes.body, {
+            status: 200,
+            headers: {
+              "Content-Type": contentType,
+              "Cache-Control": "public, max-age=86400",
+              "Access-Control-Allow-Origin": "*",
+              "X-Content-Type-Options": "nosniff"
+            }
+          });
+        }
+      } catch (e) {}
+      return new Response(null, { status: 404 });
+    }
 
-    await pipeline(readStream, transformer, writeStream);
+    // =========================================================================
+    // 2. MULTI-SOURCE KEYLESS IMAGE SCRAPER (DUCKDUCKGO + WIKIMEDIA)
+    // =========================================================================
+    if (query) {
+      let aggregatedResults = [];
 
-    // Stream newly cached file directly to response
-    const cachedStats = await stat(cachePath);
-    res.setHeader('Content-Length', cachedStats.size);
-    return pipeline(createReadStream(cachePath), res);
+      // Engine A: DuckDuckGo Keyless Image API
+      try {
+        // Step 1: Obtain the VQD session token from DuckDuckGo search
+        const tokenRes = await fetch(`https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+          },
+          signal: AbortSignal.timeout(4000)
+        });
+
+        if (tokenRes.ok) {
+          const html = await tokenRes.text();
+          const vqdMatch = html.match(/vqd=['"]?([^&'"]+)/i);
+
+          if (vqdMatch && vqdMatch[1]) {
+            const vqd = vqdMatch[1];
+            const ddgApiUrl = `https://duckduckgo.com/i.js?l=us-en&o=json&q=${encodeURIComponent(query)}&vqd=${encodeURIComponent(vqd)}&f=,,,;&p=1`;
+
+            const ddgRes = await fetch(ddgApiUrl, {
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Referer": "https://duckduckgo.com/"
+              },
+              signal: AbortSignal.timeout(4000)
+            });
+
+            if (ddgRes.ok) {
+              const ddgData = await ddgRes.json();
+              (ddgData.results || []).forEach(item => {
+                if (item.image) {
+                  aggregatedResults.push({
+                    title: item.title || "Image",
+                    image: `/api/imgbackend?proxy_img=${encodeURIComponent(item.image)}`,
+                    thumbnail: `/api/imgbackend?proxy_img=${encodeURIComponent(item.thumbnail || item.image)}`,
+                    source: "DuckDuckGo",
+                    width: item.width || 0,
+                    height: item.height || 0
+                  });
+                }
+              });
+            }
+          }
+        }
+      } catch (err) {}
+
+      // Engine B: Wikimedia Commons Open Search (Fallback / Complementary)
+      if (aggregatedResults.length < 6) {
+        try {
+          const wikiRes = await fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=12&prop=imageinfo&iiprop=url|size|mime&format=json&origin=*`, {
+            headers: {
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/1.0"
+            },
+            signal: AbortSignal.timeout(3500)
+          });
+
+          if (wikiRes.ok) {
+            const wikiData = await wikiRes.json();
+            const pages = wikiData?.query?.pages || {};
+
+            Object.values(pages).forEach(page => {
+              const info = page.imageinfo?.[0];
+              if (info && info.url && !info.mime?.includes("svg") && !info.mime?.includes("pdf")) {
+                aggregatedResults.push({
+                  title: (page.title || "Image").replace(/^File:/i, ""),
+                  image: `/api/imgbackend?proxy_img=${encodeURIComponent(info.url)}`,
+                  thumbnail: `/api/imgbackend?proxy_img=${encodeURIComponent(info.thumburl || info.url)}`,
+                  source: "Wikimedia",
+                  width: info.width || 0,
+                  height: info.height || 0
+                });
+              }
+            });
+          }
+        } catch (err) {}
+      }
+
+      if (aggregatedResults.length === 0) {
+        return new Response(JSON.stringify({ success: false, error: "No image results found." }), {
+          headers: jsonHeaders
+        });
+      }
+
+      const pageResults = aggregatedResults.slice(offset, offset + 3);
+      const hasNext = aggregatedResults.length > offset + 3;
+
+      return new Response(JSON.stringify({
+        success: true,
+        query: query,
+        offset: offset,
+        hasNext: hasNext,
+        results: pageResults
+      }), {
+        headers: jsonHeaders
+      });
+    }
+
+    return new Response(JSON.stringify({ success: false, error: "Missing required parameter" }), {
+      headers: jsonHeaders,
+      status: 400
+    });
+
   } catch (err) {
-    if (existsSync(cachePath)) {
-      await unlink(cachePath).catch(() => {});
-    }
-    if (!res.headersSent) {
-      return res.status(500).json({ error: 'Image transformation failed' });
-    }
-    res.end();
+    return new Response(JSON.stringify({ success: false, error: "Worker error: " + err.message }), {
+      headers: jsonHeaders,
+      status: 500
+    });
   }
-});
-
-// --- ERROR & REJECTION HANDLING ---
-app.use((err, req, res, next) => {
-  if (err.message === 'UNSUPPORTED_MEDIA_TYPE') {
-    return res.status(415).json({ error: 'Only JPEG, PNG, WebP, and AVIF are allowed' });
-  }
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(413).json({ error: 'Image exceeds size limit of 25MB' });
-  }
-  return res.status(500).json({ error: 'Internal Server Error' });
-});
-
-app.listen(PORT, () => {
-  console.log(`Image backend running on http://localhost:${PORT}`);
-});
+}
