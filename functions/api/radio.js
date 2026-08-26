@@ -1,131 +1,145 @@
-/**
- * Cloudflare Pages Functions - /api/radio
- * Reverse-proxies audio streams with 15-second persistent multi-station retries,
- * browser-spoofed headers (bypassing CDN/Datacenter IP blocks), and a seamless Lo-Fi fallback.
- */
-
-const STATIONS = {
-  hindi: [
-    "https://stream.zeno.fm/f3wvbbqmdg8uv", // Bollywood Hits
-    "https://stream.zeno.fm/0r0xa792kwzuv", // Radio Mirchi Mirror
-    "https://mirchi-hindi.streamguys1.com/mirchi-hindi",
-    "https://stream.zeno.fm/3hww9cydg8uv"  // Desi Retro
-  ],
-  south: [
-    "https://stream.zeno.fm/v22nwtkgwzruv", // Tamil Regional Hits
-    "https://stream.zeno.fm/s494y9s7wzruv", // South Gold / Telugu
-    "https://stream.zeno.fm/k2y0q0a2kwzuv", // Malayalam / Regional Mirror
-    "https://stream.zeno.fm/05w6t72q4ehvv"  // South Mega Live
-  ],
-  english: [
-    "https://icecast.somafm.com/groovesalad-128-mp3",
-    "https://stream.nightwaveplaza.com/plaza.mp3",
-    "https://stream-relay-geo.ntslive.net/stream",
-    "https://icecast.somafm.com/indiepop-128-mp3"
-  ],
-  other: [
-    "https://icecast.somafm.com/chill-128-mp3",
-    "https://icecast.somafm.com/dronezone-128-mp3",
-    "https://icecast.somafm.com/lush-128-mp3"
-  ]
-};
-
-// High-Uptime 24/7 Lo-Fi Fallback Relays
-const LOFI_FALLBACK_STREAMS = [
-  "https://icecast.somafm.com/chill-128-mp3",
-  "https://stream.nightwaveplaza.com/plaza.mp3",
-  "https://icecast.somafm.com/groovesalad-128-mp3"
-];
-
-const BROWSER_HEADERS = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-  "Accept": "*/*",
-  "Accept-Language": "en-US,en;q=0.9",
-  "Icy-MetaData": "0"
-};
-
 export async function onRequest(context) {
-  const url = new URL(context.request.url);
-  const channel = (url.searchParams.get("channel") || "english").toLowerCase();
-  const candidates = STATIONS[channel] || STATIONS.english;
+  const { request } = context;
+  const url = new URL(request.url);
+  const channel = (url.searchParams.get("channel") || "english").toLowerCase().trim();
 
-  const OVERALL_DEADLINE_MS = 15000; // 15-second hard budget before switching to Lo-Fi
-  const overallStartTime = Date.now();
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+    "Access-Control-Allow-Headers": "Range, Content-Type",
+    "Content-Type": "audio/mpeg",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "X-Content-Type-Options": "nosniff"
+  };
 
-  // 1. Attempt all primary channel candidates within the 15-second budget
-  for (let i = 0; i < candidates.length; i++) {
-    const elapsed = Date.now() - overallStartTime;
-    if (elapsed >= OVERALL_DEADLINE_MS) break;
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
 
-    const remainingTime = Math.min(4500, OVERALL_DEADLINE_MS - elapsed);
-    const streamUrl = candidates[i];
+  // =========================================================================
+  // 1. HARDENED STATIC STREAM ARRAYS (PRIMARY + FALLBACKS)
+  // =========================================================================
+  const STREAM_POOLS = {
+    hindi: [
+      "https://drive.uber.radio/uber/bollywoodmix/icecast.audio",
+      "https://drive.uber.radio/uber/bollywood/icecast.audio",
+      "https://drive.uber.radio/uber/bollywood2000s/icecast.audio",
+      "https://server.mixify.in/listen/new_hits/radio.mp3",
+      "https://stream.zeno.fm/f3wvbbqmdg8uv",
+      "https://stream.zeno.fm/cub84trbgy5tv"
+    ],
+    south: [
+      "https://stream.zeno.fm/amlydol2msyuv", // Tamil Katerumbu FM
+      "https://stream.zeno.fm/r0aab8wanf9uv", // Kandy Tamil Hits
+      "https://drive.uber.radio/uber/tamilhits/icecast.audio",
+      "https://drive.uber.radio/uber/teluguhits/icecast.audio",
+      "https://stream.zeno.fm/60pqgs97f2zuv",
+      "https://drive.uber.radio/uber/malayalamhits/icecast.audio"
+    ],
+    other: [
+      "https://stream.zeno.fm/u3uaxaq6wp8uv", // EDM Club Hits
+      "https://stream.zeno.fm/hqbrk7skwxhvv", // Lofi Instrumentals 24/7
+      "https://stream.zeno.fm/iitnog3filatv", // Viral Hits / Dance
+      "https://drive.uber.radio/uber/edm/icecast.audio",
+      "https://icecast5.play.cz/rockzone128.mp3"
+    ],
+    english: [
+      "https://stream.zeno.fm/hqbrk7skwxhvv", // Lofi English Beats
+      "https://streaming.positivity.radio/pr/goodafternoon/icecast.audio",
+      "https://drive.uber.radio/uber/top40/icecast.audio",
+      "https://drive.uber.radio/uber/chillout/icecast.audio"
+    ]
+  };
 
+  const candidateUrls = STREAM_POOLS[channel] || STREAM_POOLS.english;
+
+  // =========================================================================
+  // 2. ATTEMPT STATIC STREAM POOLS
+  // =========================================================================
+  for (const streamUrl of candidateUrls) {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), remainingTime);
-
       const response = await fetch(streamUrl, {
-        method: "GET",
-        headers: BROWSER_HEADERS,
-        signal: controller.signal
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+          "Accept": "*/*"
+        },
+        signal: AbortSignal.timeout(3000) // Fast 3-second timeout per candidate
       });
 
-      clearTimeout(timeoutId);
-
       if (response.ok && response.body) {
+        const contentType = response.headers.get("content-type") || "audio/mpeg";
         return new Response(response.body, {
           status: 200,
           headers: {
-            "Content-Type": response.headers.get("Content-Type") || "audio/mpeg",
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Access-Control-Allow-Origin": "*",
-            "X-Radio-Channel": channel,
-            "X-Radio-Station": `primary-${i}`
+            ...corsHeaders,
+            "Content-Type": contentType
           }
         });
       }
     } catch (err) {
-      // Station timed out or dropped; cycle to the next candidate
-      continue;
+      continue; // Move to the next backup stream immediately
     }
   }
 
-  // 2. If all attempts failed after 15 seconds, connect to the Lo-Fi fallback stream
-  for (const lofiUrl of LOFI_FALLBACK_STREAMS) {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+  // =========================================================================
+  // 3. LIVE AUTO-DISCOVERY FALLBACK (RADIO-BROWSER API)
+  // =========================================================================
+  const tagMap = {
+    hindi: "hindi",
+    south: "tamil",
+    other: "edm",
+    english: "top40"
+  };
+  const searchTag = tagMap[channel] || "hits";
 
-      const lofiResponse = await fetch(lofiUrl, {
-        method: "GET",
-        headers: BROWSER_HEADERS,
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (lofiResponse.ok && lofiResponse.body) {
-        return new Response(lofiResponse.body, {
-          status: 200,
-          headers: {
-            "Content-Type": lofiResponse.headers.get("Content-Type") || "audio/mpeg",
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Access-Control-Allow-Origin": "*",
-            "X-Radio-Channel": channel,
-            "X-Radio-Fallback": "lofi-stream"
-          }
-        });
+  try {
+    const apiDiscoveryRes = await fetch(
+      `https://de1.api.radio-browser.info/json/stations/bytag/${searchTag}?limit=5&order=votes&reverse=true`,
+      {
+        headers: { "User-Agent": "MeshRelayAudio/2.0" },
+        signal: AbortSignal.timeout(3500)
       }
-    } catch (err) {
-      continue;
-    }
-  }
+    );
 
-  return new Response("All radio streams and fallback relays are currently offline.", {
-    status: 502,
-    headers: {
-      "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": "*"
+    if (apiDiscoveryRes.ok) {
+      const stations = await apiDiscoveryRes.json();
+      for (const station of stations) {
+        if (station.url_resolved || station.url) {
+          try {
+            const liveStreamUrl = station.url_resolved || station.url;
+            const liveRes = await fetch(liveStreamUrl, {
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept": "*/*"
+              },
+              signal: AbortSignal.timeout(3000)
+            });
+
+            if (liveRes.ok && liveRes.body) {
+              const liveType = liveRes.headers.get("content-type") || "audio/mpeg";
+              return new Response(liveRes.body, {
+                status: 200,
+                headers: {
+                  ...corsHeaders,
+                  "Content-Type": liveType
+                }
+              });
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+      }
     }
+  } catch (apiErr) {}
+
+  // =========================================================================
+  // 4. GUARANTEED FINAL BACKUP STREAM
+  // =========================================================================
+  const emergencyBackup = "https://stream.zeno.fm/hqbrk7skwxhvv";
+  const finalRes = await fetch(emergencyBackup);
+  return new Response(finalRes.body, {
+    status: 200,
+    headers: corsHeaders
   });
 }
