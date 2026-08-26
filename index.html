@@ -24,14 +24,7 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: [
-              '"Plus Jakarta Sans"',
-              '-apple-system',
-              'BlinkMacSystemFont',
-              '"Segoe UI"',
-              'Roboto',
-              'sans-serif'
-            ],
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
@@ -200,7 +193,20 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
-  <!-- ==================== MIGRATION NOTIFICATION MODAL ==================== -->
+  <!-- LIGHTBOX IMAGE MODAL -->
+  <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" onclick="closeImageLightbox()">
+    <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center gap-3" onclick="event.stopPropagation()">
+      <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white hover:text-slate-300 text-lg font-bold">✕</button>
+      <img id="lightboxImg" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10">
+      <div class="flex items-center gap-3">
+        <a id="lightboxDownloadBtn" href="" download="image.jpg" class="px-4 py-2 rounded-full bg-brand text-white font-bold text-xs shadow-lg hover:opacity-90 transition flex items-center gap-1.5">
+          <span>💾</span> Download Original
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMAIN MIGRATION MODAL -->
   <div id="domainNoticeModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-md bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
       <div class="w-12 h-12 rounded-2xl bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto shadow-sm">
@@ -209,7 +215,7 @@
 
       <div class="space-y-2">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
-          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Important Migration Notice
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Important Notice
         </div>
         
         <h3 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white tracking-tight">
@@ -318,7 +324,7 @@
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
           <p class="font-bold text-emerald-600 dark:text-emerald-400">System Continuously Maintained & Bug-Free</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Maintained with sandboxed zero-leak stream proxies & origin-bound ping telemetry.</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Dual-Engine Video/Image hub with zero-leak sandboxed streams and origin-bound telemetry.</p>
         </div>
       </div>
 
@@ -404,7 +410,7 @@
         </div>
       </div>
 
-      <!-- PINNED 24/7 VAMS VIDEO BOT CARD -->
+      <!-- PINNED 24/7 VAMS VIDEO & IMAGE BOT CARD -->
       <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-red-500/5 to-transparent">
         <div onclick="selectVideoBot()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-red-500/10 border border-red-500/20 shadow-sm group">
           <div class="flex items-center gap-2.5 truncate">
@@ -414,9 +420,9 @@
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
-                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">STREAM</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">MEDIA</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Multi-Engine Stream Proxy • YouTube & Other</p>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Zero-Leak Video & Image Search Hub</p>
             </div>
           </div>
           <span class="text-[10px] text-red-500 font-bold group-hover:translate-x-0.5 transition">Search →</span>
@@ -543,7 +549,7 @@
       <!-- Message History Scroll Area -->
       <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 custom-scroll relative min-w-0"></div>
 
-      <!-- iMessage Style Realtime Typing Indicator Bubble -->
+      <!-- Realtime Typing Indicator Bubble -->
       <div id="typingIndicatorBubble" class="hidden px-4 py-1.5 flex items-center gap-2 transition-all">
         <div class="bg-white dark:bg-darkMuted border border-slate-200/80 dark:border-slate-800 px-3 py-2 rounded-2xl rounded-bl-sm flex items-center gap-1 shadow-sm">
           <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
@@ -572,10 +578,20 @@
       <!-- Message Customization Sub-Bar -->
       <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0">
         
-        <!-- Video Source Toggle (Visible Only In Vams Session) -->
+        <!-- Vams Mode Toggle (VIDEO vs IMAGE) -->
+        <div id="vamsMediaTypeToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
+          <button type="button" id="vamsModeVideoBtn" onclick="setVamsSearchMode('video')" class="px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">
+            VIDEO
+          </button>
+          <button type="button" id="vamsModeImageBtn" onclick="setVamsSearchMode('image')" class="px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">
+            IMAGE
+          </button>
+        </div>
+
+        <!-- Video Platform Engine Switcher (Shown only when in VIDEO mode) -->
         <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
           <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">
-            YouTube
+            YT
           </button>
           <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">
             OTHER
@@ -666,7 +682,7 @@
     </section>
   </main>
 
-  <!-- ==================== VERIFICATION PHOTO SUBMISSION MODAL ==================== -->
+  <!-- ==================== VERIFICATION SELFIE MODAL ==================== -->
   <div id="badgePhotoModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
       <button onclick="closeBadgePhotoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -700,7 +716,7 @@
     </div>
   </div>
 
-  <!-- ==================== ADMIN USER MANAGEMENT MODAL (DEVS ONLY) ==================== -->
+  <!-- ==================== ADMIN USER MANAGEMENT DIRECTORY ==================== -->
   <div id="adminUserModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-2xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
       <button onclick="closeAdminUserManagerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -903,7 +919,7 @@
     </div>
   </div>
 
-  <!-- DEV ACCESS PASSWORD MODAL -->
+  <!-- DEV ACCESS MODAL -->
   <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
       <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -935,7 +951,7 @@
     </div>
   </div>
 
-  <!-- CAMPUS RADIO EARPHONES MODAL -->
+  <!-- RADIO EARPHONES WARNING MODAL -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
       <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
@@ -965,7 +981,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
-      <!-- Quick Unlock (Cached Sessions) -->
+      <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
         <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
         
@@ -1240,7 +1256,8 @@
     let activeChatUser = null;
     let isSophieActive = false;
     let isVideoBotActive = false;
-    let activeVideoSourceEngine = "youtube";
+    let activeVamsMode = "video"; // "video" | "image"
+    let activeVideoSourceEngine = "youtube"; // "youtube" | "other"
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -1273,6 +1290,22 @@
     const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
 
     const inMemoryChatCache = new Map();
+
+    // =========================================================================
+    // LIGHTBOX HANDLERS
+    // =========================================================================
+    function openImageLightbox(imgUrl) {
+      const modal = document.getElementById("imageLightboxModal");
+      const img = document.getElementById("lightboxImg");
+      const btn = document.getElementById("lightboxDownloadBtn");
+      img.src = imgUrl;
+      btn.href = imgUrl;
+      modal.classList.remove("hidden");
+    }
+
+    function closeImageLightbox() {
+      document.getElementById("imageLightboxModal").classList.add("hidden");
+    }
 
     // =========================================================================
     // BADGE PHOTO VERIFICATION
@@ -1662,6 +1695,7 @@
     function selectSophieAI() {
       isSophieActive = true;
       isVideoBotActive = false;
+      document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = { username: "Sophie", course: "Campus AI", year: "24/7", is_verified: true };
 
@@ -1742,8 +1776,28 @@
     }
 
     // =========================================================================
-    // VAMS MULTI-ENGINE VIDEO BOT LOGIC & SANDBOXED ZERO-LEAK EMBED
+    // VAMS DUAL-ENGINE (VIDEO & IMAGE PROXY)
     // =========================================================================
+    function setVamsSearchMode(mode) {
+      activeVamsMode = mode;
+      const videoBtn = document.getElementById("vamsModeVideoBtn");
+      const imgBtn = document.getElementById("vamsModeImageBtn");
+      const videoSrcGroup = document.getElementById("videoSourceToggleGroup");
+      const input = document.getElementById("dmInput");
+
+      if (mode === "video") {
+        videoBtn.className = "px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm";
+        imgBtn.className = "px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition";
+        videoSrcGroup.classList.remove("hidden");
+        input.placeholder = "Search videos (e.g. GTA VI Trailer)...";
+      } else {
+        imgBtn.className = "px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm";
+        videoBtn.className = "px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition";
+        videoSrcGroup.classList.add("hidden");
+        input.placeholder = "Search images (e.g. Valorant, Cars, Wallpapers)...";
+      }
+    }
+
     function setVideoSourceEngine(engine) {
       activeVideoSourceEngine = engine;
       const ytBtn = document.getElementById("vSourceYtBtn");
@@ -1761,8 +1815,10 @@
     function selectVideoBot() {
       isVideoBotActive = true;
       isSophieActive = false;
-      document.getElementById("videoSourceToggleGroup").classList.remove("hidden");
-      activeChatUser = { username: "Vams", course: "Video Hub", year: "24/7", is_verified: true };
+      document.getElementById("vamsMediaTypeToggleGroup").classList.remove("hidden");
+      setVamsSearchMode(activeVamsMode);
+
+      activeChatUser = { username: "Vams", course: "Media Hub", year: "24/7", is_verified: true };
 
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -1776,89 +1832,147 @@
       document.getElementById("activeChatPeerAvatar").innerText = "🎬";
       document.getElementById("activeChatPeerName").innerText = "Vams";
       document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
-      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Stream Proxy • YouTube & Other";
+      document.getElementById("activeChatPeerMeta").innerText = "Zero-Leak Media Hub • Video & Image Search";
 
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
       input.removeAttribute("disabled");
       btn.removeAttribute("disabled");
-      input.placeholder = "Ask Vams for a video (e.g. GTA VI Trailer)...";
       input.focus();
 
       loadConversationFromSession("Vams");
     }
 
-    async function handleVideoBotInteraction(queryText, offset = 0, targetSource = null) {
+    async function handleVamsMediaInteraction(queryText, offset = 0, targetSource = null) {
       showTypingBubble("Vams");
-      const engine = targetSource || activeVideoSourceEngine;
 
-      try {
-        const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}&source=${engine}&offset=${offset}`);
-        const contentType = res.headers.get("content-type") || "";
+      if (activeVamsMode === "image") {
+        // --- IMAGE ENGINE CALL ---
+        try {
+          const res = await fetch(`/api/imgbackend?q=${encodeURIComponent(queryText)}&offset=${offset}`);
+          const data = await res.json();
+          document.getElementById("typingIndicatorBubble").classList.add("hidden");
 
-        let data;
-        if (contentType.includes("application/json")) {
-          data = await res.json();
-        } else {
-          const rawText = await res.text();
-          throw new Error(`Server returned non-JSON payload (${res.status}): ${rawText.substring(0, 100)}...`);
-        }
+          if (!data.success || !data.results || data.results.length === 0) {
+            const errPayload = {
+              id: "msg_" + Math.random().toString(36).substr(2, 9),
+              sender: "Vams",
+              recipient: currentUser.username,
+              text: `⚠️ **Image Search Notice:** ${data.error || "No images found."}`,
+              timestamp: Date.now(),
+              network: "IMG-RELAY"
+            };
+            saveMessageToSession("Vams", errPayload);
+            if (isVideoBotActive) renderBubble(errPayload, false);
+            return;
+          }
 
-        document.getElementById("typingIndicatorBubble").classList.add("hidden");
+          const imageResultsPayload = {
+            id: "msg_" + Math.random().toString(36).substr(2, 9),
+            sender: "Vams",
+            recipient: currentUser.username,
+            imageList: data.results,
+            searchContext: {
+              query: queryText,
+              type: "image",
+              offset: offset,
+              hasNext: data.hasNext
+            },
+            timestamp: Date.now(),
+            network: "IMG-RELAY"
+          };
 
-        if (!data.success || !data.results || data.results.length === 0) {
-          const errDetail = data.error || `No matching videos found on ${engine.toUpperCase()}.`;
+          saveMessageToSession("Vams", imageResultsPayload);
+          if (isVideoBotActive) {
+            renderBubble(imageResultsPayload, false);
+            soundRecv();
+          }
+        } catch (err) {
+          document.getElementById("typingIndicatorBubble").classList.add("hidden");
           const errPayload = {
             id: "msg_" + Math.random().toString(36).substr(2, 9),
             sender: "Vams",
             recipient: currentUser.username,
-            text: `⚠️ **Search Notice (${engine.toUpperCase()}):** ${errDetail}\n\n*Tip:* Switch between YouTube and OTHER above.`,
+            text: `🚨 **Image Gateway Error:** ${err.message}`,
             timestamp: Date.now(),
-            network: "RELAY-NOTICE"
+            network: "FATAL-ERROR"
           };
           saveMessageToSession("Vams", errPayload);
           if (isVideoBotActive) renderBubble(errPayload, false);
-          return;
         }
+      } else {
+        // --- VIDEO ENGINE CALL ---
+        const engine = targetSource || activeVideoSourceEngine;
+        try {
+          const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}&source=${engine}&offset=${offset}`);
+          const contentType = res.headers.get("content-type") || "";
 
-        const videoResultsPayload = {
-          id: "msg_" + Math.random().toString(36).substr(2, 9),
-          sender: "Vams",
-          recipient: currentUser.username,
-          videoList: data.results,
-          searchContext: {
-            query: queryText,
-            source: engine,
-            offset: offset,
-            hasNext: data.hasNext
-          },
-          timestamp: Date.now(),
-          network: "PROXY-RELAY"
-        };
+          let data;
+          if (contentType.includes("application/json")) {
+            data = await res.json();
+          } else {
+            const rawText = await res.text();
+            throw new Error(`Server returned non-JSON (${res.status}): ${rawText.substring(0, 80)}...`);
+          }
 
-        saveMessageToSession("Vams", videoResultsPayload);
-        if (isVideoBotActive) {
-          renderBubble(videoResultsPayload, false);
-          soundRecv();
+          document.getElementById("typingIndicatorBubble").classList.add("hidden");
+
+          if (!data.success || !data.results || data.results.length === 0) {
+            const errDetail = data.error || `No matching videos found on ${engine.toUpperCase()}.`;
+            const errPayload = {
+              id: "msg_" + Math.random().toString(36).substr(2, 9),
+              sender: "Vams",
+              recipient: currentUser.username,
+              text: `⚠️ **Video Notice (${engine.toUpperCase()}):** ${errDetail}\n\n*Tip:* Switch between YT and OTHER above.`,
+              timestamp: Date.now(),
+              network: "RELAY-NOTICE"
+            };
+            saveMessageToSession("Vams", errPayload);
+            if (isVideoBotActive) renderBubble(errPayload, false);
+            return;
+          }
+
+          const videoResultsPayload = {
+            id: "msg_" + Math.random().toString(36).substr(2, 9),
+            sender: "Vams",
+            recipient: currentUser.username,
+            videoList: data.results,
+            searchContext: {
+              query: queryText,
+              type: "video",
+              source: engine,
+              offset: offset,
+              hasNext: data.hasNext
+            },
+            timestamp: Date.now(),
+            network: "PROXY-RELAY"
+          };
+
+          saveMessageToSession("Vams", videoResultsPayload);
+          if (isVideoBotActive) {
+            renderBubble(videoResultsPayload, false);
+            soundRecv();
+          }
+        } catch (err) {
+          document.getElementById("typingIndicatorBubble").classList.add("hidden");
+          const errPayload = {
+            id: "msg_" + Math.random().toString(36).substr(2, 9),
+            sender: "Vams",
+            recipient: currentUser.username,
+            text: `🚨 **Relay Error:** ${err.message}`,
+            timestamp: Date.now(),
+            network: "FATAL-ERROR"
+          };
+          saveMessageToSession("Vams", errPayload);
+          if (isVideoBotActive) renderBubble(errPayload, false);
         }
-      } catch (err) {
-        document.getElementById("typingIndicatorBubble").classList.add("hidden");
-        const errPayload = {
-          id: "msg_" + Math.random().toString(36).substr(2, 9),
-          sender: "Vams",
-          recipient: currentUser.username,
-          text: `🚨 **Relay Error:** ${err.message}`,
-          timestamp: Date.now(),
-          network: "FATAL-ERROR"
-        };
-        saveMessageToSession("Vams", errPayload);
-        if (isVideoBotActive) renderBubble(errPayload, false);
       }
     }
 
-    function paginateVideoResults(encodedQuery, nextOffset, sourceEngine) {
+    function paginateMediaResults(encodedQuery, nextOffset, mediaType, sourceEngine) {
       const query = decodeURIComponent(encodedQuery);
-      handleVideoBotInteraction(query, nextOffset, sourceEngine);
+      activeVamsMode = mediaType || "video";
+      handleVamsMediaInteraction(query, nextOffset, sourceEngine);
     }
 
     function playInlineVideo(btnElement, videoId) {
@@ -2604,7 +2718,7 @@
     }
 
     async function adminDeleteUser(username) {
-      if (!confirm(`Permanently delete @${username}? Their next login attempt will state "Account doesn't exist".`)) return;
+      if (!confirm(`Permanently delete @${username}?`)) return;
 
       const { error } = await sb.from("campus_users").delete().ilike("username", username);
       if (error) {
@@ -2816,6 +2930,7 @@
     function selectDirectTab() {
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
@@ -2833,7 +2948,7 @@
         document.getElementById("dmChatArea").innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
             <div class="w-12 h-12 rounded-full bg-slate-200/60 dark:bg-darkMuted flex items-center justify-center text-lg font-bold text-slate-400">💬</div>
-            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer from the directory, talk to Sophie AI, or search videos with Vams.</p>
+            <p class="text-xs text-slate-400 max-w-xs leading-relaxed">Select any active peer, chat with Sophie AI, or search videos & images with Vams.</p>
           </div>
         `;
         parseTwemoji(document.getElementById("dmChatArea"));
@@ -2846,6 +2961,7 @@
     function selectLoungeChannel() {
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = null;
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
@@ -2928,6 +3044,7 @@
       if (!peer) return;
       isSophieActive = false;
       isVideoBotActive = false;
+      document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = peer;
       unreadMap.delete(peer.username);
@@ -3383,7 +3500,66 @@
 
       if (msg.text) {
         contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap break-words min-w-0">${msg.text}</div>`;
-      } else if (msg.videoList) {
+      } 
+      // --- IMAGE SEARCH GALLERY BUBBLE ---
+      else if (msg.imageList) {
+        rawSnippetText = "🖼️ Image Search Results";
+        const ctx = msg.searchContext || { query: "", offset: 0, hasNext: false };
+        const currentOffset = ctx.offset || 0;
+        const nextOffset = currentOffset + 3;
+        const prevOffset = Math.max(0, currentOffset - 3);
+        const encodedQ = encodeURIComponent(ctx.query || "");
+
+        contentHtml = `
+          <div class="p-3 flex flex-col gap-3 w-full max-w-full min-w-0 overflow-hidden">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0">
+              <span class="truncate">Images (${currentOffset + 1}–${currentOffset + msg.imageList.length}) • "${ctx.query}"</span>
+              <span class="text-[9px] font-mono text-emerald-500 font-bold shrink-0 ml-1">100% Proxied</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full min-w-0">
+              ${msg.imageList.map(img => `
+                <div class="p-2 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between min-w-0">
+                  <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-900 cursor-pointer group/card" onclick="openImageLightbox('${img.image}')">
+                    <img src="${img.thumbnail || img.image}" class="w-full h-full object-cover transition-transform duration-200 group-hover/card:scale-105" loading="lazy">
+                    <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/70 text-white text-[9px] font-bold backdrop-blur">
+                      ${img.source || 'HD'}
+                    </span>
+                  </div>
+                  <div class="space-y-1 min-w-0">
+                    <p class="text-[11px] font-bold truncate text-slate-900 dark:text-white" title="${img.title}">${img.title || 'Image'}</p>
+                    <div class="flex gap-1">
+                      <button onclick="openImageLightbox('${img.image}')" class="flex-1 py-1 rounded-lg bg-brand/10 hover:bg-brand/20 text-brand text-[10px] font-bold transition">
+                        🔍 View
+                      </button>
+                      <a href="${img.image}" download="campus_image.jpg" class="p-1 rounded-lg bg-slate-200 dark:bg-darkMuted hover:opacity-80 text-slate-700 dark:text-slate-300 text-[10px] font-bold transition flex items-center justify-center">
+                        💾
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Image Pagination -->
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0">
+              ${currentOffset > 0 ? `
+                <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'image')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
+                  ← Prev 3
+                </button>
+              ` : `<span></span>`}
+
+              ${ctx.hasNext ? `
+                <button onclick="paginateMediaResults('${encodedQ}', ${nextOffset}, 'image')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto shrink-0">
+                  Next 3 (${nextOffset + 1}–${nextOffset + 3}) →
+                </button>
+              ` : `<span></span>`}
+            </div>
+          </div>
+        `;
+      }
+      // --- VIDEO SEARCH RESULTS BUBBLE ---
+      else if (msg.videoList) {
         rawSnippetText = "🎬 Video Search Results";
         const ctx = msg.searchContext || { query: "", source: "youtube", offset: 0, hasNext: false };
         const currentOffset = ctx.offset || 0;
@@ -3419,16 +3595,16 @@
               `).join('')}
             </div>
 
-            <!-- 3x Index Navigation Bar -->
+            <!-- Video Pagination -->
             <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0">
               ${currentOffset > 0 ? `
-                <button onclick="paginateVideoResults('${encodedQ}', ${prevOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
+                <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'video', '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
                   ← Prev 3
                 </button>
               ` : `<span></span>`}
 
               ${ctx.hasNext ? `
-                <button onclick="paginateVideoResults('${encodedQ}', ${nextOffset}, '${ctx.source}')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto shrink-0">
+                <button onclick="paginateMediaResults('${encodedQ}', ${nextOffset}, 'video', '${ctx.source}')" class="px-3 py-1 rounded-xl bg-brand text-white hover:opacity-90 transition active:scale-95 shadow-sm ml-auto shrink-0">
                   Next 3 (${nextOffset + 1}–${nextOffset + 3}) →
                 </button>
               ` : `<span></span>`}
@@ -3439,7 +3615,7 @@
         rawSnippetText = "🖼️ Photo";
         contentHtml = `
           <div class="p-1 relative group/img max-w-full">
-            <img src="${msg.image}" class="max-w-[240px] sm:max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="window.open('${msg.image}')">
+            <img src="${msg.image}" class="max-w-[240px] sm:max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="openImageLightbox('${msg.image}')">
             <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/85 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md hover:bg-slate-900">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>Save</span>
@@ -3760,7 +3936,7 @@
       if (isSophieActive) {
         if (text) handleSophieInteraction(text);
       } else if (isVideoBotActive) {
-        if (text) handleVideoBotInteraction(text, 0, activeVideoSourceEngine);
+        if (text) handleVamsMediaInteraction(text, 0, activeVideoSourceEngine);
       } else if (channel) {
         const secret = getChannelEncryptionSecret(activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE");
         const encryptedEnvelope = await encryptPayloadE2EE(payload, secret);
