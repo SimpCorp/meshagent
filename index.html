@@ -7,12 +7,13 @@
   <meta name="theme-color" content="#080A0F" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>LAN CHAT — Direct Campus Network</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,7 +26,8 @@
         extend: {
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace']
+            mono: ['"JetBrains Mono"', 'monospace'],
+            nothing: ['"Space Grotesk"', '"JetBrains Mono"', 'monospace']
           },
           colors: {
             brand: 'var(--brand-color)',
@@ -37,7 +39,9 @@
             darkMuted: '#171B26',
             lightBg: '#F8FAFC',
             lightCard: '#FFFFFF',
-            lightMuted: '#F1F5F9'
+            lightMuted: '#F1F5F9',
+            nothingRed: '#D71921',
+            nothingDark: '#0D0D0D'
           }
         }
       }
@@ -165,6 +169,29 @@
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
+    /* NOTHING OS DOT MATRIX & LED GLYPH STYLES */
+    .nothing-matrix-border {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 0);
+      background-size: 6px 6px;
+    }
+
+    @keyframes redLedPulse {
+      0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 6px rgba(215, 25, 33, 0.8)); }
+      50% { opacity: 0.3; transform: scale(0.92); filter: drop-shadow(0 0 1px rgba(215, 25, 33, 0.2)); }
+    }
+    .nothing-led { animation: redLedPulse 1s infinite ease-in-out; }
+
+    @keyframes glyphWave {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .glyph-bar { animation: glyphWave 0.8s ease-in-out infinite; }
+    .glyph-bar:nth-child(1) { animation-delay: 0.0s; }
+    .glyph-bar:nth-child(2) { animation-delay: 0.15s; }
+    .glyph-bar:nth-child(3) { animation-delay: 0.3s; }
+    .glyph-bar:nth-child(4) { animation-delay: 0.45s; }
+    .glyph-bar:nth-child(5) { animation-delay: 0.2s; }
+
     @media (min-width: 640px) {
       #chatView {
         height: 86vh;
@@ -223,15 +250,9 @@
         </h3>
 
         <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed text-left space-y-2">
-          <p>
-            ● The terminal domain has officially transitioned to <strong>meshage.pages.dev</strong>.
-          </p>
-          <p>
-            ● The legacy link <strong>nomesh.pages.dev</strong> will stop redirecting in <strong>10 days</strong>.
-          </p>
-          <p class="text-[11px] text-slate-400 dark:text-slate-400">
-            ✓ <em>Tip:</em> Typing <strong>nomesh</strong> opens <strong>meshage.pages.dev</strong> automatically. Update your bookmarks.
-          </p>
+          <p>● The terminal domain has officially transitioned to <strong>meshage.pages.dev</strong>.</p>
+          <p>● The legacy link <strong>nomesh.pages.dev</strong> will stop redirecting in <strong>10 days</strong>.</p>
+          <p class="text-[11px] text-slate-400">✓ <em>Tip:</em> Typing <strong>nomesh</strong> opens <strong>meshage.pages.dev</strong> automatically. Update your bookmarks.</p>
         </div>
       </div>
 
@@ -269,7 +290,7 @@
       <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <h1 class="text-xs font-bold tracking-tight uppercase">LAN CHAT</h1>
+          <h1 class="text-xs font-bold tracking-tight uppercase font-nothing">LAN CHAT</h1>
           <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 flex items-center gap-1">
             <span class="w-1 h-1 rounded-full bg-emerald-500 animate-ping"></span> AES-256 E2EE
           </span>
@@ -300,7 +321,7 @@
         <span id="themeIcon" class="text-xs">🌓</span>
       </button>
 
-      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-3.5 py-1 rounded-full bg-brand text-white text-[11px] font-semibold hover:opacity-90 transition shadow-sm">
+      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-3.5 py-1 rounded-full bg-brand text-white text-[11px] font-semibold hover:opacity-90 transition shadow-sm font-nothing">
         Enter Terminal
       </button>
     </div>
@@ -313,7 +334,7 @@
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         Zero-Knowledge Encrypted Mesh Relay
       </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+      <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white font-nothing">
         Zero Latency.<br>Direct Campus Mesh.
       </h2>
       <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
@@ -323,42 +344,18 @@
       <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
-          <p class="font-bold text-emerald-600 dark:text-emerald-400">System Continuously Maintained & Bug-Free</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Dual-Engine Video/Image hub with zero-leak sandboxed streams and origin-bound telemetry.</p>
+          <p class="font-bold text-emerald-600 dark:text-emerald-400">Zero-Leak Hardened Architecture</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Full binary serverless media forwarding with zero external client queries and encrypted payloads.</p>
         </div>
       </div>
 
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-darkCard/60 text-xs leading-relaxed text-left text-slate-600 dark:text-slate-400 shadow-sm">
-        <span class="text-brand font-bold">● Network Notice:</span> All students connect to <strong>SSSIHL-STUDENT</strong>. Verified devs can unlock the isolated <strong>DEVS</strong> network above.
-      </div>
-      
       <div class="pt-2 flex flex-wrap gap-3 justify-center">
-        <button onclick="handleNavAction()" class="px-7 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95">
+        <button onclick="handleNavAction()" class="px-7 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95 font-nothing">
           Open Messages →
         </button>
         <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold text-slate-600 dark:text-slate-300 transition active:scale-95">
           Source Code & Audits
         </button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-        <span class="text-[10px] text-brand font-mono font-bold">01</span>
-        <h3 class="text-xs font-bold">Zero-Knowledge AES-GCM</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">256-bit symmetric encryption with PBKDF2 SHA-256 key derivation. Zero server visibility.</p>
-      </div>
-
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-        <span class="text-[10px] text-brand font-mono font-bold">02</span>
-        <h3 class="text-xs font-bold">Two-Way Delete</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Instantly erase any sent message, location card, image, or document on both ends simultaneously.</p>
-      </div>
-
-      <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
-        <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-xs font-bold">Host-Verified Badges</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Fast photo submission from settings with manual dev-verified authenticity badges.</p>
       </div>
     </div>
   </main>
@@ -371,12 +368,12 @@
       
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Conversations</span>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-nothing">Conversations</span>
           <div class="flex items-center gap-1.5">
-            <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-devGreen/15 text-devGreen border border-devGreen/30 hover:bg-devGreen/25 transition shadow-sm">
+            <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-devGreen/15 text-devGreen border border-devGreen/30 hover:bg-devGreen/25 transition shadow-sm font-nothing">
               ⚙ Manage Users
             </button>
-            <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">0 Online</span>
+            <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-mono">0 Online</span>
           </div>
         </div>
 
@@ -391,17 +388,15 @@
         </div>
       </div>
 
-      <!-- PINNED 24/7 SOPHIE AI CARD -->
+      <!-- PINNED SOPHIE AI -->
       <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-purple-500/5 to-transparent">
         <div onclick="selectSophieAI()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-purple-500/10 border border-purple-500/20 shadow-sm group">
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
-              🤖
-            </div>
+            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">🤖</div>
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Sophie</p>
-                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">AI BOT</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 font-nothing">AI BOT</span>
               </div>
               <p class="text-[10px] text-slate-400 font-medium truncate">Sarcastic Campus LLM • 24/7 Online</p>
             </div>
@@ -410,19 +405,17 @@
         </div>
       </div>
 
-      <!-- PINNED 24/7 VAMS VIDEO & IMAGE BOT CARD -->
+      <!-- PINNED VAMS HUB -->
       <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-red-500/5 to-transparent">
         <div onclick="selectVideoBot()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-red-500/10 border border-red-500/20 shadow-sm group">
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
-              🎬
-            </div>
+            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">🎬</div>
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
                 <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
-                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">MEDIA</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 font-nothing">MEDIA</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Zero-Leak Video & Image Search Hub</p>
+              <p class="text-[10px] text-slate-400 font-medium truncate">Zero-Leak Media Hub • Video & Image Search</p>
             </div>
           </div>
           <span class="text-[10px] text-red-500 font-bold group-hover:translate-x-0.5 transition">Search →</span>
@@ -437,32 +430,28 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5 truncate">
             <span class="w-2 h-2 rounded-full bg-brand animate-pulse shrink-0"></span>
-            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase shrink-0">Campus Audio</span>
+            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase shrink-0 font-nothing">Campus Audio</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200" title="Pause/Play Stream">
-              ⏸
-            </button>
+            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200">⏸</button>
             <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[125px]">Idle</span>
           </div>
         </div>
         
-        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1">
+        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono">
           <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">ENG</button>
           <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">HIN</button>
           <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">S.IND</button>
           <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">OTH</button>
-          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95" title="Browse Saved Tracks">SAVED</button>
+          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">SAVED</button>
         </div>
 
         <div id="savedMusicDrawer" class="hidden space-y-2 pt-0.5 smooth-transition">
           <div class="flex items-center gap-1">
-            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95" title="Back to Live Stations">← Live</button>
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95">← Live</button>
             <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[10px] focus:outline-none focus:border-brand">
           </div>
-          
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
-
           <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1">
             <div class="flex items-center justify-between text-[9px] font-mono text-slate-400">
               <span id="savedCurrentTime">0:00</span>
@@ -479,7 +468,7 @@
         <div class="space-y-1 pt-0.5">
           <div class="flex justify-between text-[10px] font-semibold text-slate-400">
             <span>Master Volume</span>
-            <span id="volPercentLabel">100%</span>
+            <span id="volPercentLabel" class="font-mono">100%</span>
           </div>
           <div class="flex items-center gap-2 px-1">
             <span class="text-[10px] text-slate-400">🔈</span>
@@ -492,12 +481,12 @@
       <!-- Bottom Profile Bar -->
       <div onclick="openProfileModal()" class="p-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
         <div class="flex items-center gap-2.5 truncate">
-          <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+          <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm font-nothing">
             <span id="myAvatarLetter">U</span>
           </div>
           <div class="truncate min-w-0">
             <div class="flex items-center gap-1.5">
-              <span id="myUsernameDisplay" class="font-bold text-slate-900 dark:text-white truncate text-xs">@me</span>
+              <span id="myUsernameDisplay" class="font-bold text-slate-900 dark:text-white truncate text-xs font-nothing">@me</span>
               <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
             </div>
             <p id="myBioDisplay" class="text-[10px] text-slate-400 truncate">Tap to edit status...</p>
@@ -516,12 +505,10 @@
           <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1 shrink-0">← Back</button>
           
           <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition min-w-0">
-            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
-              ?
-            </div>
+            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0 font-nothing">?</div>
             <div class="truncate max-w-[140px] sm:max-w-[200px] min-w-0">
               <div class="flex items-center gap-1">
-                <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate">Select a peer</p>
+                <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate font-nothing">Select a peer</p>
                 <span id="activePeerVerifiedIcon" class="hidden inline-flex items-center justify-center">
                   <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
                 </span>
@@ -532,7 +519,7 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" title="Poke Peer">
+          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
@@ -540,7 +527,7 @@
             <span>📞</span> <span class="hidden sm:inline">Call</span>
           </button>
           
-          <span id="activeNetIndicatorPill" class="hidden sm:inline text-[10px] text-slate-400 bg-slate-100 dark:bg-darkMuted px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 font-medium truncate">
+          <span id="activeNetIndicatorPill" class="hidden sm:inline text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-darkMuted px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 font-medium truncate">
             SSSIHL-STUDENT
           </span>
         </div>
@@ -556,11 +543,11 @@
           <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
           <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
         </div>
-        <span id="typingUserLabel" class="text-[10px] text-slate-400 font-medium">@peer is typing...</span>
+        <span id="typingUserLabel" class="text-[10px] text-slate-400 font-medium font-mono">@peer is typing...</span>
       </div>
 
       <!-- Floating Unread New Messages Pill -->
-      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-4 sm:right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10">
+      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-4 sm:right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10 font-nothing">
         <span>↓</span> New messages
       </button>
 
@@ -568,7 +555,7 @@
       <div id="activeReplyBar" class="hidden px-3 sm:px-4 py-1.5 sm:py-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-100/80 dark:bg-darkMuted/60 flex items-center justify-between text-xs z-10 smooth-transition">
         <div class="flex items-center gap-2 truncate border-l-2 border-brand pl-2 min-w-0">
           <div class="truncate min-w-0">
-            <span class="font-bold text-[10px] sm:text-[11px] text-brand" id="replyAuthorLabel">Replying to @peer</span>
+            <span class="font-bold text-[10px] sm:text-[11px] text-brand font-nothing" id="replyAuthorLabel">Replying to @peer</span>
             <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[200px] sm:max-w-md" id="replySnippetLabel">Message snippet...</p>
           </div>
         </div>
@@ -576,26 +563,18 @@
       </div>
 
       <!-- Message Customization Sub-Bar -->
-      <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0">
+      <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0 font-nothing">
         
-        <!-- Vams Mode Toggle (VIDEO vs IMAGE) -->
+        <!-- Vams Mode Toggle -->
         <div id="vamsMediaTypeToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
-          <button type="button" id="vamsModeVideoBtn" onclick="setVamsSearchMode('video')" class="px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">
-            VIDEO
-          </button>
-          <button type="button" id="vamsModeImageBtn" onclick="setVamsSearchMode('image')" class="px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">
-            IMAGE
-          </button>
+          <button type="button" id="vamsModeVideoBtn" onclick="setVamsSearchMode('video')" class="px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">VIDEO</button>
+          <button type="button" id="vamsModeImageBtn" onclick="setVamsSearchMode('image')" class="px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">IMAGE</button>
         </div>
 
-        <!-- Video Platform Engine Switcher (Shown only when in VIDEO mode) -->
-        <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
-          <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">
-            YT
-          </button>
-          <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">
-            OTHER
-          </button>
+        <!-- Video Source Switcher -->
+        <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px] font-mono">
+          <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">YT</button>
+          <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">OTHER</button>
         </div>
 
         <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition text-[10px] sm:text-[11px]">
@@ -608,14 +587,14 @@
           </button>
 
           <div id="burnerMenu" class="absolute bottom-8 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1 min-w-[150px] hidden z-30">
-            <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase">Self-Destruct in:</div>
+            <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase font-mono">Self-Destruct in:</div>
             <button type="button" onclick="selectBurnerDuration(0, 'Burner Off')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">Off (Normal)</button>
             <button type="button" onclick="selectBurnerDuration(5, '5s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">5 Seconds</button>
             <button type="button" onclick="selectBurnerDuration(10, '10s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">10 Seconds</button>
             <button type="button" onclick="selectBurnerDuration(15, '15s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">15 Seconds</button>
             <button type="button" onclick="selectBurnerDuration(30, '30s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">30 Seconds</button>
             <div class="pt-1 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 px-1">
-              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-xs focus:outline-none">
+              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-xs focus:outline-none font-mono">
               <button type="button" onclick="applyCustomBurner()" class="px-2 py-0.5 bg-brand text-white text-[10px] font-bold rounded-lg hover:bg-brandDark">Set</button>
             </div>
           </div>
@@ -656,25 +635,50 @@
           <input id="dmInput" type="text" placeholder="Message..." autocomplete="off" disabled class="w-full bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none disabled:opacity-50 py-0.5">
         </div>
         
-        <button id="dmSendBtn" type="submit" disabled class="bg-brand text-white text-xs font-bold px-3.5 sm:px-4 py-1.5 rounded-full transition hover:opacity-90 shrink-0 disabled:opacity-30 shadow-sm active:scale-95">
+        <button id="dmSendBtn" type="submit" disabled class="bg-brand text-white text-xs font-bold px-3.5 sm:px-4 py-1.5 rounded-full transition hover:opacity-90 shrink-0 disabled:opacity-30 shadow-sm active:scale-95 font-nothing">
           Send
         </button>
 
-        <div id="recordingHUD" class="absolute inset-x-2 sm:inset-x-3 inset-y-2 bg-brand text-white rounded-2xl backdrop-blur flex items-center justify-between px-3 sm:px-4 hidden z-20 shadow-lg">
-          <div class="flex items-center gap-1.5 sm:gap-2 text-xs font-semibold">
-            <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-            <span class="hidden sm:inline">RECORDING</span>
-            <span id="recordingTimer" class="font-bold font-mono">0:00</span>
+        <!-- NOTHING OS GLYPH RECORDING HUD -->
+        <div id="recordingHUD" class="absolute inset-x-2 sm:inset-x-3 inset-y-1.5 bg-[#0C0E14] text-white rounded-2xl border border-white/10 shadow-2xl flex items-center justify-between px-3 sm:px-4 hidden z-20 nothing-matrix-border">
+          <div class="flex items-center gap-2 min-w-0">
+            <!-- Red LED Indicator -->
+            <span id="recordingLedDot" class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></span>
             
-            <div class="flex items-center bg-black/20 rounded-lg p-0.5 text-[10px] ml-1">
-              <button type="button" onclick="setDestructLimit(1)" id="limBtn1" class="px-2 py-0.5 rounded bg-white text-brand font-bold">1x</button>
-              <button type="button" onclick="setDestructLimit(2)" id="limBtn2" class="px-2 py-0.5 rounded text-white font-medium">2x</button>
-              <button type="button" onclick="setDestructLimit(3)" id="limBtn3" class="px-2 py-0.5 rounded text-white font-medium">3x</button>
+            <!-- Nothing Mono Text & Timer -->
+            <div class="flex flex-col truncate">
+              <span id="recordingStatusLabel" class="text-[9px] font-mono tracking-widest text-slate-400 uppercase font-bold">REC // NOTHING</span>
+              <span id="recordingTimer" class="font-mono text-sm font-extrabold tracking-wider text-white">00:00</span>
+            </div>
+
+            <!-- LED Glyph VU Meter -->
+            <div id="recordingGlyphBars" class="flex items-center gap-1 px-2 border-l border-white/10 shrink-0">
+              <span class="w-1 rounded-full bg-nothingRed glyph-bar"></span>
+              <span class="w-1 rounded-full bg-white glyph-bar"></span>
+              <span class="w-1 rounded-full bg-white glyph-bar"></span>
+              <span class="w-1 rounded-full bg-nothingRed glyph-bar"></span>
+              <span class="w-1 rounded-full bg-white glyph-bar"></span>
+            </div>
+
+            <!-- Destruct limits -->
+            <div class="hidden sm:flex items-center bg-white/5 border border-white/10 rounded-lg p-0.5 text-[9px] font-mono">
+              <button type="button" onclick="setDestructLimit(1)" id="limBtn1" class="px-1.5 py-0.5 rounded bg-white text-black font-bold">1x</button>
+              <button type="button" onclick="setDestructLimit(2)" id="limBtn2" class="px-1.5 py-0.5 rounded text-slate-400 font-medium">2x</button>
+              <button type="button" onclick="setDestructLimit(3)" id="limBtn3" class="px-1.5 py-0.5 rounded text-slate-400 font-medium">3x</button>
             </div>
           </div>
-          <div class="flex items-center gap-1.5 sm:gap-2">
-            <button type="button" onclick="cancelVoiceRecording()" class="px-2 sm:px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-semibold hover:bg-black/40 transition">Cancel</button>
-            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-2.5 sm:px-3 py-1 rounded-lg bg-white text-brand text-[11px] font-bold hover:bg-slate-100 transition shadow-sm">Send</button>
+
+          <!-- Controls: Pause, Cancel, Send -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" id="pauseResumeVoiceBtn" onclick="togglePauseVoiceRecording()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-[11px] font-mono font-bold transition flex items-center gap-1">
+              <span id="pauseVoiceIcon">⏸</span> <span class="hidden sm:inline" id="pauseVoiceLabel">Pause</span>
+            </button>
+            <button type="button" onclick="cancelVoiceRecording()" class="px-2 sm:px-2.5 py-1 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-[11px] font-mono font-bold transition">
+              Cancel
+            </button>
+            <button type="button" onclick="stopAndSendVoiceRecording()" class="px-3 py-1 rounded-xl bg-white text-black text-[11px] font-mono font-extrabold hover:bg-slate-200 transition shadow-md">
+              SEND ➔
+            </button>
           </div>
         </div>
       </form>
@@ -688,9 +692,7 @@
       <button onclick="closeBadgePhotoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="space-y-1 pt-1">
-        <div class="w-12 h-12 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xl mx-auto shadow-sm">
-          📸
-        </div>
+        <div class="w-12 h-12 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xl mx-auto shadow-sm">📸</div>
         <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Request Verified Badge</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
           Snap a quick selfie. The host will inspect your identity and approve your blue badge.
@@ -706,12 +708,8 @@
       <p id="badgePhotoStatusMsg" class="text-xs text-slate-500 font-medium min-h-[1rem]">Center face in circle</p>
 
       <div class="flex gap-2 pt-1">
-        <button onclick="closeBadgePhotoModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition active:scale-95">
-          Cancel
-        </button>
-        <button id="badgePhotoSubmitBtn" onclick="submitVerificationSelfie()" class="flex-1 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95">
-          Snap & Submit
-        </button>
+        <button onclick="closeBadgePhotoModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition active:scale-95">Cancel</button>
+        <button id="badgePhotoSubmitBtn" onclick="submitVerificationSelfie()" class="flex-1 py-2.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95">Snap & Submit</button>
       </div>
     </div>
   </div>
@@ -725,13 +723,11 @@
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-devGreen"></span>
           <div>
-            <h3 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white">Registered Users Directory</h3>
+            <h3 class="text-sm font-bold tracking-tight text-slate-900 dark:text-white font-nothing">Registered Users Directory</h3>
             <p class="text-[10px] text-slate-400 font-mono">Host Administration & Badge Verification Review</p>
           </div>
         </div>
-        <button onclick="fetchAndRenderAdminUsers()" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition active:scale-95">
-          ↻ Refresh
-        </button>
+        <button onclick="fetchAndRenderAdminUsers()" class="px-3 py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-600 dark:text-slate-300 transition active:scale-95">↻ Refresh</button>
       </div>
 
       <div id="adminUsersListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scroll">
@@ -739,9 +735,7 @@
       </div>
 
       <div class="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-end">
-        <button onclick="closeAdminUserManagerModal()" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold rounded-xl transition hover:opacity-90">
-          Close Directory
-        </button>
+        <button onclick="closeAdminUserManagerModal()" class="px-5 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold rounded-xl transition hover:opacity-90">Close Directory</button>
       </div>
     </div>
   </div>
@@ -751,7 +745,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <div class="space-y-1 text-center">
         <div class="w-10 h-10 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl mx-auto">🚫</div>
-        <h3 class="text-sm font-bold text-slate-900 dark:text-white">Ban @<span id="targetBanUsername">user</span></h3>
+        <h3 class="text-sm font-bold text-slate-900 dark:text-white font-nothing">Ban @<span id="targetBanUsername">user</span></h3>
         <p class="text-[11px] text-slate-400">Select or enter the reason for banning this account.</p>
       </div>
 
@@ -771,12 +765,8 @@
       </div>
 
       <div class="flex gap-2 pt-2">
-        <button onclick="closeBanReasonModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
-          Cancel
-        </button>
-        <button onclick="confirmExecuteBan()" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition shadow-md active:scale-95">
-          Execute Ban
-        </button>
+        <button onclick="closeBanReasonModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">Cancel</button>
+        <button onclick="confirmExecuteBan()" class="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition shadow-md active:scale-95">Execute Ban</button>
       </div>
     </div>
   </div>
@@ -784,7 +774,6 @@
   <!-- WEBRTC CALL HUD -->
   <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
     <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
-      
       <div class="space-y-1">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -793,12 +782,10 @@
         
         <div class="relative w-16 h-16 mx-auto mt-2">
           <div id="callTalkingAura" class="absolute inset-0 rounded-full bg-brand/30 transition-transform duration-100 scale-100 opacity-50"></div>
-          <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg">
-            ?
-          </div>
+          <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg font-nothing">?</div>
         </div>
 
-        <h3 id="callPeerName" class="text-base font-bold tracking-tight pt-1">@peer</h3>
+        <h3 id="callPeerName" class="text-base font-bold tracking-tight pt-1 font-nothing">@peer</h3>
         <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Stream...</p>
       </div>
 
@@ -807,21 +794,19 @@
       </div>
 
       <div class="flex justify-center items-center gap-3 pt-1">
-        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Mute Microphone">
+        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
           <span id="muteIcon">🎙️</span>
         </button>
 
-        <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95" title="Speaker Output Mode">
+        <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
           <span id="speakerIcon">🔊</span>
         </button>
 
-        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5">
+        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5 font-nothing">
           <span>📞</span> Accept
         </button>
 
-        <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95" title="End Call">
-          ✕
-        </button>
+        <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95">✕</button>
       </div>
     </div>
   </div>
@@ -834,17 +819,15 @@
       <button onclick="closePeerProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-2 pt-2">
-        <div id="inspectAvatarBox" class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center text-lg font-extrabold mx-auto shadow-md">
-          ?
-        </div>
+        <div id="inspectAvatarBox" class="w-14 h-14 rounded-full bg-brand text-white flex items-center justify-center text-lg font-extrabold mx-auto shadow-md font-nothing">?</div>
         <div>
           <div class="flex items-center justify-center gap-1">
-            <h3 id="inspectUsername" class="text-base font-extrabold text-slate-900 dark:text-white">@username</h3>
+            <h3 id="inspectUsername" class="text-base font-extrabold text-slate-900 dark:text-white font-nothing">@username</h3>
             <span id="inspectVerifiedIcon" class="hidden inline-flex items-center justify-center">
               <svg class="w-4 h-4 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
             </span>
           </div>
-          <div class="flex items-center justify-center gap-2 pt-1">
+          <div class="flex items-center justify-center gap-2 pt-1 font-mono">
             <span id="inspectStreamBadge" class="px-2.5 py-0.5 rounded-full bg-brand/10 text-brand text-[11px] font-bold border border-brand/20">Stream</span>
             <span id="inspectYearBadge" class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-darkMuted text-slate-500 text-[11px] font-semibold border border-slate-200 dark:border-slate-800">Year</span>
           </div>
@@ -852,19 +835,15 @@
       </div>
 
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-1">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status / Bio</span>
-        <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
-          "No bio provided yet."
-        </p>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Status / Bio</span>
+        <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">"No bio provided yet."</p>
       </div>
 
       <div class="flex gap-2 pt-1">
-        <button id="inspectCallBtn" onclick="inspectPeerCallAction()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+        <button id="inspectCallBtn" onclick="inspectPeerCallAction()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95 font-nothing">
           <span>📞</span> Call Peer
         </button>
-        <button onclick="closePeerProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition active:scale-95">
-          Message
-        </button>
+        <button onclick="closePeerProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition active:scale-95 font-nothing">Message</button>
       </div>
     </div>
   </div>
@@ -875,16 +854,16 @@
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
 
       <div class="text-center space-y-1 pt-1">
-        <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center text-base font-bold mx-auto shadow-md">
+        <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center text-base font-bold mx-auto shadow-md font-nothing">
           <span id="profileAvatarInitial">U</span>
         </div>
         <div class="flex items-center justify-center gap-1">
-          <h3 id="profileUsername" class="text-sm font-bold text-slate-900 dark:text-white">@username</h3>
+          <h3 id="profileUsername" class="text-sm font-bold text-slate-900 dark:text-white font-nothing">@username</h3>
           <span id="myProfileVerifiedIcon" class="hidden inline-flex items-center justify-center">
             <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
           </span>
         </div>
-        <p id="profileMeta" class="text-[11px] text-slate-400">Course • Year</p>
+        <p id="profileMeta" class="text-[11px] text-slate-400 font-mono">Course • Year</p>
       </div>
 
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
@@ -893,9 +872,7 @@
           <span id="bioSavedNotice" class="text-[10px] text-emerald-500 font-bold hidden">Saved ✓</span>
         </div>
         <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Coding Lab 💻" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
-        <button onclick="saveMyBio()" class="w-full py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-sm active:scale-95">
-          Update Status
-        </button>
+        <button onclick="saveMyBio()" class="w-full py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-sm active:scale-95 font-nothing">Update Status</button>
       </div>
 
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
@@ -903,18 +880,14 @@
           <span class="text-xs font-bold">Account Verification</span>
           <span id="myProfileVerificationBadgeText" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
         </div>
-        <button id="profileVerifyFaceBtn" onclick="openBadgePhotoModal()" class="w-full py-2 rounded-xl bg-brand/10 hover:bg-brand/20 border border-brand/30 text-brand text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5">
+        <button id="profileVerifyFaceBtn" onclick="openBadgePhotoModal()" class="w-full py-2 rounded-xl bg-brand/10 hover:bg-brand/20 border border-brand/30 text-brand text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5 font-nothing">
           <span>📷</span> Request Verified Badge
         </button>
       </div>
 
       <div class="flex gap-2">
-        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-brand/40 text-brand hover:bg-brand/10 text-xs font-bold transition active:scale-95">
-          Log Out
-        </button>
-        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition active:scale-95">
-          Done
-        </button>
+        <button onclick="disconnectSession()" class="flex-1 py-2.5 rounded-xl border border-brand/40 text-brand hover:bg-brand/10 text-xs font-bold transition active:scale-95 font-nothing">Log Out</button>
+        <button onclick="closeProfileModal()" class="flex-1 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold transition active:scale-95 font-nothing">Done</button>
       </div>
     </div>
   </div>
@@ -929,7 +902,7 @@
           <span class="w-2 h-2 rounded-full bg-devGreen animate-ping"></span>
           <span class="text-[11px] font-mono font-bold text-devGreen uppercase">Isolated Dev Channel</span>
         </div>
-        <h3 class="text-base font-bold">Enter Developer Key</h3>
+        <h3 class="text-base font-bold font-nothing">Enter Developer Key</h3>
         <p class="text-xs text-slate-500 leading-relaxed">
           Switching to DEVS disconnects you from the public student room and enters the developer relay.
         </p>
@@ -941,12 +914,8 @@
       </div>
 
       <div class="flex gap-2 pt-1">
-        <button onclick="closeDevModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
-          Cancel
-        </button>
-        <button onclick="verifyDevAccess()" class="flex-1 py-2.5 rounded-xl bg-devGreen text-white text-xs font-bold hover:opacity-90 transition shadow-md shadow-devGreen/20 active:scale-95">
-          Unlock DEVS
-        </button>
+        <button onclick="closeDevModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">Cancel</button>
+        <button onclick="verifyDevAccess()" class="flex-1 py-2.5 rounded-xl bg-devGreen text-white text-xs font-bold hover:opacity-90 transition shadow-md shadow-devGreen/20 active:scale-95 font-nothing">Unlock DEVS</button>
       </div>
     </div>
   </div>
@@ -954,12 +923,10 @@
   <!-- RADIO EARPHONES WARNING MODAL -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl relative">
-      <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">
-        🎧
-      </div>
+      <div class="w-14 h-14 rounded-full bg-brand/10 text-brand flex items-center justify-center text-2xl mx-auto">🎧</div>
       
       <div class="space-y-1.5">
-        <h3 class="text-base font-extrabold tracking-tight text-brand">PLEASE USE EARPHONES</h3>
+        <h3 class="text-base font-extrabold tracking-tight text-brand font-nothing">PLEASE USE EARPHONES</h3>
         <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
           Campus Wi-Fi radio channels are high gain. Respect the study environment around you.
         </p>
@@ -967,12 +934,10 @@
 
       <div id="radioTimerBox" class="p-3 bg-slate-100 dark:bg-darkMuted rounded-2xl border border-slate-200 dark:border-slate-800">
         <span class="text-xs font-medium text-slate-400">Tuning stream in </span>
-        <span id="radioCountdown" class="text-sm font-bold text-brand">5</span>
+        <span id="radioCountdown" class="text-sm font-bold text-brand font-mono">5</span>
       </div>
 
-      <button onclick="closeRadioModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold transition">
-        Cancel
-      </button>
+      <button onclick="closeRadioModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold transition">Cancel</button>
     </div>
   </div>
 
@@ -983,22 +948,22 @@
 
       <!-- Quick Unlock -->
       <div id="stepQuickUnlock" class="space-y-4 hidden">
-        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Session Locked</span>
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide font-nothing">Session Locked</span>
         
         <div class="p-3.5 rounded-2xl bg-slate-100 dark:bg-darkMuted border border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div class="flex items-center gap-2.5 truncate">
             <div class="w-2.5 h-2.5 rounded-full bg-brand"></div>
             <div class="truncate min-w-0">
               <div class="flex items-center gap-1">
-                <p id="unlockUserLabel" class="text-xs font-bold truncate">@username</p>
+                <p id="unlockUserLabel" class="text-xs font-bold truncate font-nothing">@username</p>
                 <span id="unlockVerifiedIcon" class="hidden inline-flex items-center justify-center">
                   <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
                 </span>
               </div>
-              <p id="unlockMetaLabel" class="text-[11px] text-slate-400 truncate">Course • Year</p>
+              <p id="unlockMetaLabel" class="text-[11px] text-slate-400 truncate font-mono">Course • Year</p>
             </div>
           </div>
-          <span class="text-[10px] font-semibold text-slate-400">CACHED</span>
+          <span class="text-[10px] font-semibold text-slate-400 font-mono">CACHED</span>
         </div>
 
         <div class="space-y-2">
@@ -1007,7 +972,7 @@
           <p id="unlockError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
 
-        <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
+        <button onclick="submitQuickUnlock()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95 font-nothing">
           Unlock Terminal ↵
         </button>
 
@@ -1018,26 +983,24 @@
         </div>
       </div>
 
-      <!-- Step 1 Course & Direct Sign-In Shortcut -->
+      <!-- Step 1 Course -->
       <div id="stepCourse" class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 1 of 3</span>
-          <button onclick="toggleToLogin()" class="text-xs font-bold text-brand hover:underline">
-            Sign In ➔
-          </button>
+          <span class="text-[11px] text-brand font-bold uppercase tracking-wide font-nothing">Step 1 of 3</span>
+          <button onclick="toggleToLogin()" class="text-xs font-bold text-brand hover:underline font-nothing">Sign In ➔</button>
         </div>
         
         <div class="p-3 bg-brand/5 border border-brand/20 rounded-2xl flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-900 dark:text-white">Have an existing account?</p>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400">Sign in directly with your username & passkey.</p>
+            <p class="text-xs font-bold text-slate-900 dark:text-white font-nothing">Have an existing account?</p>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400">Sign in directly with your credentials.</p>
           </div>
-          <button onclick="toggleToLogin()" class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shrink-0 shadow-sm active:scale-95">
+          <button onclick="toggleToLogin()" class="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shrink-0 shadow-sm active:scale-95 font-nothing">
             Sign In
           </button>
         </div>
 
-        <h3 class="text-base font-bold pt-1">Or create new: Select stream</h3>
+        <h3 class="text-base font-bold pt-1 font-nothing">Or create new: Select stream</h3>
         <div class="grid grid-cols-1 gap-1.5">
           <button onclick="selectCourse('BCom (Hons)')" class="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted transition text-xs font-semibold flex justify-between items-center">
             <span>BCom (Hons)</span> <span class="text-slate-400">→</span>
@@ -1059,9 +1022,9 @@
 
       <!-- Step 2 Year -->
       <div id="stepYear" class="space-y-3 hidden">
-        <span class="text-[11px] text-brand font-bold uppercase tracking-wide">Step 2 of 3</span>
-        <h3 class="text-base font-bold">Select your academic year</h3>
-        <div class="grid grid-cols-2 gap-2">
+        <span class="text-[11px] text-brand font-bold uppercase tracking-wide font-nothing">Step 2 of 3</span>
+        <h3 class="text-base font-bold font-nothing">Select your academic year</h3>
+        <div class="grid grid-cols-2 gap-2 font-mono">
           <button onclick="selectYear('1st')" class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">1st Year</button>
           <button onclick="selectYear('2nd')" class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">2nd Year</button>
           <button onclick="selectYear('3rd')" class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-darkMuted font-bold text-xs text-center">3rd Year</button>
@@ -1073,12 +1036,10 @@
       <!-- Step 3 Handle & Password -->
       <div id="stepAuth" class="space-y-3 hidden">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] text-brand font-bold uppercase tracking-wide" id="authStepBadge">Step 3 of 3</span>
-          <button id="toggleAuthModeBtn" onclick="toggleAuthMode()" class="text-xs font-bold text-brand hover:underline">
-            Already have an account? Sign In
-          </button>
+          <span class="text-[11px] text-brand font-bold uppercase tracking-wide font-nothing" id="authStepBadge">Step 3 of 3</span>
+          <button id="toggleAuthModeBtn" onclick="toggleAuthMode()" class="text-xs font-bold text-brand hover:underline font-nothing">Already have an account? Sign In</button>
         </div>
-        <h3 class="text-base font-bold" id="authHeading">Create your profile</h3>
+        <h3 class="text-base font-bold font-nothing" id="authHeading">Create your profile</h3>
         <div class="space-y-2">
           <div>
             <label class="text-[11px] font-medium text-slate-400">Username</label>
@@ -1090,7 +1051,7 @@
           </div>
           <p id="authError" class="text-xs text-rose-500 font-semibold hidden"></p>
         </div>
-        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95">
+        <button id="authActionBtn" onclick="submitAuth()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold rounded-xl transition hover:opacity-90 shadow-md active:scale-95 font-nothing">
           Create Account & Join ↵
         </button>
       </div>
@@ -1101,16 +1062,14 @@
   <!-- Open Source Contact Modal -->
   <div id="sourceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
-      <h3 class="text-base font-bold">Open Source & Audits</h3>
+      <h3 class="text-base font-bold font-nothing">Open Source & Audits</h3>
       <p class="text-xs text-slate-500 leading-relaxed">
         LAN CHAT client code and relay protocol are open for campus review.
       </p>
       <div class="p-3 bg-slate-100 dark:bg-darkMuted rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono select-all">
         simpcorp@proton.me
       </div>
-      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">
-        Close
-      </button>
+      <button onclick="closeSourceModal()" class="w-full py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">Close</button>
     </div>
   </div>
 
@@ -1118,12 +1077,12 @@
   <footer class="w-full max-w-6xl mx-auto p-4 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row justify-between items-center gap-3">
     <div class="flex items-center gap-2 text-xs text-slate-400">
       <span id="pingStatusDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-      <span>Session Active • <span id="pingMeter" class="font-mono text-emerald-500 font-bold">⚡ --ms</span> • <span class="text-slate-500">[2× ESC to Cloak]</span></span>
+      <span>Session Active • <span id="pingMeter" class="font-mono text-emerald-500 font-bold">⚡ --ms</span> • <span class="text-slate-500 font-mono">[2× ESC to Cloak]</span></span>
     </div>
 
     <div class="px-3.5 py-1.5 rounded-full bg-slate-200/70 dark:bg-darkMuted border border-slate-300 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center gap-1.5 shadow-sm">
       <span class="text-brand font-bold">●</span>
-      <span>Developed by a Jobless B.COM 1st year student (<a href="https://portdp.pages.dev" target="_blank" rel="noopener noreferrer" class="text-slate-900 dark:text-white font-bold hover:underline hover:text-brand dark:hover:text-brand transition cursor-pointer">SimpCorp</a>)</span>
+      <span>Developed by a Jobless B.COM 1st year student (<a href="https://portdp.pages.dev" target="_blank" rel="noopener noreferrer" class="text-slate-900 dark:text-white font-bold hover:underline hover:text-brand dark:hover:text-brand transition cursor-pointer font-nothing">SimpCorp</a>)</span>
     </div>
   </footer>
 
@@ -1256,8 +1215,8 @@
     let activeChatUser = null;
     let isSophieActive = false;
     let isVideoBotActive = false;
-    let activeVamsMode = "video"; // "video" | "image"
-    let activeVideoSourceEngine = "youtube"; // "youtube" | "other"
+    let activeVamsMode = "video"; 
+    let activeVideoSourceEngine = "youtube"; 
     let currentNetwork = "SSSIHL-STUDENT";
     let channel = null;
     let onlineUsersMap = new Map();
@@ -1276,13 +1235,15 @@
     let activeLiveSessionTimer = null;
     let activeAudioSessionId = 0;
 
+    // IN-MEMORY TEXT STORE TO GUARANTEE 100% RELIABLE TEXT COPYING
+    const rawMessageTextStore = new Map();
+
     const SAVED_SONGS_LIST = [
       { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
       { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" },
       { id: "s3", title: "lush life", file: "/audiohandle/lush%20life.mp3" },
       { id: "s4", title: "love me not", file: "/audiohandle/Love%20Me%20Not.mp3" },
       { id: "s5", title: "lovers rock", file: "/audiohandle/lovers%20rock.mp3" }
-    
     ];
     let currentPlayingSongIndex = -1;
 
@@ -1459,18 +1420,43 @@
       if (pauseBtn) pauseBtn.classList.add("hidden");
     }
 
-    function copyMessageText(text) {
-      if (!navigator.clipboard) {
-        const temp = document.createElement("textarea");
-        temp.value = text;
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand("copy");
-        document.body.removeChild(temp);
-      } else {
-        navigator.clipboard.writeText(text);
-      }
+    // =========================================================================
+    // ENHANCED ERROR-FREE CLIPBOARD COPY FUNCTION
+    // =========================================================================
+    function copyStoredMessage(msgId) {
+      const textToCopy = rawMessageTextStore.get(msgId);
+      if (!textToCopy) return;
 
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showCopyToast();
+        }).catch(() => {
+          fallbackExecCommandCopy(textToCopy);
+        });
+      } else {
+        fallbackExecCommandCopy(textToCopy);
+      }
+    }
+
+    function fallbackExecCommandCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showCopyToast();
+      } catch (err) {
+        console.error('Fallback copy error:', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function showCopyToast() {
       const toast = document.getElementById("copyToast");
       toast.classList.remove("hidden");
       setTimeout(() => toast.classList.add("hidden"), 2000);
@@ -1553,7 +1539,7 @@
       globalMasterVolume = parseFloat(val) / 100;
       document.getElementById('volPercentLabel').innerText = `${val}%`;
       
-      document.querySelectorAll('audio').forEach(a => { a.volume = globalMasterVolume; });
+      document.querySelectorAll('audio, video').forEach(a => { a.volume = globalMasterVolume; });
       if (activeRadioPlayer) activeRadioPlayer.volume = globalMasterVolume;
     }
 
@@ -1615,7 +1601,7 @@
         item.innerHTML = `
           <span class="truncate flex items-center gap-1.5 min-w-0">
             <span class="text-[9px] opacity-60 shrink-0">🎵</span>
-            <span class="truncate">${song.title}</span>
+            <span class="truncate font-nothing">${song.title}</span>
           </span>
           <span class="shrink-0 text-[10px] ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
         `;
@@ -1851,7 +1837,6 @@
       showTypingBubble("Vams");
 
       if (activeVamsMode === "image") {
-        // --- IMAGE ENGINE CALL ---
         try {
           const res = await fetch(`/api/imgbackend?q=${encodeURIComponent(queryText)}&offset=${offset}`);
           const data = await res.json();
@@ -1905,7 +1890,6 @@
           if (isVideoBotActive) renderBubble(errPayload, false);
         }
       } else {
-        // --- VIDEO ENGINE CALL ---
         const engine = targetSource || activeVideoSourceEngine;
         try {
           const res = await fetch(`/api/video?q=${encodeURIComponent(queryText)}&source=${engine}&offset=${offset}`);
@@ -1979,24 +1963,29 @@
       handleVamsMediaInteraction(query, nextOffset, sourceEngine);
     }
 
+    // =========================================================================
+    // ZERO-LEAK NATIVE VIDEO PLAYER INJECTION
+    // =========================================================================
     function playInlineVideo(btnElement, videoId) {
       const container = document.getElementById(`video-box-${videoId}`);
       if (!container) return;
 
-      btnElement.innerText = "Buffering...";
+      stopAndKillActiveAudio();
+
+      btnElement.innerText = "Buffering Stream...";
       btnElement.disabled = true;
 
-      const embedProxyUrl = `/api/video?embed=${encodeURIComponent(videoId)}`;
+      const streamProxyUrl = `/api/video?stream=${encodeURIComponent(videoId)}`;
 
       container.innerHTML = `
-        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-md border border-slate-200 dark:border-slate-800">
-          <iframe 
-            src="${embedProxyUrl}" 
-            class="w-full h-full border-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen 
-            referrerpolicy="no-referrer">
-          </iframe>
+        <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg border border-slate-200 dark:border-slate-800">
+          <video 
+            src="${streamProxyUrl}" 
+            controls 
+            autoplay 
+            playsinline
+            class="w-full h-full object-contain">
+          </video>
         </div>
       `;
     }
@@ -2204,6 +2193,7 @@
 
       const targetKey = isSophieActive ? "Sophie" : (isVideoBotActive ? "Vams" : (activeChatUser ? activeChatUser.username : "GLOBAL_LOUNGE"));
       removeMessageFromSession(targetKey, msgId);
+      rawMessageTextStore.delete(msgId);
     }
 
     function toggleSpoilerOption() {
@@ -2246,8 +2236,10 @@
       activeDestructLimit = lim;
       [1, 2, 3].forEach(n => {
         const btn = document.getElementById(`limBtn${n}`);
-        if (n === lim) btn.className = "px-2 py-0.5 rounded bg-white text-brand font-bold";
-        else btn.className = "px-2 py-0.5 rounded text-white font-medium";
+        if (btn) {
+          if (n === lim) btn.className = "px-1.5 py-0.5 rounded bg-white text-black font-bold";
+          else btn.className = "px-1.5 py-0.5 rounded text-slate-400 font-medium";
+        }
       });
     }
 
@@ -2261,6 +2253,15 @@
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         const now = Date.now();
+        
+        // Priority 1: Close lightboxes & modals on single ESC
+        const lightbox = document.getElementById("imageLightboxModal");
+        if (lightbox && !lightbox.classList.contains("hidden")) {
+          closeImageLightbox();
+          return;
+        }
+
+        // Priority 2: Panic cloak on double ESC
         if (now - lastEscPress < 500) triggerPanic();
         lastEscPress = now;
       }
@@ -2605,15 +2606,15 @@
       const adminBtn = document.getElementById("adminManageUsersBtn");
 
       if (currentNetwork === "DEVS") {
-        netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-devGreen text-white transition font-bold shadow-sm flex items-center gap-1 text-[11px]";
-        netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium text-[11px]";
+        netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-devGreen text-white transition font-bold shadow-sm flex items-center gap-1 text-[11px] font-nothing";
+        netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium text-[11px] font-nothing";
         devBadge.classList.remove("hidden");
         adminBtn.classList.remove("hidden");
         statusDot.className = "w-2.5 h-2.5 rounded-full bg-devGreen shadow-sm shadow-devGreen/50 animate-pulse";
         if (netPill) netPill.innerText = "DEVS PRIVATE MESH";
       } else {
-        netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px]";
-        netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px]";
+        netStudentBtn.className = "px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px] font-nothing";
+        netDevsBtn.className = "px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px] font-nothing";
         devBadge.classList.add("hidden");
         adminBtn.classList.add("hidden");
         statusDot.className = "w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse";
@@ -2666,20 +2667,20 @@
         card.innerHTML = `
           <div class="flex items-center justify-between gap-2 min-w-0">
             <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
-              ${u.face_image ? `<img src="${u.face_image}" class="w-9 h-9 rounded-full object-cover border border-brand shrink-0 cursor-pointer shadow-sm" onclick="window.open('${u.face_image}')">` : `<div class="w-9 h-9 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center font-bold text-xs shrink-0">${u.username.charAt(0).toUpperCase()}</div>`}
+              ${u.face_image ? `<img src="${u.face_image}" class="w-9 h-9 rounded-full object-cover border border-brand shrink-0 cursor-pointer shadow-sm" onclick="window.open('${u.face_image}')">` : `<div class="w-9 h-9 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center font-bold text-xs shrink-0 font-nothing">${u.username.charAt(0).toUpperCase()}</div>`}
               <div class="truncate space-y-0.5 min-w-0">
                 <div class="flex items-center gap-1.5">
-                  <span class="font-bold text-xs text-slate-900 dark:text-white truncate">@${u.username}</span>
+                  <span class="font-bold text-xs text-slate-900 dark:text-white truncate font-nothing">@${u.username}</span>
                   ${isVerified ? getVerifiedBadgeSvg() : ''}
-                  ${isBanned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500 text-white">BANNED</span>` : ''}
-                  ${hasFaceRequest ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse">PHOTO PENDING</span>` : ''}
+                  ${isBanned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-500 text-white font-mono">BANNED</span>` : ''}
+                  ${hasFaceRequest ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500 text-slate-950 animate-pulse font-mono">PHOTO PENDING</span>` : ''}
                 </div>
                 <p class="text-[10px] text-slate-400 truncate">${u.course || 'N/A'} • ${u.year || '1st'} Year • Pass: <span class="font-mono text-slate-500 select-all">${u.password}</span></p>
-                ${isBanned && u.ban_reason ? `<p class="text-[10px] text-rose-500 font-medium truncate">Reason: ${u.ban_reason}</p>` : ''}
+                ${isBanned && u.ban_reason ? `<p class="text-[10px] text-rose-500 font-medium truncate font-mono">Reason: ${u.ban_reason}</p>` : ''}
               </div>
             </div>
 
-            <div class="flex items-center gap-1.5 shrink-0">
+            <div class="flex items-center gap-1.5 shrink-0 font-nothing">
               ${!isVerified ? `
                 <button onclick="adminApproveUserVerification('${u.username}')" class="px-2.5 py-1 rounded-xl bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-700 transition active:scale-95 shadow-sm">
                   ✓ Approve Badge
@@ -3019,12 +3020,12 @@
         
         row.innerHTML = `
           <div class="flex items-center gap-2.5 truncate flex-1 min-w-0" onclick="selectPeerForChat(onlineUsersMap.get('${peer.username}'))">
-            <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+            <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm font-nothing">
               ${initial}
             </div>
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1">
-                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">@${peer.username}</p>
+                <p class="text-xs font-bold text-slate-900 dark:text-white truncate font-nothing">@${peer.username}</p>
                 ${isPeerVerified ? getVerifiedBadgeSvg() : ''}
                 ${unreadCount > 0 ? `<span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>` : ''}
               </div>
@@ -3144,11 +3145,10 @@
       const badgeText = document.getElementById("myProfileVerificationBadgeText");
       if (isVerifiedUser(currentUser)) {
         verifiedIcon.classList.remove("hidden");
-        badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500 border border-blue-500/30";
+        badgeText.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-500 border border-blue-500/30 font-nothing";
         badgeText.innerText = "Verified Identity ✓";
       } else {
-        verifiedIcon.classList.add("hidden");
-        badgeText.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500";
+        badgeText.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-nothing";
         badgeText.innerText = "Unverified";
       }
 
@@ -3299,6 +3299,10 @@
       history.push(messageObj);
       inMemoryChatCache.set(key, history);
       sessionStorage.setItem(key, JSON.stringify(history));
+
+      if (messageObj.text && messageObj.id) {
+        rawMessageTextStore.set(messageObj.id, messageObj.text);
+      }
     }
 
     function removeMessageFromSession(peerName, id) {
@@ -3323,14 +3327,19 @@
       if (history.length === 0) {
         area.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-1">
-            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Active Direct Session</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-nothing">Active Direct Session</span>
             <p class="text-[11px] text-slate-400 font-medium">Messages encrypted via AES-GCM 256 in RAM.</p>
           </div>
         `;
         return;
       }
 
-      history.forEach(msg => renderBubble(msg, msg.sender.toLowerCase() === currentUser.username.toLowerCase()));
+      history.forEach(msg => {
+        if (msg.text && msg.id) {
+          rawMessageTextStore.set(msg.id, msg.text);
+        }
+        renderBubble(msg, msg.sender.toLowerCase() === currentUser.username.toLowerCase());
+      });
       scrollChatToBottom();
     }
 
@@ -3359,6 +3368,7 @@
       const btn = document.getElementById(`play-btn-${id}`);
       if (!aud) return;
 
+      stopAndKillActiveAudio();
       checkVolumeAlert();
       aud.volume = globalMasterVolume;
 
@@ -3381,7 +3391,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
+        aud.currentTime = (val / 100) * aud.duration;
       }
     }
 
@@ -3470,7 +3480,7 @@
 
       const isSenderVerified = isVerifiedUser(msg.sender);
       const meta = document.createElement("div");
-      meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold";
+      meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold font-nothing";
       meta.innerHTML = `
         <span class="flex items-center gap-1">
           <span>${msg.sender}</span>
@@ -3503,6 +3513,7 @@
       let rawSnippetText = msg.text || "";
 
       if (msg.text) {
+        rawMessageTextStore.set(msg.id, msg.text);
         contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap break-words min-w-0">${msg.text}</div>`;
       } 
       // --- IMAGE SEARCH GALLERY BUBBLE ---
@@ -3516,7 +3527,7 @@
 
         contentHtml = `
           <div class="p-3 flex flex-col gap-3 w-full max-w-full min-w-0 overflow-hidden">
-            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0 font-nothing">
               <span class="truncate">Images (${currentOffset + 1}–${currentOffset + msg.imageList.length}) • "${ctx.query}"</span>
               <span class="text-[9px] font-mono text-emerald-500 font-bold shrink-0 ml-1">100% Proxied</span>
             </div>
@@ -3525,14 +3536,14 @@
               ${msg.imageList.map(img => `
                 <div class="p-2 bg-slate-100 dark:bg-darkBg rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between min-w-0">
                   <div class="relative aspect-square rounded-xl overflow-hidden bg-slate-900 cursor-pointer group/card" onclick="openImageLightbox('${img.image}')">
-                    <img src="${img.thumbnail || img.image}" class="w-full h-full object-cover transition-transform duration-200 group-hover/card:scale-105" loading="lazy">
-                    <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/70 text-white text-[9px] font-bold backdrop-blur">
+                    <img src="${img.thumbnail || img.image}" class="w-full h-full object-cover transition-transform duration-200 group-hover/card:scale-105">
+                    <span class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/70 text-white text-[9px] font-bold backdrop-blur font-mono">
                       ${img.source || 'HD'}
                     </span>
                   </div>
                   <div class="space-y-1 min-w-0">
                     <p class="text-[11px] font-bold truncate text-slate-900 dark:text-white" title="${img.title}">${img.title || 'Image'}</p>
-                    <div class="flex gap-1">
+                    <div class="flex gap-1 font-nothing">
                       <button onclick="openImageLightbox('${img.image}')" class="flex-1 py-1 rounded-lg bg-brand/10 hover:bg-brand/20 text-brand text-[10px] font-bold transition">
                         🔍 View
                       </button>
@@ -3546,7 +3557,7 @@
             </div>
 
             <!-- Image Pagination -->
-            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0">
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0 font-nothing">
               ${currentOffset > 0 ? `
                 <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'image')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
                   ← Prev 3
@@ -3562,7 +3573,7 @@
           </div>
         `;
       }
-      // --- VIDEO SEARCH RESULTS BUBBLE ---
+      // --- ZERO-LEAK VIDEO SEARCH RESULTS BUBBLE ---
       else if (msg.videoList) {
         rawSnippetText = "🎬 Video Search Results";
         const ctx = msg.searchContext || { query: "", source: "youtube", offset: 0, hasNext: false };
@@ -3574,7 +3585,7 @@
 
         contentHtml = `
           <div class="p-3 flex flex-col gap-3 w-full max-w-full min-w-0 overflow-hidden">
-            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0">
+            <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between min-w-0 font-nothing">
               <span class="truncate">Results (${currentOffset + 1}–${currentOffset + msg.videoList.length}) • ${engineLabel}</span>
               <span class="text-[9px] font-mono text-emerald-500 font-bold shrink-0 ml-1">100% Proxied</span>
             </div>
@@ -3586,13 +3597,13 @@
                     <img src="${v.thumbnail}" class="w-20 aspect-video object-cover rounded-lg border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-900">
                     <div class="truncate flex-1 min-w-0">
                       <div class="flex items-center gap-1.5 min-w-0">
-                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand/10 text-brand border border-brand/20 shrink-0">${v.source || engineLabel}</span>
-                        <p class="text-xs font-bold truncate text-slate-900 dark:text-white" title="${v.title}">${v.title}</p>
+                        <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-brand/10 text-brand border border-brand/20 shrink-0 font-mono">${v.source || engineLabel}</span>
+                        <p class="text-xs font-bold truncate text-slate-900 dark:text-white font-nothing" title="${v.title}">${v.title}</p>
                       </div>
-                      <p class="text-[10px] text-slate-400 truncate">${v.uploader} • ${v.duration}</p>
+                      <p class="text-[10px] text-slate-400 truncate font-mono">${v.uploader} • ${v.duration}</p>
                     </div>
                   </div>
-                  <button onclick="playInlineVideo(this, '${v.id}')" class="w-full py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition active:scale-95 shadow-sm flex items-center justify-center gap-1.5">
+                  <button onclick="playInlineVideo(this, '${v.id}')" class="w-full py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition active:scale-95 shadow-sm flex items-center justify-center gap-1.5 font-nothing">
                     <span>▶</span> Watch Stream
                   </button>
                 </div>
@@ -3600,7 +3611,7 @@
             </div>
 
             <!-- Video Pagination -->
-            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0">
+            <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0 font-nothing">
               ${currentOffset > 0 ? `
                 <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'video', '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
                   ← Prev 3
@@ -3620,7 +3631,7 @@
         contentHtml = `
           <div class="p-1 relative group/img max-w-full">
             <img src="${msg.image}" class="max-w-[240px] sm:max-w-xs rounded-xl max-h-60 object-cover cursor-pointer hover:opacity-95 transition" onclick="openImageLightbox('${msg.image}')">
-            <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/85 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md hover:bg-slate-900">
+            <a href="${msg.image}" download="campus_image.jpg" title="Download Image" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-slate-950/85 text-white text-[10px] font-bold backdrop-blur flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition shadow-md hover:bg-slate-900 font-nothing">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>Save</span>
             </a>
@@ -3634,12 +3645,12 @@
         
         contentHtml = `
           <div class="p-3 sm:p-3.5 flex flex-col gap-2 min-w-[200px] sm:min-w-[220px] max-w-full">
-            <div class="flex items-center justify-between text-[11px] font-bold">
+            <div class="flex items-center justify-between text-[11px] font-bold font-nothing">
               <span class="flex items-center gap-1.5"><span>📍</span> Live Location</span>
               <span class="text-[9px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">±${accuracy}m</span>
             </div>
             <p class="text-[11px] font-mono opacity-85">${lat.toFixed(4)}°, ${lng.toFixed(4)}°</p>
-            <div class="flex gap-1.5 pt-1">
+            <div class="flex gap-1.5 pt-1 font-nothing">
               <a href="${googleMapsUrl}" target="_blank" class="flex-1 py-1.5 rounded-lg text-center ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[10px] font-bold transition hover:opacity-90">Google Maps ↗</a>
               <a href="${appleMapsUrl}" target="_blank" class="flex-1 py-1.5 rounded-lg text-center ${isSelf ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-darkBg text-slate-900 dark:text-white'} text-[10px] font-bold transition hover:opacity-90">Apple Maps ↗</a>
             </div>
@@ -3651,13 +3662,13 @@
         contentHtml = `
           <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[200px] sm:min-w-[220px] max-w-full">
             <div class="flex items-center gap-2 truncate flex-1 min-w-0">
-              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-xs sm:text-sm shrink-0">📄</div>
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-xs sm:text-sm shrink-0 font-nothing">📄</div>
               <div class="truncate text-left min-w-0">
                 <p class="text-xs font-bold truncate">${name}</p>
                 <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
               </div>
             </div>
-            <a href="${data}" download="${name}" title="Download File" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[10px] sm:text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm">
+            <a href="${data}" download="${name}" title="Download File" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[10px] sm:text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm font-nothing">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>Save</span>
             </a>
@@ -3669,10 +3680,10 @@
         const currentCount = audioPlayedCounts.get(msg.id) || 0;
         
         contentHtml = `
-          <div class="p-3 flex flex-col gap-2 min-w-[220px] sm:min-w-[280px] max-w-full">
+          <div class="p-3 flex flex-col gap-2 min-w-[220px] sm:min-w-[280px] max-w-full font-mono">
             <div class="flex items-center justify-between gap-2 text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'}">
               <span class="font-bold flex items-center gap-1">🔥 Voice Clip (<span id="burn-count-${msg.id}">${currentCount}/${limit} Plays</span>)</span>
-              <span id="time-${msg.id}" class="font-mono">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
+              <span id="time-${msg.id}">0:00 / 0:${msg.duration < 10 ? '0' : ''}${msg.duration}</span>
             </div>
             <audio id="native-aud-${msg.id}" src="${msg.audio}" preload="metadata" ontimeupdate="onAudioTimeUpdate('${msg.id}')" onended="handleAudioEnded('${msg.id}', '${msg.sender}', ${limit})" class="hidden"></audio>
             <div class="flex items-center gap-2">
@@ -3697,7 +3708,7 @@
             ${replySnippetHtml}
             <div class="spoiler-content w-full">${contentHtml}</div>
             <div id="spoiler-cover-${msg.id}" onclick="revealSpoiler('${msg.id}')" class="spoiler-overlay absolute inset-0 bg-rose-600/95 text-white font-extrabold flex flex-col items-center justify-center cursor-pointer px-4 py-2 text-center z-10 backdrop-blur-md rounded-2xl">
-              <span class="text-[11px] tracking-wider uppercase flex items-center gap-1 font-bold">⚠️ SPOILER</span>
+              <span class="text-[11px] tracking-wider uppercase flex items-center gap-1 font-bold font-nothing">⚠️ SPOILER</span>
               <span class="text-[9px] font-medium opacity-80 pt-0.5">Tap to reveal</span>
             </div>
           </div>
@@ -3713,9 +3724,8 @@
       
       let copyBtnHtml = "";
       if (msg.text) {
-        const escapedText = encodeURIComponent(msg.text);
         copyBtnHtml = `
-          <button onclick="copyMessageText(decodeURIComponent('${escapedText}'))" title="Copy Text" class="p-1 rounded-full text-slate-400 hover:text-brand hover:bg-brand/10 transition flex items-center justify-center">
+          <button onclick="copyStoredMessage('${msg.id}')" title="Copy Text" class="p-1 rounded-full text-slate-400 hover:text-brand hover:bg-brand/10 transition flex items-center justify-center">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           </button>
         `;
@@ -3753,11 +3763,11 @@
 
       const reactionsContainer = document.createElement("div");
       reactionsContainer.id = `reactions-${msg.id}`;
-      reactionsContainer.className = "flex gap-1 text-[10px] px-2 font-semibold";
+      reactionsContainer.className = "flex gap-1 text-[10px] px-2 font-semibold font-mono";
 
       const timeStr = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
       const timeTag = document.createElement("div");
-      timeTag.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-medium";
+      timeTag.className = "flex items-center gap-1.5 text-[10px] text-slate-400 px-2 font-medium font-mono";
       
       let burnerBadge = "";
       if (msg.burnerDuration && msg.burnerDuration > 0) {
@@ -3801,13 +3811,18 @@
       parseTwemoji(tag);
     }
 
+    // =========================================================================
+    // NOTHING OS RECORDING ENGINE WITH PAUSE / RESUME
+    // =========================================================================
     let mediaRecorder = null;
     let audioChunks = [];
     let recordStartTime = 0;
     let recordTimerInterval = null;
+    let recordedAccumulatedSeconds = 0;
+    let isRecordingPaused = false;
 
     async function toggleVoiceRecording() {
-      if (mediaRecorder && mediaRecorder.state === "recording") {
+      if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
         stopAndSendVoiceRecording();
       } else {
         startVoiceRecording();
@@ -3816,22 +3831,64 @@
 
     async function startVoiceRecording() {
       try {
+        stopAndKillActiveAudio();
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaRecorder = new MediaRecorder(stream);
         audioChunks = [];
+        recordedAccumulatedSeconds = 0;
+        isRecordingPaused = false;
         
         mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
         mediaRecorder.start();
         recordStartTime = Date.now();
 
         document.getElementById("recordingHUD").classList.remove("hidden");
+        document.getElementById("recordingStatusLabel").innerText = "REC // NOTHING";
+        document.getElementById("pauseVoiceIcon").innerText = "⏸";
+        document.getElementById("pauseVoiceLabel").innerText = "Pause";
+        document.getElementById("recordingLedDot").className = "w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0";
+
+        clearInterval(recordTimerInterval);
         recordTimerInterval = setInterval(() => {
-          const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
-          document.getElementById("recordingTimer").innerText = `0:${elapsed < 10 ? '0' : ''}${elapsed}`;
-          if (elapsed >= 30) stopAndSendVoiceRecording();
+          if (!isRecordingPaused) {
+            const elapsed = recordedAccumulatedSeconds + Math.floor((Date.now() - recordStartTime) / 1000);
+            const m = Math.floor(elapsed / 60);
+            const s = elapsed % 60;
+            document.getElementById("recordingTimer").innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+            if (elapsed >= 30) stopAndSendVoiceRecording();
+          }
         }, 1000);
       } catch(e) {
         alert("Microphone permission required for voice notes.");
+      }
+    }
+
+    function togglePauseVoiceRecording() {
+      if (!mediaRecorder) return;
+
+      const icon = document.getElementById("pauseVoiceIcon");
+      const label = document.getElementById("pauseVoiceLabel");
+      const statusLbl = document.getElementById("recordingStatusLabel");
+      const led = document.getElementById("recordingLedDot");
+
+      if (mediaRecorder.state === "recording") {
+        mediaRecorder.pause();
+        isRecordingPaused = true;
+        recordedAccumulatedSeconds += Math.floor((Date.now() - recordStartTime) / 1000);
+        
+        icon.innerText = "🎙️";
+        label.innerText = "Resume";
+        statusLbl.innerText = "PAUSED // STANDBY";
+        led.className = "w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0";
+      } else if (mediaRecorder.state === "paused") {
+        mediaRecorder.resume();
+        isRecordingPaused = false;
+        recordStartTime = Date.now();
+
+        icon.innerText = "⏸";
+        label.innerText = "Pause";
+        statusLbl.innerText = "REC // NOTHING";
+        led.className = "w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0";
       }
     }
 
@@ -3846,7 +3903,12 @@
     function stopAndSendVoiceRecording() {
       if (!mediaRecorder) return;
       clearInterval(recordTimerInterval);
-      const duration = Math.min(30, Math.max(1, Math.floor((Date.now() - recordStartTime) / 1000)));
+      
+      let totalDuration = recordedAccumulatedSeconds;
+      if (!isRecordingPaused) {
+        totalDuration += Math.floor((Date.now() - recordStartTime) / 1000);
+      }
+      const duration = Math.min(30, Math.max(1, totalDuration));
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
@@ -3967,7 +4029,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE
+    // WEBRTC CALL ENGINE (HARDENED - NO PUBLIC GOOGLE STUN LEAKS)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -3985,11 +4047,9 @@
     let localVisSource = null;
     let remoteVisSource = null;
 
+    // Fully shielded relay config without Google telemetry endpoints
     const rtcConfig = {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
         { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelay', credential: 'openrelay' }
       ]
@@ -4172,6 +4232,7 @@
     async function initiateAudioCall() {
       if (!activeChatUser || !channel || isSophieActive || isVideoBotActive) return;
       
+      stopAndKillActiveAudio();
       const remoteAudio = document.getElementById("remoteAudioElement");
       remoteAudio.volume = globalMasterVolume;
       remoteAudio.play().catch(() => {});
@@ -4245,6 +4306,7 @@
       if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
 
       if (payload.type === "offer") {
+        stopAndKillActiveAudio();
         pendingOffer = payload;
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
