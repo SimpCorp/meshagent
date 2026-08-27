@@ -169,7 +169,6 @@
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* NOTHING OS DOT MATRIX & LED GLYPH STYLES */
     .nothing-matrix-border {
       background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 0);
       background-size: 6px 6px;
@@ -226,7 +225,7 @@
       <button onclick="closeImageLightbox()" class="absolute -top-10 right-0 text-white hover:text-slate-300 text-lg font-bold">✕</button>
       <img id="lightboxImg" src="" class="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl border border-white/10">
       <div class="flex items-center gap-3">
-        <a id="lightboxDownloadBtn" href="" download="image.jpg" class="px-4 py-2 rounded-full bg-brand text-white font-bold text-xs shadow-lg hover:opacity-90 transition flex items-center gap-1.5">
+        <a id="lightboxDownloadBtn" href="" download="image.jpg" class="px-4 py-2 rounded-full bg-brand text-white font-bold text-xs shadow-lg hover:opacity-90 transition flex items-center gap-1.5 font-nothing">
           <span>💾</span> Download Original
         </a>
       </div>
@@ -241,11 +240,11 @@
       </div>
 
       <div class="space-y-2">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider font-mono">
           <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> Important Notice
         </div>
         
-        <h3 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white tracking-tight">
+        <h3 class="text-base sm:text-lg font-extrabold text-slate-950 dark:text-white tracking-tight font-nothing">
           Domain Migrated to <span class="text-brand underline underline-offset-4">meshage.pages.dev</span>
         </h3>
 
@@ -257,7 +256,7 @@
       </div>
 
       <div class="pt-1">
-        <button id="closeDomainNoticeBtn" onclick="closeDomainNotice()" disabled class="w-full py-3 bg-brand text-white text-xs font-bold rounded-2xl transition hover:opacity-90 shadow-md disabled:opacity-40 disabled:cursor-not-allowed">
+        <button id="closeDomainNoticeBtn" onclick="closeDomainNotice()" disabled class="w-full py-3 bg-brand text-white text-xs font-bold rounded-2xl transition hover:opacity-90 shadow-md disabled:opacity-40 disabled:cursor-not-allowed font-nothing">
           <span id="closeNoticeTimerLabel">Please wait 1s...</span>
         </button>
       </div>
@@ -265,22 +264,22 @@
   </div>
 
   <!-- LOW VOLUME TOAST -->
-  <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all">
+  <div id="lowVolumeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 transition-all font-mono">
     <span class="w-2 h-2 rounded-full bg-amber-400"></span> Master volume is low (<span id="lowVolPct">20</span>%). Increase slider in left sidebar.
   </div>
 
   <!-- COPY CONFIRMATION TOAST -->
-  <div id="copyToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 dark:border-slate-200 transition-all">
+  <div id="copyToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 dark:bg-white/95 text-white dark:text-slate-900 text-xs font-bold px-4 py-2 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-slate-800 dark:border-slate-200 transition-all font-mono">
     <span>📋</span> Copied to clipboard!
   </div>
 
   <!-- STREAM ERROR TOAST -->
-  <div id="radioErrorToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-rose-600 text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20">
+  <div id="radioErrorToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-rose-600 text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20 font-mono">
     <span>📡</span> <span id="radioErrorMsg">Stream connection failed. Retrying...</span>
   </div>
 
   <!-- POKE NOTIFICATION -->
-  <div id="pokeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-brand text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20 animate-bounce">
+  <div id="pokeToast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-brand text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-2xl backdrop-blur flex items-center gap-2 hidden border border-white/20 animate-bounce font-mono">
     <span>⚡</span> <span id="pokeToastText">@peer poked you!</span>
   </div>
 
@@ -311,8 +310,8 @@
       </div>
 
       <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
-        <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px]">SSSIHL-STUDENT</button>
-        <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px]">
+        <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px] font-nothing">SSSIHL-STUDENT</button>
+        <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px] font-nothing">
           <span>🔒</span> DEVS
         </button>
       </div>
@@ -328,37 +327,6 @@
   </header>
 
   <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
-  <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-8">
-    <div class="text-center space-y-4 max-w-xl">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Zero-Knowledge Encrypted Mesh Relay
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white font-nothing">
-        Zero Latency.<br>Direct Campus Mesh.
-      </h2>
-      <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
-        Real-time direct messaging, two-way delete on read, background tab alerts, live location cards, and self-destruct media with client-side cryptographic isolation.
-      </p>
-
-      <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
-        <span class="text-base shrink-0">🛡️</span>
-        <div class="space-y-0.5">
-          <p class="font-bold text-emerald-600 dark:text-emerald-400">Zero-Leak Hardened Architecture</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Full binary serverless media forwarding with zero external client queries and encrypted payloads.</p>
-        </div>
-      </div>
-
-      <div class="pt-2 flex flex-wrap gap-3 justify-center">
-        <button onclick="handleNavAction()" class="px-7 py-3 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 text-xs font-bold hover:opacity-90 transition shadow-md active:scale-95 font-nothing">
-          Open Messages →
-        </button>
-        <button onclick="openSourceNotice()" class="px-5 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-darkMuted text-xs font-semibold text-slate-600 dark:text-slate-300 transition active:scale-95">
-          Source Code & Audits
-        </button>
-      </div>
-    </div>
-    <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-8">
     
     <!-- Hero Text Container -->
@@ -378,7 +346,7 @@
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
           <p class="font-bold text-emerald-600 dark:text-emerald-400">Zero-Leak Hardened Architecture</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Full binary serverless media forwarding with zero external client queries and encrypted payloads.</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Full binary serverless media forwarding with zero external client queries and origin-bound encrypted payloads.</p>
         </div>
       </div>
 
@@ -394,9 +362,9 @@
           Source Code & Audits
         </button>
       </div>
-    </div> <!-- Close of max-w-xl hero container -->
+    </div>
 
-    <!-- PLACE THE 3 CARDS RIGHT HERE (AFTER THE </div>) -->
+    <!-- 3 Pre-Login Feature Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">01</span>
@@ -416,8 +384,6 @@
         <p class="text-[11px] text-slate-500 leading-relaxed">Fast photo submission from settings with manual dev-verified authenticity badges.</p>
       </div>
     </div>
-
-  </main>
   </main>
 
   <!-- ==================== VIEW 2: SPLIT DM & LOUNGE ==================== -->
@@ -494,7 +460,7 @@
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
             <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200">⏸</button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[125px]">Idle</span>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[135px]">Idle</span>
           </div>
         </div>
         
@@ -508,12 +474,12 @@
 
         <div id="savedMusicDrawer" class="hidden space-y-2 pt-0.5 smooth-transition">
           <div class="flex items-center gap-1">
-            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95">← Live</button>
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95 font-nothing">← Live</button>
             <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[10px] focus:outline-none focus:border-brand">
           </div>
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
-          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1">
-            <div class="flex items-center justify-between text-[9px] font-mono text-slate-400">
+          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1 font-mono">
+            <div class="flex items-center justify-between text-[9px] text-slate-400">
               <span id="savedCurrentTime">0:00</span>
               <span id="savedTotalDuration">0:00</span>
             </div>
@@ -552,7 +518,7 @@
             <p id="myBioDisplay" class="text-[10px] text-slate-400 truncate">Tap to edit status...</p>
           </div>
         </div>
-        <span class="text-[10px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium">Settings ⚙</span>
+        <span class="text-[10px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium font-nothing">Settings ⚙</span>
       </div>
     </section>
 
@@ -562,7 +528,7 @@
       <!-- Chat Header -->
       <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10 shrink-0">
         <div class="flex items-center gap-2 min-w-0">
-          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1 shrink-0">← Back</button>
+          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1 shrink-0 font-nothing">← Back</button>
           
           <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition min-w-0">
             <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0 font-nothing">?</div>
@@ -579,11 +545,11 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed">
+          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed font-nothing">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
 
-          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 sm:px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 sm:px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm font-nothing">
             <span>📞</span> <span class="hidden sm:inline">Call</span>
           </button>
           
@@ -654,7 +620,7 @@
             <button type="button" onclick="selectBurnerDuration(15, '15s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">15 Seconds</button>
             <button type="button" onclick="selectBurnerDuration(30, '30s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">30 Seconds</button>
             <div class="pt-1 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 px-1">
-              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2 py-0.5 text-xs focus:outline-none font-mono">
+              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-xs focus:outline-none font-mono">
               <button type="button" onclick="applyCustomBurner()" class="px-2 py-0.5 bg-brand text-white text-[10px] font-bold rounded-lg hover:bg-brandDark">Set</button>
             </div>
           </div>
@@ -938,7 +904,7 @@
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold">Account Verification</span>
-          <span id="myProfileVerificationBadgeText" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500">Unverified</span>
+          <span id="myProfileVerificationBadgeText" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 font-nothing">Unverified</span>
         </div>
         <button id="profileVerifyFaceBtn" onclick="openBadgePhotoModal()" class="w-full py-2 rounded-xl bg-brand/10 hover:bg-brand/20 border border-brand/30 text-brand text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5 font-nothing">
           <span>📷</span> Request Verified Badge
@@ -1295,7 +1261,7 @@
     let activeLiveSessionTimer = null;
     let activeAudioSessionId = 0;
 
-    // IN-MEMORY TEXT STORE TO GUARANTEE 100% RELIABLE TEXT COPYING
+    // IN-MEMORY TEXT STORE FOR ERROR-FREE CLIPBOARD COPYING
     const rawMessageTextStore = new Map();
 
     const SAVED_SONGS_LIST = [
@@ -1481,7 +1447,7 @@
     }
 
     // =========================================================================
-    // ENHANCED ERROR-FREE CLIPBOARD COPY FUNCTION
+    // ENHANCED ERROR-FREE CLIPBOARD COPY
     // =========================================================================
     function copyStoredMessage(msgId) {
       const textToCopy = rawMessageTextStore.get(msgId);
@@ -2314,10 +2280,16 @@
       if (e.key === "Escape") {
         const now = Date.now();
         
-        // Priority 1: Close lightboxes & modals on single ESC
+        // Priority 1: Close modals / lightboxes
         const lightbox = document.getElementById("imageLightboxModal");
         if (lightbox && !lightbox.classList.contains("hidden")) {
           closeImageLightbox();
+          return;
+        }
+
+        const peerModal = document.getElementById("peerProfileModal");
+        if (peerModal && !peerModal.classList.contains("hidden")) {
+          closePeerProfileModal();
           return;
         }
 
@@ -3283,6 +3255,14 @@
       }
     }
 
+    // MAP OF PRIMARY ENGINE ATTRIBUTIONS
+    const RADIO_SOURCE_MAP = {
+      hindi: "Uber.Radio / Mixify",
+      south: "ZenoFM / Katerumbu",
+      other: "ZenoFM / Play.cz",
+      english: "Positivity / Uber"
+    };
+
     function executeRadioStream(lang) {
       stopAndKillActiveAudio();
       const sessionId = activeAudioSessionId;
@@ -3290,8 +3270,11 @@
       currentPlayingSongIndex = -1;
       document.getElementById("savedScrubberHUD").classList.add("hidden");
 
+      const channelKey = lang.toLowerCase();
+      const sourceTag = RADIO_SOURCE_MAP[channelKey] || "Icecast Direct";
+
       document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
-      const streamUrl = `/api/radio?channel=${encodeURIComponent(lang.toLowerCase())}`;
+      const streamUrl = `/api/radio?channel=${encodeURIComponent(channelKey)}`;
       
       const player = new Audio();
       player.preload = "auto";
@@ -3306,7 +3289,7 @@
       player.onplaying = () => {
         if (sessionId !== activeAudioSessionId) return;
         clearTimeout(activeLiveSessionTimer);
-        document.getElementById("radioStatusTag").innerText = `Live: ${lang}`;
+        document.getElementById("radioStatusTag").innerText = `Live: ${lang} (${sourceTag.split('/')[0].trim()})`;
         const pauseBtn = document.getElementById("radioPauseBtn");
         pauseBtn.classList.remove("hidden");
         pauseBtn.innerText = "⏸";
@@ -3451,7 +3434,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * aud.duration;
+        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
       }
     }
 
@@ -3721,7 +3704,7 @@
         rawSnippetText = `📄 ${name}`;
         contentHtml = `
           <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[200px] sm:min-w-[220px] max-w-full">
-            <div class="flex items-center gap-2 truncate flex-1 min-w-0">
+            <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
               <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-xs sm:text-sm shrink-0 font-nothing">📄</div>
               <div class="truncate text-left min-w-0">
                 <p class="text-xs font-bold truncate">${name}</p>
@@ -4089,7 +4072,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE (HARDENED - NO PUBLIC GOOGLE STUN LEAKS)
+    // WEBRTC CALL ENGINE (HARDENED TURN ONLY)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -4107,7 +4090,6 @@
     let localVisSource = null;
     let remoteVisSource = null;
 
-    // Fully shielded relay config without Google telemetry endpoints
     const rtcConfig = {
       iceServers: [
         { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
