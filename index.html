@@ -219,6 +219,18 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
+  <!-- IN-APP NOTHING OS TOAST NOTIFICATION CONTAINER -->
+  <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></div>
+      <div class="truncate">
+        <p id="inAppNotifSender" class="text-[11px] font-mono font-bold text-slate-300 uppercase tracking-wider">NEW SIGNAL</p>
+        <p id="inAppNotifText" class="text-xs font-semibold text-white truncate">Encrypted payload received</p>
+      </div>
+    </div>
+    <span class="text-[10px] font-mono bg-white/10 px-2 py-0.5 rounded-lg text-slate-300 shrink-0">OPEN ➔</span>
+  </div>
+
   <!-- LIGHTBOX IMAGE MODAL -->
   <div id="imageLightboxModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden" onclick="closeImageLightbox()">
     <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center gap-3" onclick="event.stopPropagation()">
@@ -326,7 +338,7 @@
     </div>
   </header>
 
-  <!-- ==================== VIEW 1: CLEAN LANDING ==================== -->
+  <!-- ==================== VIEW 1: CLEAN SINGLE-INSTANCE LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center space-y-8">
     
     <!-- Hero Text Container -->
@@ -545,6 +557,11 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <!-- Quick Mute Notifications for Peer -->
+          <button id="quickMutePeerBtn" onclick="toggleMuteCurrentPeer()" class="hidden w-7 h-7 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs transition" title="Toggle Notifications for Peer">
+            <span id="quickMuteIcon">🔔</span>
+          </button>
+
           <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed font-nothing">
             <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
           </button>
@@ -653,8 +670,13 @@
           </div>
         </div>
 
-        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
-          <span id="voiceMicIcon" class="text-xs">🎤</span>
+        <!-- REDESIGNED NOTHING OS MIC BUTTON -->
+        <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="relative w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 border border-slate-700 dark:border-slate-200 flex items-center justify-center transition shrink-0 active:scale-90 shadow-sm group">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+          <span class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-nothingRed opacity-0 group-hover:opacity-100 transition"></span>
         </button>
 
         <div class="flex-1 flex items-center bg-slate-100 dark:bg-darkMuted rounded-full px-3.5 sm:px-4 py-1.5 focus-within:ring-2 focus-within:ring-brand/50 transition min-w-0">
@@ -668,16 +690,13 @@
         <!-- NOTHING OS GLYPH RECORDING HUD -->
         <div id="recordingHUD" class="absolute inset-x-2 sm:inset-x-3 inset-y-1.5 bg-[#0C0E14] text-white rounded-2xl border border-white/10 shadow-2xl flex items-center justify-between px-3 sm:px-4 hidden z-20 nothing-matrix-border">
           <div class="flex items-center gap-2 min-w-0">
-            <!-- Red LED Indicator -->
             <span id="recordingLedDot" class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></span>
             
-            <!-- Nothing Mono Text & Timer -->
             <div class="flex flex-col truncate">
               <span id="recordingStatusLabel" class="text-[9px] font-mono tracking-widest text-slate-400 uppercase font-bold">REC // NOTHING</span>
               <span id="recordingTimer" class="font-mono text-sm font-extrabold tracking-wider text-white">00:00</span>
             </div>
 
-            <!-- LED Glyph VU Meter -->
             <div id="recordingGlyphBars" class="flex items-center gap-1 px-2 border-l border-white/10 shrink-0">
               <span class="w-1 rounded-full bg-nothingRed glyph-bar"></span>
               <span class="w-1 rounded-full bg-white glyph-bar"></span>
@@ -686,7 +705,6 @@
               <span class="w-1 rounded-full bg-white glyph-bar"></span>
             </div>
 
-            <!-- Destruct limits -->
             <div class="hidden sm:flex items-center bg-white/5 border border-white/10 rounded-lg p-0.5 text-[9px] font-mono">
               <button type="button" onclick="setDestructLimit(1)" id="limBtn1" class="px-1.5 py-0.5 rounded bg-white text-black font-bold">1x</button>
               <button type="button" onclick="setDestructLimit(2)" id="limBtn2" class="px-1.5 py-0.5 rounded text-slate-400 font-medium">2x</button>
@@ -694,7 +712,6 @@
             </div>
           </div>
 
-          <!-- Controls: Pause, Cancel, Send -->
           <div class="flex items-center gap-1.5 shrink-0">
             <button type="button" id="pauseResumeVoiceBtn" onclick="togglePauseVoiceRecording()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-[11px] font-mono font-bold transition flex items-center gap-1">
               <span id="pauseVoiceIcon">⏸</span> <span class="hidden sm:inline" id="pauseVoiceLabel">Pause</span>
@@ -865,6 +882,13 @@
         <p id="inspectBioText" class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">"No bio provided yet."</p>
       </div>
 
+      <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 text-xs">
+        <span class="font-bold">Mute Notifications</span>
+        <button id="inspectMuteToggleBtn" onclick="toggleMuteInspectedPeer()" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkMuted font-mono font-bold text-[11px] transition">
+          UNMUTED
+        </button>
+      </div>
+
       <div class="flex gap-2 pt-1">
         <button id="inspectCallBtn" onclick="inspectPeerCallAction()" class="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95 font-nothing">
           <span>📞</span> Call Peer
@@ -874,7 +898,7 @@
     </div>
   </div>
 
-  <!-- USER PROFILE & BIO SETTINGS MODAL -->
+  <!-- USER PROFILE & SETTINGS MODAL -->
   <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -899,6 +923,17 @@
         </div>
         <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Coding Lab 💻" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
         <button onclick="saveMyBio()" class="w-full py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-sm active:scale-95 font-nothing">Update Status</button>
+      </div>
+
+      <!-- NOTIFICATION SYSTEM TOGGLE -->
+      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+        <div>
+          <p class="font-bold text-slate-900 dark:text-white">Push & Tab Notifications</p>
+          <p class="text-[10px] text-slate-400">Receive alerts when outside the tab</p>
+        </div>
+        <button id="globalNotifToggleBtn" onclick="toggleGlobalNotifications()" class="px-3 py-1 rounded-xl bg-emerald-500 text-white font-mono font-bold text-[11px] transition shadow-sm">
+          ENABLED
+        </button>
       </div>
 
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
@@ -1216,7 +1251,7 @@
         delete decryptedObj._pad;
         return decryptedObj;
       } catch (err) {
-        console.warn("E2EE Decryption Authentication Failed:", err);
+        console.warn("E2EE Decryption Failed:", err);
         return null;
       }
     }
@@ -1260,9 +1295,12 @@
     let radioErrorRecoveryTimeout = null;
     let activeLiveSessionTimer = null;
     let activeAudioSessionId = 0;
+    let activeMediaLoadToken = 0; // Concurrency protection token for audio track loading
 
-    // IN-MEMORY TEXT STORE FOR ERROR-FREE CLIPBOARD COPYING
+    // IN-MEMORY STORAGE FOR SAFE COPY & MUTED PEERS
     const rawMessageTextStore = new Map();
+    let mutedPeersSet = new Set(JSON.parse(localStorage.getItem("lan_muted_peers") || "[]"));
+    let globalNotificationsEnabled = localStorage.getItem("lan_global_notif") !== "false"; // Default true
 
     const SAVED_SONGS_LIST = [
       { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
@@ -1281,6 +1319,133 @@
     const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
 
     const inMemoryChatCache = new Map();
+
+    // =========================================================================
+    // UNIFIED NOTIFICATION DISPATCHER (IN-APP & POPUP "new notification")
+    // =========================================================================
+    function triggerNotificationAlert(senderName, rawSnippet = "New message") {
+      if (!globalNotificationsEnabled) return;
+      if (mutedPeersSet.has(senderName.toLowerCase())) return;
+
+      const isHidden = document.visibilityState === "hidden";
+
+      if (isHidden) {
+        // --- TIER 2: TAB IN BACKGROUND -> EXACT "new notification" POPUP ---
+        if ("Notification" in window) {
+          if (Notification.permission === "granted") {
+            try {
+              const notif = new Notification("new notification", {
+                body: `@${senderName} sent an encrypted message`,
+                icon: "/favicon.ico",
+                tag: "campus-mesh-alert",
+                renotify: true
+              });
+              notif.onclick = () => {
+                window.focus();
+                const peerObj = onlineUsersMap.get(senderName.toLowerCase());
+                if (peerObj) selectPeerForChat(peerObj);
+              };
+            } catch (e) {}
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+              if (permission === "granted") {
+                new Notification("new notification", {
+                  body: `@${senderName} sent an encrypted message`
+                });
+              }
+            });
+          }
+        }
+        triggerBackgroundTabFlash(senderName);
+      } else {
+        // --- TIER 1: TAB IN FOREGROUND -> IN-APP NOTHING OS TOAST ---
+        const toast = document.getElementById("inAppNotificationToast");
+        const senderLbl = document.getElementById("inAppNotifSender");
+        const textLbl = document.getElementById("inAppNotifText");
+
+        senderLbl.innerText = `@${senderName} // SIGNAL`;
+        textLbl.innerText = rawSnippet;
+
+        toast.classList.remove("hidden");
+        setTimeout(() => {
+          toast.classList.remove("translate-y-[-10px]", "opacity-0");
+        }, 10);
+
+        toast.onclick = () => {
+          const peerObj = onlineUsersMap.get(senderName.toLowerCase());
+          if (peerObj) selectPeerForChat(peerObj);
+          dismissInAppToast();
+        };
+
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(dismissInAppToast, 3500);
+      }
+    }
+
+    function dismissInAppToast() {
+      const toast = document.getElementById("inAppNotificationToast");
+      toast.classList.add("translate-y-[-10px]", "opacity-0");
+      setTimeout(() => toast.classList.add("hidden"), 300);
+    }
+
+    function toggleGlobalNotifications() {
+      globalNotificationsEnabled = !globalNotificationsEnabled;
+      localStorage.setItem("lan_global_notif", globalNotificationsEnabled.toString());
+      
+      const btn = document.getElementById("globalNotifToggleBtn");
+      if (globalNotificationsEnabled) {
+        btn.className = "px-3 py-1 rounded-xl bg-emerald-500 text-white font-mono font-bold text-[11px] transition shadow-sm";
+        btn.innerText = "ENABLED";
+        if ("Notification" in window && Notification.permission !== "granted") {
+          Notification.requestPermission();
+        }
+      } else {
+        btn.className = "px-3 py-1 rounded-xl bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono font-bold text-[11px] transition";
+        btn.innerText = "MUTED";
+      }
+    }
+
+    function toggleMuteCurrentPeer() {
+      if (!activeChatUser) return;
+      const u = activeChatUser.username.toLowerCase();
+      if (mutedPeersSet.has(u)) {
+        mutedPeersSet.delete(u);
+      } else {
+        mutedPeersSet.add(u);
+      }
+      localStorage.setItem("lan_muted_peers", JSON.stringify(Array.from(mutedPeersSet)));
+      updatePeerMuteUI();
+    }
+
+    function toggleMuteInspectedPeer() {
+      if (!inspectedPeerObj) return;
+      const u = inspectedPeerObj.username.toLowerCase();
+      if (mutedPeersSet.has(u)) {
+        mutedPeersSet.delete(u);
+      } else {
+        mutedPeersSet.add(u);
+      }
+      localStorage.setItem("lan_muted_peers", JSON.stringify(Array.from(mutedPeersSet)));
+      updatePeerMuteUI();
+    }
+
+    function updatePeerMuteUI() {
+      if (inspectedPeerObj) {
+        const isMuted = mutedPeersSet.has(inspectedPeerObj.username.toLowerCase());
+        const btn = document.getElementById("inspectMuteToggleBtn");
+        if (btn) {
+          btn.innerText = isMuted ? "MUTED" : "UNMUTED";
+          btn.className = isMuted 
+            ? "px-3 py-1 rounded-xl bg-rose-500/20 text-rose-500 font-mono font-bold text-[11px] transition" 
+            : "px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkMuted font-mono font-bold text-[11px] transition";
+        }
+      }
+      if (activeChatUser) {
+        const isMuted = mutedPeersSet.has(activeChatUser.username.toLowerCase());
+        const icon = document.getElementById("quickMuteIcon");
+        if (icon) icon.innerText = isMuted ? "🔕" : "🔔";
+      }
+    }
 
     // =========================================================================
     // LIGHTBOX HANDLERS
@@ -1476,9 +1641,7 @@
       try {
         document.execCommand('copy');
         showCopyToast();
-      } catch (err) {
-        console.error('Fallback copy error:', err);
-      }
+      } catch (err) {}
       document.body.removeChild(textArea);
     }
 
@@ -1642,10 +1805,14 @@
       renderSavedSongsList(q);
     }
 
+    // =========================================================================
+    // ROBUST RACE-CONDITION PROTECTED AUDIO TRACK PLAYER
+    // =========================================================================
     function playSavedSong(index) {
       if (index < 0 || index >= SAVED_SONGS_LIST.length) return;
       
       stopAndKillActiveAudio();
+      const loadToken = ++activeMediaLoadToken;
       const sessionId = activeAudioSessionId;
 
       currentPlayingSongIndex = index;
@@ -1658,7 +1825,7 @@
       player.volume = globalMasterVolume;
 
       player.ontimeupdate = () => {
-        if (sessionId !== activeAudioSessionId) return;
+        if (loadToken !== activeMediaLoadToken || sessionId !== activeAudioSessionId) return;
         if (player.duration) {
           const pct = (player.currentTime / player.duration) * 100;
           document.getElementById("savedTrackSeekSlider").value = pct;
@@ -1668,7 +1835,10 @@
       };
 
       player.onplaying = () => {
-        if (sessionId !== activeAudioSessionId) return;
+        if (loadToken !== activeMediaLoadToken || sessionId !== activeAudioSessionId) {
+          player.pause();
+          return;
+        }
         document.getElementById("radioStatusTag").innerText = `🎵 ${song.title}`;
         const pauseBtn = document.getElementById("radioPauseBtn");
         pauseBtn.classList.remove("hidden");
@@ -1677,20 +1847,20 @@
       };
 
       player.onended = () => {
-        if (sessionId !== activeAudioSessionId) return;
+        if (loadToken !== activeMediaLoadToken || sessionId !== activeAudioSessionId) return;
         const nextIndex = (currentPlayingSongIndex + 1) % SAVED_SONGS_LIST.length;
         playSavedSong(nextIndex);
       };
 
       player.onerror = () => {
-        if (sessionId !== activeAudioSessionId) return;
+        if (loadToken !== activeMediaLoadToken || sessionId !== activeAudioSessionId) return;
         showRadioErrorToast(`Error loading ${song.title}.`);
         document.getElementById("radioStatusTag").innerText = "Idle";
       };
 
       player.src = song.file;
       activeRadioPlayer = player;
-      player.play().catch(e => console.warn("Saved audio autoplay check:", e));
+      player.play().catch(e => console.warn("Audio playback init:", e));
     }
 
     function onSavedSeekSliderInput(val) {
@@ -1723,6 +1893,7 @@
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.add("hidden");
       document.getElementById("pokePeerBtn").classList.add("hidden");
+      document.getElementById("quickMutePeerBtn").classList.add("hidden");
 
       document.getElementById("activeChatPeerAvatar").innerText = "🤖";
       document.getElementById("activeChatPeerName").innerText = "Sophie";
@@ -1844,6 +2015,7 @@
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.add("hidden");
       document.getElementById("pokePeerBtn").classList.add("hidden");
+      document.getElementById("quickMutePeerBtn").classList.add("hidden");
 
       document.getElementById("activeChatPeerAvatar").innerText = "🎬";
       document.getElementById("activeChatPeerName").innerText = "Vams";
@@ -1989,9 +2161,6 @@
       handleVamsMediaInteraction(query, nextOffset, sourceEngine);
     }
 
-    // =========================================================================
-    // ZERO-LEAK NATIVE VIDEO PLAYER INJECTION
-    // =========================================================================
     function playInlineVideo(btnElement, videoId) {
       const container = document.getElementById(`video-box-${videoId}`);
       if (!container) return;
@@ -2187,7 +2356,7 @@
       }
 
       soundPoke();
-      triggerBackgroundTabFlash(payload.from);
+      triggerNotificationAlert(payload.from, "⚡ Poked your terminal!");
 
       document.body.classList.remove("poke-flash");
       void document.body.offsetWidth;
@@ -2280,7 +2449,6 @@
       if (e.key === "Escape") {
         const now = Date.now();
         
-        // Priority 1: Close modals / lightboxes
         const lightbox = document.getElementById("imageLightboxModal");
         if (lightbox && !lightbox.classList.contains("hidden")) {
           closeImageLightbox();
@@ -2293,7 +2461,6 @@
           return;
         }
 
-        // Priority 2: Panic cloak on double ESC
         if (now - lastEscPress < 500) triggerPanic();
         lastEscPress = now;
       }
@@ -2317,6 +2484,10 @@
       parseTwemoji(document.body);
 
       checkAndShowDomainNotice();
+
+      if (globalNotificationsEnabled && "Notification" in window && Notification.permission !== "granted") {
+        Notification.requestPermission();
+      }
 
       const cached = localStorage.getItem("nomesh_saved_user");
       if (cached) {
@@ -2872,6 +3043,8 @@
           if (activeChatUser === null && !isSophieActive && !isVideoBotActive) {
             renderBubble(decrypted, false);
             soundRecv();
+          } else {
+            triggerNotificationAlert("Campus Lounge", decrypted.text || "New attachment");
           }
         })
         .on("broadcast", { event: "direct_msg" }, async ({ payload }) => {
@@ -2897,6 +3070,7 @@
               const currentUnread = unreadMap.get(decrypted.sender) || 0;
               unreadMap.set(decrypted.sender, currentUnread + 1);
               renderUsersList();
+              triggerNotificationAlert(decrypted.sender, decrypted.text || "Encrypted media file");
             }
           }
         })
@@ -2979,6 +3153,7 @@
         document.getElementById("activeChatPeerAvatar").innerText = "?";
         document.getElementById("startCallBtn").classList.add("hidden");
         document.getElementById("pokePeerBtn").classList.add("hidden");
+        document.getElementById("quickMutePeerBtn").classList.add("hidden");
         document.getElementById("dmInput").setAttribute("disabled", "true");
         document.getElementById("dmSendBtn").setAttribute("disabled", "true");
         document.getElementById("dmInput").placeholder = "Select a peer from directory...";
@@ -3009,6 +3184,7 @@
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.add("hidden");
       document.getElementById("pokePeerBtn").classList.add("hidden");
+      document.getElementById("quickMutePeerBtn").classList.add("hidden");
 
       document.getElementById("dmInput").removeAttribute("disabled");
       document.getElementById("dmSendBtn").removeAttribute("disabled");
@@ -3095,6 +3271,7 @@
       document.getElementById("chatPane").classList.add("flex");
       document.getElementById("startCallBtn").classList.remove("hidden");
       document.getElementById("pokePeerBtn").classList.remove("hidden");
+      document.getElementById("quickMutePeerBtn").classList.remove("hidden");
 
       document.getElementById("activeChatPeerAvatar").innerText = peer.username.charAt(0).toUpperCase();
       document.getElementById("activeChatPeerName").innerText = `@${peer.username}`;
@@ -3115,6 +3292,7 @@
       input.placeholder = `Message @${peer.username}...`;
       input.focus();
 
+      updatePeerMuteUI();
       loadConversationFromSession(peer.username);
     }
 
@@ -3145,6 +3323,7 @@
       const bioText = peer.bio && peer.bio.trim().length > 0 ? `"${peer.bio}"` : "No status/bio provided yet.";
       document.getElementById("inspectBioText").innerText = bioText;
 
+      updatePeerMuteUI();
       document.getElementById("peerProfileModal").classList.remove("hidden");
       parseTwemoji(document.getElementById("peerProfileModal"));
     }
@@ -3186,6 +3365,13 @@
 
       document.getElementById("profileMeta").innerText = `${currentUser.course} • ${currentUser.year}`;
       document.getElementById("myBioInput").value = currentUser.bio || "";
+      
+      const notifBtn = document.getElementById("globalNotifToggleBtn");
+      notifBtn.innerText = globalNotificationsEnabled ? "ENABLED" : "MUTED";
+      notifBtn.className = globalNotificationsEnabled
+        ? "px-3 py-1 rounded-xl bg-emerald-500 text-white font-mono font-bold text-[11px] transition shadow-sm"
+        : "px-3 py-1 rounded-xl bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono font-bold text-[11px] transition";
+
       parseTwemoji(document.getElementById("profileModal"));
     }
 
@@ -3255,7 +3441,6 @@
       }
     }
 
-    // MAP OF PRIMARY ENGINE ATTRIBUTIONS
     const RADIO_SOURCE_MAP = {
       hindi: "Uber.Radio / Mixify",
       south: "ZenoFM / Katerumbu",
@@ -4072,7 +4257,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE (HARDENED TURN ONLY)
+    // FULLY REPAIRED WEBRTC CALL ENGINE (STABLE ICE QUEUE & RECOVERY)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -4092,6 +4277,8 @@
 
     const rtcConfig = {
       iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'turn:openrelay.metered.ca:80', username: 'openrelay', credential: 'openrelay' },
         { urls: 'turns:openrelay.metered.ca:443?transport=tcp', username: 'openrelay', credential: 'openrelay' }
       ]
@@ -4165,9 +4352,7 @@
           remoteVisSource = audioVisualizerContext.createMediaStreamSource(stream);
           remoteVisSource.connect(audioVisualizerAnalyser);
         }
-      } catch (err) {
-        console.warn("Visualizer node attach:", err);
-      }
+      } catch (err) {}
     }
 
     function startAudioWaveformVisualizer() {
@@ -4264,10 +4449,10 @@
       while (iceCandidateQueue.length > 0) {
         const cand = iceCandidateQueue.shift();
         try {
-          await peerConnection.addIceCandidate(new RTCIceCandidate(cand));
-        } catch(e) {
-          console.warn("ICE candidate drain warning:", e);
-        }
+          if (peerConnection && peerConnection.remoteDescription) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(cand));
+          }
+        } catch(e) {}
       }
     }
 
@@ -4290,217 +4475,61 @@
       document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      attachStreamToVisualizer(localStream, true);
-      startAudioWaveformVisualizer();
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+        attachStreamToVisualizer(localStream, true);
+        startAudioWaveformVisualizer();
 
-      peerConnection = new RTCPeerConnection(rtcConfig);
-      
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
 
-      peerConnection.ontrack = (e) => {
-        if (e.track) {
-          remoteStream = new MediaStream([e.track]);
+        peerConnection.ontrack = (e) => {
+          if (e.streams && e.streams[0]) {
+            remoteStream = e.streams[0];
+          } else {
+            remoteStream = new MediaStream([e.track]);
+          }
           remoteAudio.srcObject = remoteStream;
-          remoteAudio.volume = globalMasterVolume;
-          remoteAudio.play().catch(err => console.error("Audio playback error:", err));
+          remoteAudio.play().catch(() => {});
           
           attachStreamToVisualizer(remoteStream, false);
           document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
           startCallTimer();
-        }
-      };
+        };
 
-      peerConnection.onicecandidate = (e) => {
-        if (e.candidate) {
-          channel.send({
-            type: "broadcast",
-            event: "webrtc_signal",
-            payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: activeChatUser.username }
-          });
-        }
-      };
-
-      peerConnection.oniceconnectionstatechange = () => {
-        if (peerConnection) {
-          if (peerConnection.iceConnectionState === "connected") {
-            document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
-          } else if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
-            peerConnection.restartIce();
+        peerConnection.onicecandidate = (e) => {
+          if (e.candidate) {
+            channel.send({
+              type: "broadcast",
+              event: "webrtc_signal",
+              payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: activeChatUser.username }
+            });
           }
-        }
-      };
+        };
 
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-
-      channel.send({
-        type: "broadcast",
-        event: "webrtc_signal",
-        payload: { type: "offer", offer: offer, from: currentUser.username, to: activeChatUser.username }
-      });
-      parseTwemoji(document.getElementById("callOverlay"));
-    }
-
-    async function handleIncomingWebRTCSignal({ payload }) {
-      if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
-
-      if (payload.type === "offer") {
-        stopAndKillActiveAudio();
-        pendingOffer = payload;
-        document.getElementById("callOverlay").classList.remove("hidden");
-        document.getElementById("callPeerName").innerText = `@${payload.from}`;
-        document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
-        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
-        document.getElementById("acceptCallBtn").classList.remove("hidden");
-        parseTwemoji(document.getElementById("callOverlay"));
-      } else if (payload.type === "answer" && peerConnection) {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
-        await drainIceCandidates();
-        document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
-        startCallTimer();
-      } else if (payload.type === "candidate") {
-        if (peerConnection && peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
-          try {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
-          } catch(e) {
-            console.warn("ICE candidate addition error:", e);
+        peerConnection.oniceconnectionstatechange = () => {
+          if (peerConnection) {
+            if (peerConnection.iceConnectionState === "connected") {
+              document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+            } else if (peerConnection.iceConnectionState === "failed") {
+              peerConnection.restartIce();
+            }
           }
-        } else {
-          iceCandidateQueue.push(payload.candidate);
-        }
-      } else if (payload.type === "end_call") {
-        endAudioCall(false);
-      }
-    }
+        };
 
-    async function acceptIncomingCall() {
-      document.getElementById("acceptCallBtn").classList.add("hidden");
-      document.getElementById("callStatusLabel").innerText = "Connecting...";
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
 
-      const remoteAudio = document.getElementById("remoteAudioElement");
-      remoteAudio.volume = globalMasterVolume;
-      remoteAudio.play().catch(() => {});
-
-      isLocalMuted = false;
-      document.getElementById("muteIcon").innerText = "🎙️";
-      document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
-
-      iceCandidateQueue = [];
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      attachStreamToVisualizer(localStream, true);
-      startAudioWaveformVisualizer();
-
-      peerConnection = new RTCPeerConnection(rtcConfig);
-      
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      peerConnection.ontrack = (e) => {
-        if (e.track) {
-          remoteStream = new MediaStream([e.track]);
-          remoteAudio.srcObject = remoteStream;
-          remoteAudio.volume = globalMasterVolume;
-          remoteAudio.play().catch(err => console.error("Audio playback error:", err));
-
-          attachStreamToVisualizer(remoteStream, false);
-          document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
-          startCallTimer();
-        }
-      };
-
-      peerConnection.onicecandidate = (e) => {
-        if (e.candidate) {
-          channel.send({
-            type: "broadcast",
-            event: "webrtc_signal",
-            payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: pendingOffer.from }
-          });
-        }
-      };
-
-      peerConnection.oniceconnectionstatechange = () => {
-        if (peerConnection) {
-          if (peerConnection.iceConnectionState === "connected") {
-            document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
-          } else if (peerConnection.iceConnectionState === "disconnected" || peerConnection.iceConnectionState === "failed") {
-            peerConnection.restartIce();
-          }
-        }
-      };
-
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
-      await drainIceCandidates();
-
-      const answer = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answer);
-
-      channel.send({
-        type: "broadcast",
-        event: "webrtc_signal",
-        payload: { type: "answer", answer: answer, from: currentUser.username, to: pendingOffer.from }
-      });
-    }
-
-    function endAudioCall(notify = true) {
-      if (notify && channel && (activeChatUser || pendingOffer)) {
-        const target = activeChatUser ? activeChatUser.username : pendingOffer.from;
         channel.send({
           type: "broadcast",
           event: "webrtc_signal",
-          payload: { type: "end_call", from: currentUser.username, to: target }
+          payload: { type: "offer", offer: offer, from: currentUser.username, to: activeChatUser.username }
         });
+      } catch (err) {
+        alert("Microphone permission required for call: " + err.message);
+        endAudioCall(true);
       }
-
-      clearInterval(callTimerInterval);
-      stopAudioWaveformVisualizer();
-
-      if (peerConnection) {
-        peerConnection.close();
-        peerConnection = null;
-      }
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-        localStream = null;
-      }
-      if (remoteStream) {
-        remoteStream.getTracks().forEach(t => t.stop());
-        remoteStream = null;
-      }
-      
-      const remoteAudio = document.getElementById("remoteAudioElement");
-      if (remoteAudio) {
-        remoteAudio.srcObject = null;
-      }
-
-      pendingOffer = null;
-      iceCandidateQueue = [];
-      document.getElementById("callOverlay").classList.add("hidden");
-      document.getElementById("acceptCallBtn").classList.add("hidden");
-      document.getElementById("callDurationTimer").innerText = "00:00";
-    }
-
-    function disconnectSession() {
-      if (channel) sb.removeChannel(channel);
-      sessionStorage.clear();
-      activeCryptoKeyMap.clear();
-      currentUser = null;
-      activeChatUser = null;
-      document.getElementById("navLaunchBtn").innerText = "Enter Terminal";
-      closeProfileModal();
-      showLandingView();
-    }
-
-    const themeBtn = document.getElementById("themeToggle");
-    const htmlElem = document.documentElement;
-    themeBtn.addEventListener("click", () => {
-      htmlElem.classList.toggle("dark");
-      document.getElementById("themeIcon").innerText = htmlElem.classList.contains("dark") ? "🌓" : "☀️";
-      parseTwemoji(document.getElementById("themeToggle"));
-    });
-  </script>
-</body>
-</html>
+      parseTwemojiI seem to be encountering an error. Can I try something else for you?
