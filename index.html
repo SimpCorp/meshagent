@@ -4534,6 +4534,7 @@
     }
 
     async function handleIncomingWebRTCSignal({ payload }) {
+      if (!payload || !currentUser) return;
       if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
 
       if (payload.type === "offer") {
@@ -4541,4 +4542,160 @@
         pendingOffer = payload;
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
-        Sorry, something went wrong. Please try your request again.
+        document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
+        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
+        document.getElementById("acceptCallBtn").classList.remove("hidden");
+        triggerNotificationAlert(payload.from, "📞 Incoming encrypted voice call...");
+        parseTwemoji(document.getElementById("callOverlay"));
+      } else if (payload.type === "answer" && peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
+        await drainIceCandidates();
+        document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+        startCallTimer();
+      } else if (payload.type === "candidate") {
+        if (peerConnection && peerConnection.remoteDescription && peerConnection.remoteDescription.type) {
+          try {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
+          } catch(e) {}
+        } else {
+          iceCandidateQueue.push(payload.candidate);
+        }
+      } else if (payload.type === "end_call") {
+        endAudioCall(false);
+      }
+    }
+
+    async function acceptIncomingCall() {
+      document.getElementById("acceptCallBtn").classList.add("hidden");
+      document.getElementById("callStatusLabel").innerText = "Connecting...";
+
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      remoteAudio.volume = globalMasterVolume;
+      remoteAudio.play().catch(() => {});
+
+      isLocalMuted = false;
+      document.getElementById("muteIcon").innerText = "🎙️";
+      document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
+
+      iceCandidateQueue = [];
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+        attachStreamToVisualizer(localStream, true);
+        startAudioWaveformVisualizer();
+
+        peerConnection = new RTCPeerConnection(rtcConfig);
+        
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
+
+        peerConnection.ontrack = (e) => {
+          if (e.streams && e.streams[0]) {
+            remoteStream = e.streams[0];
+          } else {
+            remoteStream = new MediaStream([e.track]);
+          }
+          remoteAudio.srcObject = remoteStream;
+          remoteAudio.play().catch(() => {});
+          
+          attachStreamToVisualizer(remoteStream, false);
+          document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+          startCallTimer();
+        };
+
+        peerConnection.onicecandidate = (e) => {
+          if (e.candidate) {
+            channel.send({
+              type: "broadcast",
+              event: "webrtc_signal",
+              payload: { type: "candidate", candidate: e.candidate, from: currentUser.username, to: pendingOffer.from }
+            });
+          }
+        };
+
+        peerConnection.oniceconnectionstatechange = () => {
+          if (peerConnection) {
+            if (peerConnection.iceConnectionState === "connected") {
+              document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+            } else if (peerConnection.iceConnectionState === "failed") {
+              peerConnection.restartIce();
+            }
+          }
+        };
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer.offer));
+        await drainIceCandidates();
+
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        channel.send({
+          type: "broadcast",
+          event: "webrtc_signal",
+          payload: { type: "answer", answer: answer, from: currentUser.username, to: pendingOffer.from }
+        });
+      } catch (err) {
+        alert("Microphone permission required for call: " + err.message);
+        endAudioCall(true);
+      }
+    }
+
+    function endAudioCall(notify = true) {
+      if (notify && channel && (activeChatUser || pendingOffer)) {
+        const target = activeChatUser ? activeChatUser.username : pendingOffer.from;
+        channel.send({
+          type: "broadcast",
+          event: "webrtc_signal",
+          payload: { type: "end_call", from: currentUser.username, to: target }
+        });
+      }
+
+      clearInterval(callTimerInterval);
+      stopAudioWaveformVisualizer();
+
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(t => t.stop());
+        remoteStream = null;
+      }
+      
+      const remoteAudio = document.getElementById("remoteAudioElement");
+      if (remoteAudio) {
+        remoteAudio.srcObject = null;
+      }
+
+      pendingOffer = null;
+      iceCandidateQueue = [];
+      document.getElementById("callOverlay").classList.add("hidden");
+      document.getElementById("acceptCallBtn").classList.add("hidden");
+      document.getElementById("callDurationTimer").innerText = "00:00";
+    }
+
+    function disconnectSession() {
+      if (channel) sb.removeChannel(channel);
+      sessionStorage.clear();
+      activeCryptoKeyMap.clear();
+      currentUser = null;
+      activeChatUser = null;
+      document.getElementById("navLaunchBtn").innerText = "Enter Terminal";
+      closeProfileModal();
+      showLandingView();
+    }
+
+    const themeBtn = document.getElementById("themeToggle");
+    const htmlElem = document.documentElement;
+    themeBtn.addEventListener("click", () => {
+      htmlElem.classList.toggle("dark");
+      document.getElementById("themeIcon").innerText = htmlElem.classList.contains("dark") ? "🌓" : "☀️";
+      parseTwemoji(document.getElementById("themeToggle"));
+    });
+  </script>
+</body>
+</html>
