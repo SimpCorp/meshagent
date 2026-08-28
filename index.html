@@ -219,8 +219,8 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
-  <!-- IN-APP NOTHING OS TOAST NOTIFICATION CONTAINER -->
-  <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand">
+  <!-- IN-APP NOTHING OS TOAST NOTIFICATION -->
+  <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand pointer-events-auto">
     <div class="flex items-center gap-3 min-w-0">
       <div class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></div>
       <div class="truncate">
@@ -557,7 +557,6 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <!-- Quick Mute Notifications for Peer -->
           <button id="quickMutePeerBtn" onclick="toggleMuteCurrentPeer()" class="hidden w-7 h-7 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs transition" title="Toggle Notifications for Peer">
             <span id="quickMuteIcon">🔔</span>
           </button>
@@ -1295,12 +1294,11 @@
     let radioErrorRecoveryTimeout = null;
     let activeLiveSessionTimer = null;
     let activeAudioSessionId = 0;
-    let activeMediaLoadToken = 0; // Concurrency protection token for audio track loading
+    let activeMediaLoadToken = 0;
 
-    // IN-MEMORY STORAGE FOR SAFE COPY & MUTED PEERS
     const rawMessageTextStore = new Map();
     let mutedPeersSet = new Set(JSON.parse(localStorage.getItem("lan_muted_peers") || "[]"));
-    let globalNotificationsEnabled = localStorage.getItem("lan_global_notif") !== "false"; // Default true
+    let globalNotificationsEnabled = localStorage.getItem("lan_global_notif") !== "false";
 
     const SAVED_SONGS_LIST = [
       { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
@@ -1330,7 +1328,6 @@
       const isHidden = document.visibilityState === "hidden";
 
       if (isHidden) {
-        // --- TIER 2: TAB IN BACKGROUND -> EXACT "new notification" POPUP ---
         if ("Notification" in window) {
           if (Notification.permission === "granted") {
             try {
@@ -1358,7 +1355,6 @@
         }
         triggerBackgroundTabFlash(senderName);
       } else {
-        // --- TIER 1: TAB IN FOREGROUND -> IN-APP NOTHING OS TOAST ---
         const toast = document.getElementById("inAppNotificationToast");
         const senderLbl = document.getElementById("inAppNotifSender");
         const textLbl = document.getElementById("inAppNotifText");
@@ -3619,7 +3615,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
+        aud.currentTime = (val / 100) * aud.duration;
       }
     }
 
@@ -4257,7 +4253,7 @@
     });
 
     // =========================================================================
-    // FULLY REPAIRED WEBRTC CALL ENGINE (STABLE ICE QUEUE & RECOVERY)
+    // WEBRTC CALL ENGINE (REPAIRED SIGNALING & PROMISE QUEUE)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -4532,4 +4528,23 @@
         alert("Microphone permission required for call: " + err.message);
         endAudioCall(true);
       }
-      parseTwemojiI seem to be encountering an error. Can I try something else for you?
+      parseTwemoji(document.getElementById("callOverlay"));
+    }
+
+    async function handleIncomingWebRTCSignal({ payload }) {
+      if (payload.to.toLowerCase() !== currentUser.username.toLowerCase()) return;
+
+      if (payload.type === "offer") {
+        stopAndKillActiveAudio();
+        pendingOffer = payload;
+        document.getElementById("callOverlay").classList.remove("hidden");
+        document.getElementById("callPeerName").innerText = `@${payload.from}`;
+        document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
+        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
+        document.getElementById("acceptCallBtn").classList.remove("hidden");
+        triggerNotificationAlert(payload.from, "📞 Incoming encrypted voice call...");
+        parseTwemoji(document.getElementById("callOverlay"));
+      } else if (payload.type === "answer" && peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
+        await drainIceCandidates();
+        document.getElementById("callStatusLabel").Sorry, something went wrong. Please try your request again.
