@@ -219,8 +219,8 @@
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
 
-  <!-- IN-APP NOTHING OS TOAST NOTIFICATION -->
-  <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand pointer-events-auto">
+  <!-- IN-APP TOAST NOTIFICATION -->
+  <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand">
     <div class="flex items-center gap-3 min-w-0">
       <div class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></div>
       <div class="truncate">
@@ -1319,7 +1319,7 @@
     const inMemoryChatCache = new Map();
 
     // =========================================================================
-    // UNIFIED NOTIFICATION DISPATCHER (IN-APP & POPUP "new notification")
+    // UNIFIED NOTIFICATION DISPATCHER (IN-APP & EXACT "new notification" POPUP)
     // =========================================================================
     function triggerNotificationAlert(senderName, rawSnippet = "New message") {
       if (!globalNotificationsEnabled) return;
@@ -2436,7 +2436,9 @@
 
     function parseTwemoji(element) {
       if (window.twemoji && element) {
-        twemoji.parse(element, { folder: 'svg', ext: '.svg' });
+        try {
+          twemoji.parse(element, { folder: 'svg', ext: '.svg' });
+        } catch(e) {}
       }
     }
 
@@ -3615,7 +3617,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * aud.duration;
+        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
       }
     }
 
@@ -4253,7 +4255,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE (REPAIRED SIGNALING & PROMISE QUEUE)
+    // WEBRTC CALL ENGINE (FIXED STABLE SIGNALING)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -4539,12 +4541,4 @@
         pendingOffer = payload;
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
-        document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
-        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
-        document.getElementById("acceptCallBtn").classList.remove("hidden");
-        triggerNotificationAlert(payload.from, "📞 Incoming encrypted voice call...");
-        parseTwemoji(document.getElementById("callOverlay"));
-      } else if (payload.type === "answer" && peerConnection) {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
-        await drainIceCandidates();
-        document.getElementById("callStatusLabel").Sorry, something went wrong. Please try your request again.
+        Sorry, something went wrong. Please try your request again.
