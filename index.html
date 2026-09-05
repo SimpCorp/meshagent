@@ -4420,7 +4420,7 @@
       processAndSendImage(file);
     }
 
-    window.addEventListener("paste", (e) => {{
+    window.addEventListener("paste", (e) => {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
         if (item.kind === "file") {
