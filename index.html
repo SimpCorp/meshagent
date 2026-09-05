@@ -4416,8 +4416,7 @@
       processAndSendImage(file);
     }
 
-    window.I seem to be encountering an error. Can I try something else for you?
-      window.addEventListener("paste", (e) => {
+    window.addEventListener("paste", (e) => {{
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
         if (item.kind === "file") {
