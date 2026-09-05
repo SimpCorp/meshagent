@@ -1883,6 +1883,7 @@
 
     function closeDomainNotice() {
       document.getElementById("domainNoticeModal").classList.add("hidden");
+      localStorage.setItem("meshage_domain_notice_dismissed", "true");
     }
 
     async function checkNetworkPing() {
@@ -2656,7 +2657,10 @@
       setColorGrading(savedColor);
       parseTwemoji(document.body);
 
-      checkAndShowDomainNotice();
+      // Only show the migration notice if the user hasn't seen it yet
+      if (!localStorage.getItem("meshage_domain_notice_dismissed")) {
+        checkAndShowDomainNotice();
+      }
 
       if (localStorage.getItem("meshage_seen_v2_update") === "true") {
         const btn = document.getElementById("whatsNewNavBtn");
