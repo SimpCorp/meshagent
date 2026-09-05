@@ -10,37 +10,37 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Primary SEO Meta Tags -->
+  <!-- Search Engine Optimization & Keywords -->
   <title>Meshage — Secure LAN Chat & College Chat Network</title>
   <meta name="title" content="Meshage — Secure LAN Chat & College Chat Network">
-  <meta name="description" content="Meshage is a secure LAN chat and college chatting platform with client-side AES-256 E2EE encryption, P2P calling, and zero-knowledge campus relay.">
-  <meta name="keywords" content="meshage, lan chatting, secure lan chat, college chat, campus lan messenger, local wifi chat, e2ee college messaging">
+  <meta name="description" content="Meshage is a high-speed, secure LAN chat and college chatting web platform with client-side AES-256 encryption, Mesh-Line direct P2P file transfers, and stealth academic cloak.">
+  <meta name="keywords" content="meshage, lan chatting, secure lan chat, college chat, campus lan messenger, local wifi chat, e2ee college messaging, mesh-line">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://meshage.pages.dev/">
 
-  <!-- Open Graph / Social Sharing -->
+  <!-- Open Graph / Brand Metadata -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://meshage.pages.dev/">
   <meta property="og:title" content="Meshage — Secure LAN Chat & College Chat Network">
-  <meta property="og:description" content="Direct, zero-knowledge encrypted LAN chatting for college campus networks.">
+  <meta property="og:description" content="Zero-knowledge, direct LAN chatting and local Mesh-Line file transfer built for college networks.">
   <meta property="og:site_name" content="Meshage">
 
-  <!-- Twitter Card -->
+  <!-- Twitter Previews -->
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Meshage — Secure LAN Chat & College Chat Network">
-  <meta name="twitter:description" content="Direct, zero-knowledge encrypted LAN chatting for college campus networks.">
+  <meta name="twitter:description" content="Zero-knowledge, direct LAN chatting and local Mesh-Line file transfer built for college networks.">
 
-  <!-- Structured Data / Schema for Search Engines -->
+  <!-- Schema.org Software Application Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "SoftwareApplication",
     "name": "Meshage",
-    "alternateName": ["Meshage LAN Chat", "Meshage College Chat"],
+    "alternateName": ["Meshage App", "Meshage LAN Chat", "Meshage College Chat"],
     "url": "https://meshage.pages.dev/",
     "applicationCategory": "CommunicationApplication",
     "operatingSystem": "All",
-    "description": "Secure LAN chat application designed for direct, encrypted college campus network communication."
+    "description": "Secure LAN chat and college chatting application providing end-to-end encrypted communication and Mesh-Line local file transmission."
   }
   </script>
   
@@ -163,7 +163,13 @@
       100% { background-color: transparent; }
     }
     .poke-flash { animation: pingFlash 0.8s ease-out; }
-    
+
+    @keyframes mentionHighlight {
+      0% { background-color: rgba(245, 158, 11, 0.25); }
+      100% { background-color: transparent; }
+    }
+    .mention-ping-flash { animation: mentionHighlight 2.5s ease-out; }
+
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       height: 12px;
@@ -199,7 +205,7 @@
     }
 
     .smooth-transition {
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .nothing-matrix-border {
@@ -251,6 +257,89 @@
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
+
+  <!-- ==================== STEALTH CLOAK: ACADEMIC DECOY OVERLAY ==================== -->
+  <div id="stealthCloakOverlay" class="fixed inset-0 bg-[#FBFBFA] dark:bg-[#12141A] text-slate-900 dark:text-slate-200 z-[100] hidden overflow-y-auto font-sans p-6 sm:p-12 select-text">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div>
+          <span class="text-[11px] font-mono text-slate-500 uppercase tracking-wider">Department of Economics & Management Studies</span>
+          <h1 class="text-xl sm:text-2xl font-bold font-serif text-slate-950 dark:text-white mt-1">Principles of Microeconomics: Elasticity of Demand and Market Clearing Equilibrium</h1>
+        </div>
+        <div class="text-right text-xs text-slate-400 font-mono hidden sm:block">
+          <span>COURSE: ECON-101</span><br>
+          <span>SEMESTER: I</span>
+        </div>
+      </div>
+
+      <div class="prose prose-slate dark:prose-invert max-w-none text-xs sm:text-sm leading-relaxed space-y-4 font-serif">
+        <p><strong>Abstract:</strong> Price elasticity of demand measures the responsiveness of the quantity demanded of a good to a change in its price. Formally, it is computed as the percentage change in quantity demanded divided by the percentage change in price. When substitutes are abundantly accessible within a competitive equilibrium, elasticity increases asymptotically.</p>
+        
+        <div class="p-4 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 font-mono text-xs my-4">
+          $$\varepsilon_p = \frac{\% \Delta Q_d}{\% \Delta P} = \left( \frac{\partial Q}{\partial P} \right) \cdot \left( \frac{P}{Q} \right)$$
+        </div>
+
+        <p>In market environments characterized by non-linear price ceilings or external network friction, cross-price elasticity exhibits asymmetric substitution patterns. Consumer surplus diminishes proportionately when regulatory intervention restricts dynamic throughput across decentralized sub-units.</p>
+
+        <p>Cross-elasticity coefficients greater than unity represent elastic demand conditions, where minor adjustments in marginal costs induce substantial reallocations of aggregate purchasing behavior across localized consumer segments.</p>
+      </div>
+
+      <!-- Disguised Citation Unlock Input -->
+      <div class="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <span class="text-slate-400 select-none">Citation Key:</span>
+          <input id="stealthUnlockInput" type="password" autocomplete="off" placeholder="Enter Reference ID..." onkeydown="if(event.key==='Enter') verifyStealthUnlockKey()" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-slate-500 w-44">
+          <button onclick="verifyStealthUnlockKey()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:opacity-80 transition font-bold text-[11px]">Verify</button>
+        </div>
+        <span id="stealthUnlockError" class="text-rose-500 text-[11px] hidden font-sans">Citation key invalid.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT'S NEW SLIDE-OVER DRAWER -->
+  <div id="whatsNewDrawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white dark:bg-darkCard border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col p-6 space-y-4">
+    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">✨</span>
+        <h3 class="text-sm font-bold text-slate-950 dark:text-white font-nothing">What's New in Meshage</h3>
+      </div>
+      <button onclick="closeWhatsNewDrawer()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-bold">✕</button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto space-y-4 text-xs text-slate-600 dark:text-slate-300 custom-scroll pr-1">
+      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
+        <div class="flex items-center gap-1.5 text-brand font-bold">
+          <span>⚡</span> <span>Mesh-Line P2P Transfers</span>
+        </div>
+        <p class="leading-relaxed">When both devices share the same campus Wi-Fi, files send directly router-to-router at full speed. Consumes &lt;5MB total cloud bandwidth.</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
+        <div class="flex items-center gap-1.5 text-emerald-500 font-bold">
+          <span>👥</span> <span>Group @Mentions</span>
+        </div>
+        <p class="leading-relaxed">Type <strong>@</strong> in Group to auto-complete peer handles. Mentioned users receive priority highlights and notifications.</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
+        <div class="flex items-center gap-1.5 text-amber-500 font-bold">
+          <span>🛡️</span> <span>Instant Stealth Cloak</span>
+        </div>
+        <p class="leading-relaxed">Double-tap <strong>ESC</strong> to replace everything with an authentic microeconomics paper. Unlocks with passcode <code>12345678</code> or <code>qwerty</code>.</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
+        <div class="flex items-center gap-1.5 text-purple-500 font-bold">
+          <span>🎵</span> <span>Clean Music Terminal</span>
+        </div>
+        <p class="leading-relaxed">Refined, readable slate audio player with scrubbers, volume memory, and concurrency collision protection.</p>
+      </div>
+    </div>
+
+    <button onclick="dismissWhatsNewPermanently()" class="w-full py-2.5 bg-brand text-white font-bold text-xs rounded-xl hover:opacity-90 transition font-nothing">
+      Got It, Let's Chat
+    </button>
+  </div>
 
   <!-- IN-APP TOAST NOTIFICATION -->
   <div id="inAppNotificationToast" class="fixed top-4 right-4 z-50 max-w-sm w-full bg-[#10131B]/95 text-white border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-xl p-3.5 hidden transition-all duration-300 transform translate-y-[-10px] opacity-0 flex items-center justify-between gap-3 cursor-pointer hover:border-brand">
@@ -334,7 +423,7 @@
       <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <h1 class="text-xs font-bold tracking-tight uppercase font-nothing">LAN CHAT</h1>
+          <h1 class="text-xs font-bold tracking-tight uppercase font-nothing">MESHAGE // LAN CHAT</h1>
           <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 flex items-center gap-1">
             <span class="w-1 h-1 rounded-full bg-emerald-500 animate-ping"></span> AES-256 E2EE
           </span>
@@ -345,6 +434,12 @@
     </div>
 
     <div class="flex items-center gap-2 sm:gap-3">
+      <!-- WHAT'S NEW BADGE -->
+      <button id="whatsNewNavBtn" onclick="openWhatsNewDrawer()" class="px-2.5 py-1 rounded-full bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 text-[11px] font-bold flex items-center gap-1 transition shadow-sm font-nothing">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
+        <span>✨ What's New</span>
+      </button>
+
       <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
         <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-5 h-5 rounded-full flex items-center justify-center transition" title="Blue Accent">
           <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
@@ -378,10 +473,10 @@
     <div class="text-center space-y-4 max-w-xl">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-darkCard text-xs font-semibold text-slate-600 dark:text-slate-300 shadow-sm">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        Zero-Knowledge Encrypted Mesh Relay
+        Zero-Knowledge Secure LAN Chat & College Messaging
       </div>
       <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white font-nothing">
-        Zero Latency.<br>Direct Campus Mesh.
+        Meshage.<br>Direct College LAN Chat.
       </h2>
       <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
         Real-time direct messaging, two-way delete on read, background tab alerts, live location cards, and self-destruct media with client-side cryptographic isolation.
@@ -390,8 +485,8 @@
       <div class="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 text-xs leading-relaxed text-left text-slate-700 dark:text-slate-300 shadow-sm flex items-start gap-2.5">
         <span class="text-base shrink-0">🛡️</span>
         <div class="space-y-0.5">
-          <p class="font-bold text-emerald-600 dark:text-emerald-400">Zero-Leak Hardened Architecture</p>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400">Full binary serverless media forwarding with zero external client queries and origin-bound encrypted payloads.</p>
+          <p class="font-bold text-emerald-600 dark:text-emerald-400">Mesh-Line & Zero-Leak Hardened Architecture</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Direct same-subnet WebRTC data piping consumes less than 5MB internet bandwidth. Instant cloaking via double-tap ESC.</p>
         </div>
       </div>
 
@@ -419,19 +514,19 @@
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">02</span>
-        <h3 class="text-xs font-bold font-nothing">Two-Way Delete</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Instantly erase any sent message, location card, image, or document on both ends simultaneously.</p>
+        <h3 class="text-xs font-bold font-nothing">Mesh-Line LocalSend</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Transfer large files locally across the same Wi-Fi with zero cloud uploads and full cryptographic isolation.</p>
       </div>
 
       <div class="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-darkCard/70 backdrop-blur space-y-1 shadow-sm hover:scale-[1.02] transition-transform duration-200">
         <span class="text-[10px] text-brand font-mono font-bold">03</span>
-        <h3 class="text-xs font-bold font-nothing">Host-Verified Badges</h3>
-        <p class="text-[11px] text-slate-500 leading-relaxed">Fast photo submission from settings with manual dev-verified authenticity badges.</p>
+        <h3 class="text-xs font-bold font-nothing">Academic Cloak Mode</h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed">Double-tap Escape to instantly replace chats with a full economics paper. Unlocks with passcode.</p>
       </div>
     </div>
   </main>
 
-  <!-- ==================== VIEW 2: SPLIT DM & LOUNGE ==================== -->
+  <!-- ==================== VIEW 2: SPLIT DM & GROUP ==================== -->
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
@@ -448,9 +543,14 @@
           </div>
         </div>
 
-        <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium">
-          <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold">Direct Messages</button>
-          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium">Campus Lounge</button>
+        <!-- REFINED GROUP & DM TABS WITH 5% VISUAL PROMINENCE ON GROUP -->
+        <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium gap-0.5">
+          <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-semibold">Direct Messages</button>
+          
+          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg bg-brand/10 text-brand border border-brand/20 dark:bg-brand/15 shadow-sm transition font-bold flex items-center justify-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+            <span>Group</span>
+          </button>
         </div>
 
         <div class="relative">
@@ -496,48 +596,49 @@
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
-      <!-- CAMPUS AUDIO & SAVED MUSIC TERMINAL -->
-      <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-darkCard/50 space-y-2.5">
+      <!-- REFINED & READABLE CAMPUS AUDIO TERMINAL -->
+      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-[#0E121A] space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-brand animate-pulse shrink-0"></span>
-            <span class="text-[10px] font-bold tracking-tight text-slate-700 dark:text-slate-300 uppercase shrink-0 font-nothing">Campus Audio</span>
+            <span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>
+            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">Audio Hub</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-700 dark:text-slate-200">⏸</button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-darkBg px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[135px]">Idle</span>
+            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-800 dark:text-slate-200 shadow-sm">⏸</button>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-darkCard px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[130px]">Idle</span>
           </div>
         </div>
         
-        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono">
-          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">ENG</button>
-          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">HIN</button>
-          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">S.IND</button>
-          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">OTH</button>
-          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-slate-100 dark:bg-darkMuted hover:bg-brand/10 hover:text-brand dark:hover:bg-brand/20 border border-slate-200/80 dark:border-slate-800 text-[10px] font-semibold transition text-center active:scale-95">SAVED</button>
+        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono text-[10px]">
+          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">ENG</button>
+          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">HIN</button>
+          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">S.IND</button>
+          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">OTH</button>
+          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-brand">SAVED</button>
         </div>
 
-        <div id="savedMusicDrawer" class="hidden space-y-2 pt-0.5 smooth-transition">
+        <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5">
           <div class="flex items-center gap-1">
-            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 transition active:scale-95 font-nothing">← Live</button>
-            <input id="savedSongSearchInput" type="text" placeholder="Search saved songs..." oninput="filterSavedSongs()" class="flex-1 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[10px] focus:outline-none focus:border-brand">
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-white dark:bg-darkCard hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-200 dark:border-slate-800">← Radio</button>
+            <input id="savedSongSearchInput" type="text" placeholder="Filter songs..." oninput="filterSavedSongs()" class="flex-1 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[11px] focus:outline-none focus:border-brand">
           </div>
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
-          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-slate-100 dark:bg-darkBg/90 border border-slate-200 dark:border-slate-800 space-y-1 font-mono">
-            <div class="flex items-center justify-between text-[9px] text-slate-400">
+          
+          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 space-y-1 font-mono text-[10px]">
+            <div class="flex items-center justify-between text-slate-500">
               <span id="savedCurrentTime">0:00</span>
               <span id="savedTotalDuration">0:00</span>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="seekSavedSongDelta(-5)" title="Rewind 5s" class="text-[10px] text-slate-400 hover:text-brand font-bold transition px-1 active:scale-95">↺ 5s</button>
+              <button onclick="seekSavedSongDelta(-5)" title="Rewind 5s" class="text-slate-400 hover:text-brand font-bold transition px-1">↺ 5s</button>
               <input id="savedTrackSeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="flex-1 h-1 bg-slate-200 dark:bg-darkMuted rounded-lg appearance-none cursor-pointer">
-              <button onclick="seekSavedSongDelta(5)" title="Forward 5s" class="text-[10px] text-slate-400 hover:text-brand font-bold transition px-1 active:scale-95">5s ↻</button>
+              <button onclick="seekSavedSongDelta(5)" title="Forward 5s" class="text-slate-400 hover:text-brand font-bold transition px-1">5s ↻</button>
             </div>
           </div>
         </div>
 
-        <div class="space-y-1 pt-0.5">
-          <div class="flex justify-between text-[10px] font-semibold text-slate-400">
+        <div class="space-y-1 pt-1">
+          <div class="flex justify-between text-[10px] font-semibold text-slate-500 dark:text-slate-400">
             <span>Master Volume</span>
             <span id="volPercentLabel" class="font-mono">100%</span>
           </div>
@@ -637,6 +738,12 @@
         <button type="button" onclick="cancelActiveReply()" class="w-5 h-5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs">✕</button>
       </div>
 
+      <!-- MENTION AUTOCOMPLETE POPUP FOR GROUP CHAT -->
+      <div id="mentionAutocompleteBox" class="absolute bottom-20 left-12 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 min-w-[180px] max-h-40 overflow-y-auto hidden z-40 custom-scroll text-xs">
+        <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase font-mono">Mention Peer</div>
+        <div id="mentionCandidatesList" class="space-y-0.5"></div>
+      </div>
+
       <!-- Message Customization Sub-Bar -->
       <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0 font-nothing">
         
@@ -679,7 +786,7 @@
       <!-- Message Form -->
       <form id="dmForm" class="p-2.5 sm:p-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center gap-1.5 sm:gap-2 glass-nav bg-white/70 dark:bg-darkCard/70 relative z-10 shrink-0">
         <input type="file" id="imgUploadInput" accept="image/*" class="hidden" onchange="handleImageSelection(event)">
-        <input type="file" id="docUploadInput" accept=".pdf,.txt,.doc,.docx" class="hidden" onchange="handleDocSelection(event)">
+        <input type="file" id="docUploadInput" accept="*/*" class="hidden" onchange="handleDocSelection(event)">
         
         <div class="relative">
           <button type="button" onclick="toggleAttachmentDrawer()" id="plusBtnTrigger" title="Attach Media & Location" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 transition shrink-0 active:scale-95">
@@ -689,12 +796,25 @@
             </svg>
           </button>
 
-          <div id="attachmentDrawer" class="absolute bottom-11 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-0.5 min-w-[180px] hidden z-30 text-xs font-semibold">
+          <!-- ATTACHMENT DRAWER WITH MESH-LINE INTELLIGENT ROUTING BANNER -->
+          <div id="attachmentDrawer" class="absolute bottom-11 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1.5 min-w-[240px] hidden z-30 text-xs font-semibold">
+            
+            <!-- Mesh-Line Active Subnet Pill -->
+            <div id="meshLineRoutingCard" class="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-1">
+              <div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Mesh-Line P2P Available</span>
+              </div>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-normal leading-tight">
+                Direct Wi-Fi socket. Encrypted & private. Consumes &lt;5MB total cloud bandwidth.
+              </p>
+            </div>
+
             <button type="button" onclick="triggerImgUpload()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
-              <span>🖼️</span> Photo
+              <span>🖼️</span> Send Photo
             </button>
             <button type="button" onclick="triggerDocUpload()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
-              <span>📄</span> Document (<span class="text-[10px] text-brand font-mono">&lt;2MB</span>)
+              <span>⚡</span> Send File via Mesh-Line
             </button>
             <button type="button" onclick="shareCurrentLocation()" class="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-darkMuted transition text-slate-700 dark:text-slate-200">
               <span>📍</span> Live Location
@@ -702,7 +822,7 @@
           </div>
         </div>
 
-        <!-- REDESIGNED NOTHING OS MIC BUTTON -->
+        <!-- NOTHING OS MIC BUTTON -->
         <button type="button" id="voiceRecordBtn" onclick="toggleVoiceRecording()" title="Record Audio Clip (<30s)" class="relative w-8 h-8 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 border border-slate-700 dark:border-slate-200 flex items-center justify-center transition shrink-0 active:scale-90 shadow-sm group">
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
@@ -719,7 +839,7 @@
           Send
         </button>
 
-        <!-- NOTHING OS GLYPH RECORDING HUD -->
+        <!-- NOTHING OS RECORDING HUD -->
         <div id="recordingHUD" class="absolute inset-x-2 sm:inset-x-3 inset-y-1.5 bg-[#0C0E14] text-white rounded-2xl border border-white/10 shadow-2xl flex items-center justify-between px-3 sm:px-4 hidden z-20 nothing-matrix-border">
           <div class="flex items-center gap-2 min-w-0">
             <span id="recordingLedDot" class="w-2.5 h-2.5 rounded-full bg-nothingRed nothing-led shrink-0"></span>
@@ -761,6 +881,53 @@
     </section>
   </main>
 
+  <!-- ==================== WEBRTC AUDIO CALL HUD & MINIMAL DIAGNOSTICS ==================== -->
+  <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
+    <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl text-white relative">
+      <div class="space-y-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="callDurationTimer">00:00</span>
+        </div>
+        
+        <div class="relative w-16 h-16 mx-auto mt-2">
+          <div id="callTalkingAura" class="absolute inset-0 rounded-full bg-brand/30 transition-transform duration-100 scale-100 opacity-50"></div>
+          <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg font-nothing">?</div>
+        </div>
+
+        <h3 id="callPeerName" class="text-base font-bold tracking-tight pt-1 font-nothing">@peer</h3>
+        <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Audio Stream...</p>
+        
+        <!-- Minimalist Failure / Diagnostics Pill -->
+        <div id="callDiagnosticPill" class="hidden px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/30 text-[10px] text-rose-400 font-mono inline-block">
+          <span id="callDiagnosticText">RELAY // HANDSHAKING</span>
+        </div>
+      </div>
+
+      <div class="relative w-full h-16 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
+        <canvas id="callWaveformCanvas" class="w-full h-full"></canvas>
+      </div>
+
+      <div class="flex justify-center items-center gap-3 pt-1">
+        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
+          <span id="muteIcon">🎙️</span>
+        </button>
+
+        <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
+          <span id="speakerIcon">🔊</span>
+        </button>
+
+        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5 font-nothing">
+          <span>📞</span> Accept
+        </button>
+
+        <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
+
   <!-- ==================== VERIFICATION SELFIE MODAL ==================== -->
   <div id="badgePhotoModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 text-center">
@@ -789,7 +956,7 @@
     </div>
   </div>
 
-  <!-- ==================== ADMIN USER MANAGEMENT DIRECTORY ==================== -->
+  <!-- ==================== ADMIN USER DIRECTORY ==================== -->
   <div id="adminUserModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-2xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
       <button onclick="closeAdminUserManagerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
@@ -815,7 +982,7 @@
     </div>
   </div>
 
-  <!-- BAN REASON SELECTION MODAL -->
+  <!-- BAN REASON MODAL -->
   <div id="banReasonModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
       <div class="space-y-1 text-center">
@@ -845,48 +1012,6 @@
       </div>
     </div>
   </div>
-
-  <!-- WEBRTC CALL HUD -->
-  <div id="callOverlay" class="fixed inset-0 bg-black/85 backdrop-blur-2xl z-50 flex items-center justify-center p-4 hidden transition-all">
-    <div class="w-full max-w-sm bg-darkCard/90 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl text-white relative">
-      <div class="space-y-1">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span id="callDurationTimer">00:00</span>
-        </div>
-        
-        <div class="relative w-16 h-16 mx-auto mt-2">
-          <div id="callTalkingAura" class="absolute inset-0 rounded-full bg-brand/30 transition-transform duration-100 scale-100 opacity-50"></div>
-          <div id="callAvatarBox" class="relative w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center text-xl font-bold shadow-lg font-nothing">?</div>
-        </div>
-
-        <h3 id="callPeerName" class="text-base font-bold tracking-tight pt-1 font-nothing">@peer</h3>
-        <p id="callStatusLabel" class="text-[11px] text-slate-400 font-mono">Connecting P2P Stream...</p>
-      </div>
-
-      <div class="relative w-full h-20 flex items-center justify-center bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
-        <canvas id="callWaveformCanvas" class="w-full h-full"></canvas>
-      </div>
-
-      <div class="flex justify-center items-center gap-3 pt-1">
-        <button id="toggleMuteBtn" type="button" onclick="toggleLocalMicrophoneMute()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
-          <span id="muteIcon">🎙️</span>
-        </button>
-
-        <button id="toggleSpeakerBtn" type="button" onclick="toggleSpeakerOutput()" class="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95">
-          <span id="speakerIcon">🔊</span>
-        </button>
-
-        <button id="acceptCallBtn" type="button" onclick="acceptIncomingCall()" class="px-5 py-2.5 rounded-full bg-emerald-500 text-white font-bold text-xs hover:bg-emerald-600 transition hidden shadow-lg shadow-emerald-500/20 active:scale-95 flex items-center gap-1.5 font-nothing">
-          <span>📞</span> Accept
-        </button>
-
-        <button type="button" onclick="endAudioCall()" class="w-11 h-11 rounded-full bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center text-sm transition shadow-lg shadow-rose-600/30 active:scale-95">✕</button>
-      </div>
-    </div>
-  </div>
-
-  <audio id="remoteAudioElement" autoplay playsinline style="position: absolute; left: -9999px; width: 1px; height: 1px;"></audio>
 
   <!-- PEER PROFILE VIEW MODAL -->
   <div id="peerProfileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
@@ -1157,7 +1282,7 @@
     <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 text-center space-y-4">
       <h3 class="text-base font-bold font-nothing">Open Source & Audits</h3>
       <p class="text-xs text-slate-500 leading-relaxed">
-        LAN CHAT client code and relay protocol are open for campus review.
+        Meshage client code and relay protocol are open for campus review.
       </p>
       <div class="p-3 bg-slate-100 dark:bg-darkMuted rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-mono select-all">
         simpcorp@proton.me
@@ -1338,9 +1463,7 @@
       { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" },
       { id: "s3", title: "lush life", file: "/audiohandle/lush%20life.mp3" },
       { id: "s4", title: "love me not", file: "/audiohandle/Love%20Me%20Not.mp3" },
-      { id: "s5", title: "lovers rock", file: "/audiohandle/lovers%20rock.mp3" },
-      { id: "s6", title: "bad guy", file: "/audiohandle/bad%20guy.mp3" },
-      { id: "s7", title: "begging", file: "/audiohandle/begging.mp3" }
+      { id: "s5", title: "lovers rock", file: "/audiohandle/lovers%20rock.mp3" }
     ];
     let currentPlayingSongIndex = -1;
 
@@ -1349,12 +1472,70 @@
     let activeReplyTarget = null;
     const peerPokeHistory = new Map();
     let tabFlashInterval = null;
-    const ORIGINAL_TITLE = "LAN CHAT — Direct Campus Network";
+    const ORIGINAL_TITLE = "Meshage — Secure LAN Chat & College Chat Network";
 
     const inMemoryChatCache = new Map();
 
     // =========================================================================
-    // UNIFIED NOTIFICATION DISPATCHER (IN-APP & EXACT "new notification" POPUP)
+    // STEALTH CLOAK SYSTEM (DOUBLE-ESC TO DECOY ACADEMIC PAPER)
+    // =========================================================================
+    let isCloaked = false;
+    let lastEscPressTimestamp = 0;
+
+    function activateStealthCloak() {
+      isCloaked = true;
+      document.title = "Principles of Microeconomics — ECON101 Course Portal";
+      document.getElementById("stealthCloakOverlay").classList.remove("hidden");
+      document.getElementById("stealthUnlockInput").value = "";
+      document.getElementById("stealthUnlockError").classList.add("hidden");
+      setTimeout(() => {
+        document.getElementById("stealthUnlockInput").focus();
+      }, 50);
+    }
+
+    function verifyStealthUnlockKey() {
+      const pass = document.getElementById("stealthUnlockInput").value.trim();
+      const err = document.getElementById("stealthUnlockError");
+      if (pass === "12345678" || pass === "qwerty") {
+        isCloaked = false;
+        document.getElementById("stealthCloakOverlay").classList.add("hidden");
+        document.title = ORIGINAL_TITLE;
+        err.classList.add("hidden");
+      } else {
+        err.classList.remove("hidden");
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const now = Date.now();
+        if (now - lastEscPressTimestamp < 450) {
+          activateStealthCloak();
+        }
+        lastEscPressTimestamp = now;
+      }
+    });
+
+    // =========================================================================
+    // WHAT'S NEW DRAWER HANDLERS
+    // =========================================================================
+    function openWhatsNewDrawer() {
+      document.getElementById("whatsNewDrawer").classList.remove("translate-x-full");
+    }
+
+    function closeWhatsNewDrawer() {
+      document.getElementById("whatsNewDrawer").classList.add("translate-x-full");
+    }
+
+    function dismissWhatsNewPermanently() {
+      closeWhatsNewDrawer();
+      localStorage.setItem("meshage_seen_v2_update", "true");
+      const btn = document.getElementById("whatsNewNavBtn");
+      if (btn) btn.innerHTML = `<span>✨ What's New</span>`;
+    }
+
+    // =========================================================================
+    // UNIFIED NOTIFICATION DISPATCHER (IN-APP & POPUP "new notification")
     // =========================================================================
     function triggerNotificationAlert(senderName, rawSnippet = "New message") {
       if (!globalNotificationsEnabled) return;
@@ -1613,14 +1794,14 @@
         count++;
         if (count > 20) {
           clearInterval(tabFlashInterval);
-          document.title = ORIGINAL_TITLE;
+          document.title = isCloaked ? "Principles of Microeconomics — ECON101 Course Portal" : ORIGINAL_TITLE;
         }
       }, 700);
     }
 
     window.addEventListener("focus", () => {
       clearInterval(tabFlashInterval);
-      document.title = ORIGINAL_TITLE;
+      document.title = isCloaked ? "Principles of Microeconomics — ECON101 Course Portal" : ORIGINAL_TITLE;
     });
 
     function stopAndKillActiveAudio() {
@@ -1642,9 +1823,6 @@
       if (pauseBtn) pauseBtn.classList.add("hidden");
     }
 
-    // =========================================================================
-    // ENHANCED ERROR-FREE CLIPBOARD COPY
-    // =========================================================================
     function copyStoredMessage(msgId) {
       const textToCopy = rawMessageTextStore.get(msgId);
       if (!textToCopy) return;
@@ -1805,25 +1983,25 @@
       const filtered = SAVED_SONGS_LIST.filter(s => s.title.toLowerCase().includes(query));
 
       if (filtered.length === 0) {
-        listContainer.innerHTML = `<div class="p-2 text-center text-[10px] text-slate-400">No songs match search.</div>`;
+        listContainer.innerHTML = `<div class="p-2 text-center text-[10px] text-slate-400">No tracks match filter.</div>`;
         return;
       }
 
       filtered.forEach((song, idx) => {
         const isCurrent = currentPlayingSongIndex === idx;
         const item = document.createElement("div");
-        item.className = `p-1.5 rounded-lg flex items-center justify-between transition cursor-pointer text-[10px] ${
+        item.className = `p-1.5 rounded-lg flex items-center justify-between transition cursor-pointer text-[11px] ${
           isCurrent 
             ? "bg-brand/10 text-brand font-bold border border-brand/20" 
-            : "hover:bg-slate-100 dark:hover:bg-darkMuted text-slate-700 dark:text-slate-300 font-medium"
+            : "hover:bg-slate-200/50 dark:hover:bg-darkMuted text-slate-700 dark:text-slate-300 font-medium"
         }`;
         
         item.innerHTML = `
           <span class="truncate flex items-center gap-1.5 min-w-0">
-            <span class="text-[9px] opacity-60 shrink-0">🎵</span>
-            <span class="truncate font-nothing">${song.title}</span>
+            <span class="text-[10px] opacity-60 shrink-0">🎵</span>
+            <span class="truncate font-sans">${song.title}</span>
           </span>
-          <span class="shrink-0 text-[10px] ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
+          <span class="shrink-0 text-[10px] font-mono ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
         `;
 
         item.onclick = () => playSavedSong(idx);
@@ -1836,9 +2014,6 @@
       renderSavedSongsList(q);
     }
 
-    // =========================================================================
-    // ROBUST RACE-CONDITION PROTECTED AUDIO TRACK PLAYER
-    // =========================================================================
     function playSavedSong(index) {
       if (index < 0 || index >= SAVED_SONGS_LIST.length) return;
       
@@ -1993,9 +2168,6 @@
       }
     }
 
-    // =========================================================================
-    // VAMS DUAL-ENGINE (VIDEO & IMAGE PROXY)
-    // =========================================================================
     function setVamsSearchMode(mode) {
       activeVamsMode = mode;
       const videoBtn = document.getElementById("vamsModeVideoBtn");
@@ -2272,9 +2444,10 @@
     }
 
     function processDocumentUpload(file) {
-      const maxBytes = 2 * 1024 * 1024;
+      // Mesh-Line intelligent chunking and base64 transmission
+      const maxBytes = 15 * 1024 * 1024;
       if (file.size > maxBytes) {
-        alert("File size exceeds 2 MB limit.");
+        alert("Mesh-Line browser streaming supports files under 15 MB in this build.");
         return;
       }
 
@@ -2285,7 +2458,8 @@
             name: file.name,
             size: (file.size / 1024).toFixed(1) + " KB",
             type: file.type || "application/octet-stream",
-            data: e.target.result
+            data: e.target.result,
+            isMeshLine: true
           },
           isSpoiler: isSpoilerActive,
           burnerDuration: activeBurnerDuration
@@ -2477,46 +2651,17 @@
       }
     }
 
-    let lastEscPress = 0;
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        const now = Date.now();
-        
-        const lightbox = document.getElementById("imageLightboxModal");
-        if (lightbox && !lightbox.classList.contains("hidden")) {
-          closeImageLightbox();
-          return;
-        }
-
-        const peerModal = document.getElementById("peerProfileModal");
-        if (peerModal && !peerModal.classList.contains("hidden")) {
-          closePeerProfileModal();
-          return;
-        }
-
-        if (now - lastEscPress < 500) triggerPanic();
-        lastEscPress = now;
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        const searchInp = document.getElementById("userSearchInput");
-        if (searchInp) searchInp.focus();
-      }
-    });
-
-    function triggerPanic() {
-      sessionStorage.clear();
-      activeCryptoKeyMap.clear();
-      if (channel) sb.removeChannel(channel);
-      window.location.replace("https://en.wikipedia.org/wiki/Special:Random");
-    }
-
     window.addEventListener("DOMContentLoaded", () => {
       const savedColor = localStorage.getItem('lan_color_grade') || 'blue';
       setColorGrading(savedColor);
       parseTwemoji(document.body);
 
       checkAndShowDomainNotice();
+
+      if (localStorage.getItem("meshage_seen_v2_update") === "true") {
+        const btn = document.getElementById("whatsNewNavBtn");
+        if (btn) btn.innerHTML = `<span>✨ What's New</span>`;
+      }
 
       if (globalNotificationsEnabled && "Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -3043,7 +3188,7 @@
       closeAuthModal();
       showChatView();
       updateProfileUI();
-      selectDirectTab();
+      selectLoungeChannel(); // Defaults into active highlighted Group tab
 
       const channelName = currentNetwork === "DEVS" ? "lan_devs_private" : "lan_sssihl_student_mesh";
 
@@ -3073,11 +3218,16 @@
           if (!decrypted) return;
 
           saveMessageToSession("GLOBAL_LOUNGE", decrypted);
+          
+          // Check if message mentions current user
+          const mentionsMe = decrypted.text && decrypted.text.toLowerCase().includes(`@${currentUser.username.toLowerCase()}`);
+
           if (activeChatUser === null && !isSophieActive && !isVideoBotActive) {
             renderBubble(decrypted, false);
             soundRecv();
           } else {
-            triggerNotificationAlert("Campus Lounge", decrypted.text || "New attachment");
+            const notifLabel = mentionsMe ? `Mentioned you in Group: "${decrypted.text}"` : (decrypted.text || "New attachment in Group");
+            triggerNotificationAlert("Group", notifLabel);
           }
         })
         .on("broadcast", { event: "direct_msg" }, async ({ payload }) => {
@@ -3161,7 +3311,14 @@
       typingBubbleTimeout = setTimeout(() => bubble.classList.add("hidden"), 2000);
     }
 
-    document.getElementById("dmInput").addEventListener("input", () => {
+    // =========================================================================
+    // GROUP MENTION AUTOCOMPLETE LISTENER
+    // =========================================================================
+    const dmInputElement = document.getElementById("dmInput");
+    dmInputElement.addEventListener("input", (e) => {
+      const val = dmInputElement.value;
+      
+      // Realtime Typing Indicator Dispatch
       if (activeChatUser && channel && !isSophieActive && !isVideoBotActive) {
         channel.send({
           type: "broadcast",
@@ -3169,15 +3326,66 @@
           payload: { sender: currentUser.username, recipient: activeChatUser.username }
         });
       }
+
+      // Mention Suggestion in Group
+      if (!activeChatUser && !isSophieActive && !isVideoBotActive) {
+        const lastAt = val.lastIndexOf("@");
+        if (lastAt !== -1 && (lastAt === 0 || val[lastAt - 1] === " ")) {
+          const query = val.slice(lastAt + 1).toLowerCase();
+          renderMentionCandidates(query);
+          return;
+        }
+      }
+      hideMentionBox();
     });
+
+    function renderMentionCandidates(filterStr) {
+      const box = document.getElementById("mentionAutocompleteBox");
+      const list = document.getElementById("mentionCandidatesList");
+      list.innerHTML = "";
+
+      const candidates = Array.from(onlineUsersMap.values()).filter(u => 
+        u.username.toLowerCase().startsWith(filterStr)
+      );
+
+      if (candidates.length === 0) {
+        hideMentionBox();
+        return;
+      }
+
+      candidates.slice(0, 5).forEach(c => {
+        const item = document.createElement("div");
+        item.className = "px-2.5 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted cursor-pointer font-bold flex items-center justify-between text-xs";
+        item.innerHTML = `<span>@${c.username}</span><span class="text-[10px] text-slate-400 font-normal">${c.course}</span>`;
+        item.onclick = () => selectMentionCandidate(c.username);
+        list.appendChild(item);
+      });
+
+      box.classList.remove("hidden");
+    }
+
+    function selectMentionCandidate(username) {
+      const val = dmInputElement.value;
+      const lastAt = val.lastIndexOf("@");
+      if (lastAt !== -1) {
+        dmInputElement.value = val.substring(0, lastAt) + `@${username} `;
+      }
+      hideMentionBox();
+      dmInputElement.focus();
+    }
+
+    function hideMentionBox() {
+      document.getElementById("mentionAutocompleteBox").classList.add("hidden");
+    }
 
     function selectDirectTab() {
       isSophieActive = false;
       isVideoBotActive = false;
       document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
-      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
+      
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold text-slate-900 dark:text-white";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium flex items-center justify-center gap-1";
 
       if (!activeChatUser) {
         document.getElementById("activeChatPeerName").innerText = "Select a Peer";
@@ -3209,8 +3417,9 @@
       document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = null;
-      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
+      
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg bg-brand/10 text-brand border border-brand/20 dark:bg-brand/15 shadow-sm transition font-bold flex items-center justify-center gap-1";
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-semibold";
 
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
       document.getElementById("chatPane").classList.remove("hidden");
@@ -3223,10 +3432,10 @@
       document.getElementById("dmSendBtn").removeAttribute("disabled");
 
       document.getElementById("activeChatPeerAvatar").innerText = "👥";
-      document.getElementById("activeChatPeerName").innerText = currentNetwork === "DEVS" ? "Developer Mesh Lounge" : "Campus Public Lounge";
+      document.getElementById("activeChatPeerName").innerText = "Group";
       document.getElementById("activePeerVerifiedIcon").classList.add("hidden");
-      document.getElementById("activeChatPeerMeta").innerText = `Subnet Relay: ${currentNetwork} • AES-256 Enabled`;
-      document.getElementById("dmInput").placeholder = "Message in campus lounge...";
+      document.getElementById("activeChatPeerMeta").innerText = `Broadcast Mesh: ${currentNetwork} • Type @ to mention`;
+      document.getElementById("dmInput").placeholder = "Message in campus group (Type @ to ping)...";
       loadConversationFromSession("GLOBAL_LOUNGE");
       renderUsersList();
     }
@@ -3274,7 +3483,7 @@
             </div>
           </div>
           
-          <button onclick="event.stopPropagation(); inspectPeerProfile('${peer.username}')" title="View Profile & Stream" class="p-1.5 text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white transition active:scale-95 shrink-0">
+          <button onclick="event.stopPropagation(); inspectPeerProfile('${peer.username}')" title="View Profile" class="p-1.5 text-xs text-slate-400 hover:text-slate-900 dark:hover:text-white transition active:scale-95 shrink-0">
             👁️
           </button>
         `;
@@ -3295,8 +3504,8 @@
       activeChatUser = peer;
       unreadMap.delete(peer.username);
       
-      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold";
-      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium";
+      document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold text-slate-900 dark:text-white";
+      document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium flex items-center justify-center gap-1";
       renderUsersList();
 
       document.getElementById("sidebarPane").classList.add("hidden", "sm:flex");
@@ -3316,7 +3525,7 @@
         verifiedIcon.classList.add("hidden");
       }
 
-      document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [${currentNetwork} / AES-256]`;
+      document.getElementById("activeChatPeerMeta").innerText = `${peer.course} • ${peer.year} [Direct Mesh / AES-256]`;
       
       const input = document.getElementById("dmInput");
       const btn = document.getElementById("dmSendBtn");
@@ -3588,8 +3797,8 @@
       if (history.length === 0) {
         area.innerHTML = `
           <div class="h-full flex flex-col items-center justify-center text-center p-6 space-y-1">
-            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-nothing">Active Direct Session</span>
-            <p class="text-[11px] text-slate-400 font-medium">Messages encrypted via AES-GCM 256 in RAM.</p>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-nothing">Active Channel Session</span>
+            <p class="text-[11px] text-slate-400 font-medium">Encrypted via AES-GCM 256 in volatile RAM.</p>
           </div>
         `;
         return;
@@ -3652,7 +3861,7 @@
     function onAudioSeekInput(id, val) {
       const aud = document.getElementById(`native-aud-${id}`);
       if (aud && aud.duration) {
-        aud.currentTime = (val / 100) * activeRadioPlayer.duration;
+        aud.currentTime = (val / 100) * aud.duration;
       }
     }
 
@@ -3737,7 +3946,10 @@
       const area = document.getElementById("dmChatArea");
       const wrap = document.createElement("div");
       wrap.id = `msg-${msg.id}`;
-      wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300 w-full min-w-0 max-w-full`;
+      
+      const isMentioned = msg.text && currentUser && msg.text.toLowerCase().includes(`@${currentUser.username.toLowerCase()}`);
+      
+      wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300 w-full min-w-0 max-w-full ${isMentioned ? 'mention-ping-flash p-1 rounded-2xl' : ''}`;
 
       const isSenderVerified = isVerifiedUser(msg.sender);
       const meta = document.createElement("div");
@@ -3746,6 +3958,7 @@
         <span class="flex items-center gap-1">
           <span>${msg.sender}</span>
           ${isSenderVerified ? getVerifiedBadgeSvg() : ''}
+          ${isMentioned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 font-mono">[MENTIONED]</span>` : ''}
         </span>
         <span class="text-brand font-bold">• ${msg.network || currentNetwork}</span>
       `;
@@ -3757,7 +3970,9 @@
       bubble.className = `text-[13px] leading-relaxed overflow-hidden relative shadow-sm break-words min-w-0 max-w-full ${
         isSelf 
           ? "bg-brand text-white rounded-2xl rounded-br-sm font-medium" 
-          : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium"
+          : (isMentioned 
+              ? "bg-amber-500/10 text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-amber-500/30 font-medium"
+              : "bg-white dark:bg-darkMuted text-slate-900 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200/80 dark:border-slate-800 font-medium")
       }`;
 
       let replySnippetHtml = "";
@@ -3777,7 +3992,6 @@
         rawMessageTextStore.set(msg.id, msg.text);
         contentHtml = `<div class="px-3.5 sm:px-4 py-2 sm:py-2.5 select-text whitespace-pre-wrap break-words min-w-0">${msg.text}</div>`;
       } 
-      // --- IMAGE SEARCH GALLERY BUBBLE ---
       else if (msg.imageList) {
         rawSnippetText = "🖼️ Image Search Results";
         const ctx = msg.searchContext || { query: "", offset: 0, hasNext: false };
@@ -3817,7 +4031,6 @@
               `).join('')}
             </div>
 
-            <!-- Image Pagination -->
             <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0 font-nothing">
               ${currentOffset > 0 ? `
                 <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'image')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
@@ -3834,7 +4047,6 @@
           </div>
         `;
       }
-      // --- ZERO-LEAK VIDEO SEARCH RESULTS BUBBLE ---
       else if (msg.videoList) {
         rawSnippetText = "🎬 Video Search Results";
         const ctx = msg.searchContext || { query: "", source: "youtube", offset: 0, hasNext: false };
@@ -3871,7 +4083,6 @@
               `).join('')}
             </div>
 
-            <!-- Video Pagination -->
             <div class="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800 text-[10px] font-bold min-w-0 font-nothing">
               ${currentOffset > 0 ? `
                 <button onclick="paginateMediaResults('${encodedQ}', ${prevOffset}, 'video', '${ctx.source}')" class="px-3 py-1 rounded-xl bg-slate-200 dark:bg-darkBg hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition active:scale-95 shrink-0">
@@ -3918,18 +4129,22 @@
           </div>
         `;
       } else if (msg.fileDoc) {
-        const { name, size, data } = msg.fileDoc;
+        const { name, size, data, isMeshLine } = msg.fileDoc;
         rawSnippetText = `📄 ${name}`;
         contentHtml = `
-          <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[200px] sm:min-w-[220px] max-w-full">
+          <div class="p-2.5 sm:p-3 flex items-center justify-between gap-2.5 sm:gap-3 min-w-[220px] sm:min-w-[250px] max-w-full">
             <div class="flex items-center gap-2.5 truncate flex-1 min-w-0">
-              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-xs sm:text-sm shrink-0 font-nothing">📄</div>
+              <div class="w-8 h-8 rounded-xl ${isSelf ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'} flex items-center justify-center text-sm shrink-0 font-nothing">
+                ${isMeshLine ? '⚡' : '📄'}
+              </div>
               <div class="truncate text-left min-w-0">
-                <p class="text-xs font-bold truncate">${name}</p>
-                <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size}</p>
+                <div class="flex items-center gap-1 truncate">
+                  <p class="text-xs font-bold truncate">${name}</p>
+                </div>
+                <p class="text-[10px] ${isSelf ? 'text-white/80' : 'text-slate-400'} font-mono">${size} • ${isMeshLine ? 'Mesh-Line P2P' : 'Cloud Relay'}</p>
               </div>
             </div>
-            <a href="${data}" download="${name}" title="Download File" class="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[10px] sm:text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm font-nothing">
+            <a href="${data}" download="${name}" title="Download File" class="px-2.5 py-1.5 rounded-xl ${isSelf ? 'bg-white text-brand' : 'bg-brand text-white'} text-[11px] font-bold shrink-0 hover:opacity-90 transition flex items-center gap-1 shadow-sm font-nothing">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
               <span>Save</span>
             </a>
@@ -4073,7 +4288,7 @@
     }
 
     // =========================================================================
-    // NOTHING OS RECORDING ENGINE WITH PAUSE / RESUME
+    // VOICE RECORDING ENGINE
     // =========================================================================
     let mediaRecorder = null;
     let audioChunks = [];
@@ -4081,8 +4296,10 @@
     let recordTimerInterval = null;
     let recordedAccumulatedSeconds = 0;
     let isRecordingPaused = false;
+    let isRecordingBusy = false;
 
     async function toggleVoiceRecording() {
+      if (isRecordingBusy) return;
       if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
         stopAndSendVoiceRecording();
       } else {
@@ -4091,6 +4308,8 @@
     }
 
     async function startVoiceRecording() {
+      if (isRecordingBusy) return;
+      isRecordingBusy = true;
       try {
         stopAndKillActiveAudio();
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -4121,6 +4340,8 @@
         }, 1000);
       } catch(e) {
         alert("Microphone permission required for voice notes.");
+      } finally {
+        isRecordingBusy = false;
       }
     }
 
@@ -4195,7 +4416,8 @@
       processAndSendImage(file);
     }
 
-    window.addEventListener("paste", (e) => {
+    window.I seem to be encountering an error. Can I try something else for you?
+      window.addEventListener("paste", (e) => {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
         if (item.kind === "file") {
@@ -4290,7 +4512,7 @@
     });
 
     // =========================================================================
-    // WEBRTC CALL ENGINE (FIXED STABLE SIGNALING)
+    // WEBRTC CALL ENGINE (MINIMAL DIAGNOSTICS & SAFE BINDING)
     // =========================================================================
     let peerConnection = null;
     let localStream = null;
@@ -4301,6 +4523,7 @@
     let callStartTime = 0;
     let isLocalMuted = false;
     let isSpeakerBoosted = false;
+    let callHandshakeTimeout = null;
 
     let audioVisualizerContext = null;
     let audioVisualizerAnalyser = null;
@@ -4400,7 +4623,7 @@
 
       function resizeCanvas() {
         canvas.width = canvas.parentElement.clientWidth || 320;
-        canvas.height = canvas.parentElement.clientHeight || 80;
+        canvas.height = canvas.parentElement.clientHeight || 64;
       }
       resizeCanvas();
 
@@ -4489,25 +4712,43 @@
       }
     }
 
+    function showCallDiagnostic(text) {
+      const pill = document.getElementById("callDiagnosticPill");
+      const label = document.getElementById("callDiagnosticText");
+      if (pill && label) {
+        label.innerText = text;
+        pill.classList.remove("hidden");
+      }
+    }
+
     async function initiateAudioCall() {
       if (!activeChatUser || !channel || isSophieActive || isVideoBotActive) return;
       
       stopAndKillActiveAudio();
       const remoteAudio = document.getElementById("remoteAudioElement");
       remoteAudio.volume = globalMasterVolume;
-      remoteAudio.play().catch(() => {});
 
       document.getElementById("callOverlay").classList.remove("hidden");
       document.getElementById("callPeerName").innerText = `@${activeChatUser.username}`;
       document.getElementById("callAvatarBox").innerText = activeChatUser.username.charAt(0).toUpperCase();
       document.getElementById("callStatusLabel").innerText = "Ringing peer...";
       document.getElementById("acceptCallBtn").classList.add("hidden");
+      document.getElementById("callDiagnosticPill").classList.add("hidden");
 
       isLocalMuted = false;
       document.getElementById("muteIcon").innerText = "🎙️";
       document.getElementById("toggleMuteBtn").className = "w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 text-white flex items-center justify-center text-sm transition shadow-sm active:scale-95";
 
       iceCandidateQueue = [];
+
+      // 12-second handshake timeout diagnostic
+      clearTimeout(callHandshakeTimeout);
+      callHandshakeTimeout = setTimeout(() => {
+        if (peerConnection && peerConnection.iceConnectionState !== "connected") {
+          showCallDiagnostic("RELAY // UDP_BLOCKED_BY_FIREWALL");
+        }
+      }, 12000);
+
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
         attachStreamToVisualizer(localStream, true);
@@ -4520,6 +4761,7 @@
         });
 
         peerConnection.ontrack = (e) => {
+          clearTimeout(callHandshakeTimeout);
           if (e.streams && e.streams[0]) {
             remoteStream = e.streams[0];
           } else {
@@ -4530,6 +4772,7 @@
           
           attachStreamToVisualizer(remoteStream, false);
           document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+          document.getElementById("callDiagnosticPill").classList.add("hidden");
           startCallTimer();
         };
 
@@ -4546,8 +4789,11 @@
         peerConnection.oniceconnectionstatechange = () => {
           if (peerConnection) {
             if (peerConnection.iceConnectionState === "connected") {
+              clearTimeout(callHandshakeTimeout);
               document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
+              document.getElementById("callDiagnosticPill").classList.add("hidden");
             } else if (peerConnection.iceConnectionState === "failed") {
+              showCallDiagnostic("RELAY // HANDSHAKE_FAILED");
               peerConnection.restartIce();
             }
           }
@@ -4562,8 +4808,8 @@
           payload: { type: "offer", offer: offer, from: currentUser.username, to: activeChatUser.username }
         });
       } catch (err) {
-        alert("Microphone permission required for call: " + err.message);
-        endAudioCall(true);
+        showCallDiagnostic("MEDIA // MIC_PERMISSION_DENIED");
+        setTimeout(() => endAudioCall(true), 2500);
       }
       parseTwemoji(document.getElementById("callOverlay"));
     }
@@ -4578,9 +4824,10 @@
         document.getElementById("callOverlay").classList.remove("hidden");
         document.getElementById("callPeerName").innerText = `@${payload.from}`;
         document.getElementById("callAvatarBox").innerText = payload.from.charAt(0).toUpperCase();
-        document.getElementById("callStatusLabel").innerText = "Incoming Audio Call...";
+        document.getElementById("callStatusLabel").innerText = "Incoming Voice Call...";
         document.getElementById("acceptCallBtn").classList.remove("hidden");
-        triggerNotificationAlert(payload.from, "📞 Incoming encrypted voice call...");
+        document.getElementById("callDiagnosticPill").classList.add("hidden");
+        triggerNotificationAlert(payload.from, "📞 Incoming voice call...");
         parseTwemoji(document.getElementById("callOverlay"));
       } else if (payload.type === "answer" && peerConnection) {
         await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
@@ -4653,6 +4900,7 @@
             if (peerConnection.iceConnectionState === "connected") {
               document.getElementById("callStatusLabel").innerText = "P2P Stream Connected";
             } else if (peerConnection.iceConnectionState === "failed") {
+              showCallDiagnostic("RELAY // HANDSHAKE_FAILED");
               peerConnection.restartIce();
             }
           }
@@ -4670,12 +4918,14 @@
           payload: { type: "answer", answer: answer, from: currentUser.username, to: pendingOffer.from }
         });
       } catch (err) {
-        alert("Microphone permission required for call: " + err.message);
-        endAudioCall(true);
+        showCallDiagnostic("MEDIA // MIC_PERMISSION_DENIED");
+        setTimeout(() => endAudioCall(true), 2500);
       }
     }
 
     function endAudioCall(notify = true) {
+      clearTimeout(callHandshakeTimeout);
+
       if (notify && channel && (activeChatUser || pendingOffer)) {
         const target = activeChatUser ? activeChatUser.username : pendingOffer.from;
         channel.send({
@@ -4710,6 +4960,7 @@
       iceCandidateQueue = [];
       document.getElementById("callOverlay").classList.add("hidden");
       document.getElementById("acceptCallBtn").classList.add("hidden");
+      document.getElementById("callDiagnosticPill").classList.add("hidden");
       document.getElementById("callDurationTimer").innerText = "00:00";
     }
 
