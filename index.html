@@ -1458,19 +1458,24 @@
     let mutedPeersSet = new Set(JSON.parse(localStorage.getItem("lan_muted_peers") || "[]"));
     let globalNotificationsEnabled = localStorage.getItem("lan_global_notif") !== "false";
 
+    const SUPABASE_AUDIO_BASE = "https://ueimmuwkscafwktvbmne.supabase.co/storage/v1/object/public/audiohandle";
+
     const SAVED_SONGS_LIST = [
+      // Local GitHub files (s1 - s5)
       { id: "s1", title: "Afghan Jalebi", file: "/audiohandle/Afghan%20Jalebi.mp3" },
       { id: "s2", title: "Radhimaa", file: "/audiohandle/radhimaa.mp3" },
       { id: "s3", title: "lush life", file: "/audiohandle/lush%20life.mp3" },
       { id: "s4", title: "love me not", file: "/audiohandle/Love%20Me%20Not.mp3" },
       { id: "s5", title: "lovers rock", file: "/audiohandle/lovers%20rock.mp3" },
-      { id: "s6", title: "Counting Stars", file: "/audiohandle/OneRepublic%20Counting%20Stars.mp3" },
-      { id: "s7", title: "lavde na bhojyam Modi", file: "/audiohandle/lavde%20na%20bhojyam%20Modi.mp3" },
-      { id: "s8", title: "Physical", file: "/audiohandle/Dua%20Lipa%20Physical.mp3" },
-      { id: "s9", title: "Dil Ka Jo Haal Hai", file: "/audiohandle/Dil%20Ka%20Jo%20Haal%20Hai%20Abhijeet%20Bhattacharya,%20Shreya%20Ghoshal.mp3" },
-      { id: "s10", title: "Dracula (JENNIE Remix)", file: "/audiohandle/Tame%20Impala,%20JENNIE%20-%20Dracula%20(JENNIE%20Remix)%20(Lyrics).mp3" },
-      { id: "s11", title: "Just The Way You Are (Milky)", file: "/audiohandle/Milky%20-%20Just%20The%20Way%20You%20Are.mp3" },
-      { id: "s12", title: "Just The Way You Are", file: "/audiohandle/Bruno%20Mars%20-%20Just%20The%20Way%20You%20Are.mp3" }
+
+      // Supabase Storage files (s6 - s12)
+      { id: "s6", title: "Counting Stars", file: `${SUPABASE_AUDIO_BASE}/OneRepublic%20Counting%20Stars.mp3` },
+      { id: "s7", title: "lavde na bhojyam Modi", file: `${SUPABASE_AUDIO_BASE}/lavde%20na%20bhojyam%20Modi.mp3` },
+      { id: "s8", title: "Physical", file: `${SUPABASE_AUDIO_BASE}/Dua%20Lipa%20Physical.mp3` },
+      { id: "s9", title: "Dil Ka Jo Haal Hai", file: `${SUPABASE_AUDIO_BASE}/Dil%20Ka%20Jo%20Haal%20Hai%20Abhijeet%20Bhattacharya,%20Shreya%20Ghoshal.mp3` },
+      { id: "s10", title: "Dracula (JENNIE Remix)", file: `${SUPABASE_AUDIO_BASE}/Tame%20Impala,%20JENNIE%20-%20Dracula%20(JENNIE%20Remix)%20(Lyrics).mp3` },
+      { id: "s11", title: "Just The Way You Are (Milky)", file: `${SUPABASE_AUDIO_BASE}/Milky%20-%20Just%20The%20Way%20You%20Are.mp3` },
+      { id: "s12", title: "Just The Way You Are", file: `${SUPABASE_AUDIO_BASE}/Bruno%20Mars%20-%20Just%20The%20Way%20You%20Are.mp3` }
     ];
     let currentPlayingSongIndex = -1;
 
