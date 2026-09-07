@@ -297,48 +297,76 @@
   </div>
 
   <!-- WHAT'S NEW SLIDE-OVER DRAWER -->
-  <div id="whatsNewDrawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white dark:bg-darkCard border-l border-slate-200 dark:border-slate-800 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col p-6 space-y-4">
-    <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
-      <div class="flex items-center gap-2">
-        <span class="text-lg">✨</span>
-        <h3 class="text-sm font-bold text-slate-950 dark:text-white font-nothing">What's New in Meshage</h3>
+  <div id="whatsNewDrawerBackdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="closeWhatsNewDrawer()"></div>
+  <div id="whatsNewDrawer" class="fixed inset-y-0 right-0 max-w-sm w-full bg-white/95 dark:bg-[#0D1017]/95 border-l border-slate-200/80 dark:border-slate-800/80 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col p-6 space-y-5">
+    
+    <div class="flex justify-between items-center border-b border-slate-200/70 dark:border-slate-800/70 pb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-brand/10 text-brand border border-brand/20 flex items-center justify-center text-xs font-mono font-bold shadow-sm">
+          ✨
+        </div>
+        <div>
+          <h3 class="text-sm font-extrabold text-slate-950 dark:text-white font-nothing tracking-tight">System Changelog</h3>
+          <p class="text-[10px] font-mono text-slate-400">Node Release // v3.8-stable</p>
+        </div>
       </div>
-      <button onclick="closeWhatsNewDrawer()" class="text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm font-bold">✕</button>
+      <button onclick="closeWhatsNewDrawer()" class="w-7 h-7 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-xs transition">✕</button>
     </div>
 
-    <div class="flex-1 overflow-y-auto space-y-4 text-xs text-slate-600 dark:text-slate-300 custom-scroll pr-1">
-      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
-        <div class="flex items-center gap-1.5 text-brand font-bold">
-          <span>⚡</span> <span>Mesh-Line P2P Transfers</span>
+    <div class="flex-1 overflow-y-auto space-y-3.5 text-xs text-slate-600 dark:text-slate-300 custom-scroll pr-1.5">
+      
+      <div class="p-3.5 bg-gradient-to-br from-emerald-500/10 via-emerald-500/[0.04] to-transparent border border-emerald-500/30 rounded-2xl space-y-2 shadow-[0_4px_20px_rgba(16,185,129,0.08)] relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-emerald-500 font-bold font-nothing">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Privacy Screen (2× ESC)</span>
+          </div>
+          <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">PRIMARY</span>
         </div>
-        <p class="leading-relaxed">When both devices share the same campus Wi-Fi, files send directly router-to-router at full speed. Consumes &lt;5MB total cloud bandwidth.</p>
+        <p class="leading-relaxed text-[11px] text-slate-700 dark:text-slate-200">
+          Double-tap <kbd class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-mono text-[10px] border border-slate-300 dark:border-slate-700">ESC</kbd> to replace your viewport with an authentic academic economics paper and <strong>instantly cut active background audio</strong>. Enter passkey <code class="font-mono text-emerald-500 font-bold">12345678</code> to resume.
+        </p>
       </div>
 
-      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
-        <div class="flex items-center gap-1.5 text-emerald-500 font-bold">
-          <span>👥</span> <span>Group @Mentions</span>
+      <div class="p-3.5 bg-slate-50/80 dark:bg-darkMuted/40 border border-slate-200/70 dark:border-slate-800/70 rounded-2xl space-y-1.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-brand font-bold font-nothing">
+            <span>⚡</span> <span>Mesh-Line LAN Transfer</span>
+          </div>
+          <span class="text-[9px] font-mono text-slate-400">&lt;5MB Egress</span>
         </div>
-        <p class="leading-relaxed">Type <strong>@</strong> in Group to auto-complete peer handles. Mentioned users receive priority highlights and notifications.</p>
+        <p class="leading-relaxed text-[11px] text-slate-500 dark:text-slate-400">
+          Peer devices sharing campus Wi-Fi route data packets router-to-router via encrypted WebRTC data sockets. Zero cloud relay overhead.
+        </p>
       </div>
 
-      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
-        <div class="flex items-center gap-1.5 text-amber-500 font-bold">
-          <span>🛡️</span> <span>Instant Stealth Cloak</span>
+      <div class="p-3.5 bg-slate-50/80 dark:bg-darkMuted/40 border border-slate-200/70 dark:border-slate-800/70 rounded-2xl space-y-1.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-purple-500 font-bold font-nothing">
+            <span>🎵</span> <span>Glassmorphic Audio Console</span>
+          </div>
+          <span class="text-[9px] font-mono text-slate-400">Hybrid CDN</span>
         </div>
-        <p class="leading-relaxed">Double-tap <strong>ESC</strong> to replace everything with an authentic microeconomics paper. Unlocks with passcode <code>12345678</code> or <code>qwerty</code>.</p>
+        <p class="leading-relaxed text-[11px] text-slate-500 dark:text-slate-400">
+          Integrated Apple Music-inspired maximized interface inside the chat workspace with live scrubbers, lyrics viewport, and dynamic genre tab indicators.
+        </p>
       </div>
 
-      <div class="p-3 bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1.5">
-        <div class="flex items-center gap-1.5 text-purple-500 font-bold">
-          <span>🎵</span> <span>Clean Music Terminal</span>
+      <div class="p-3.5 bg-slate-50/80 dark:bg-darkMuted/40 border border-slate-200/70 dark:border-slate-800/70 rounded-2xl space-y-1.5">
+        <div class="flex items-center gap-1.5 text-amber-500 font-bold font-nothing">
+          <span>👥</span> <span>Subnet Group @Mentions</span>
         </div>
-        <p class="leading-relaxed">Refined, readable slate audio player with scrubbers, volume memory, and concurrency collision protection.</p>
+        <p class="leading-relaxed text-[11px] text-slate-500 dark:text-slate-400">
+          Type <strong>@</strong> in the group channel for handle auto-completion with audio alerts and amber-highlighted receipt badges.
+        </p>
       </div>
     </div>
 
-    <button onclick="dismissWhatsNewPermanently()" class="w-full py-2.5 bg-brand text-white font-bold text-xs rounded-xl hover:opacity-90 transition font-nothing">
-      Got It, Let's Chat
-    </button>
+    <div class="pt-2 border-t border-slate-200/70 dark:border-slate-800/70">
+      <button onclick="dismissWhatsNewPermanently()" class="w-full py-3 bg-slate-950 dark:bg-white text-white dark:text-slate-950 font-bold text-xs rounded-2xl transition hover:opacity-90 active:scale-[0.98] shadow-md font-nothing">
+        Acknowledge & Close
+      </button>
+    </div>
   </div>
 
   <!-- IN-APP TOAST NOTIFICATION -->
@@ -1529,23 +1557,60 @@
     });
 
     // =========================================================================
-    // WHAT'S NEW DRAWER HANDLERS
+    // WHAT'S NEW DRAWER HANDLERS (PERSISTENT READ-STATE & SMOOTH BACKDROP)
     // =========================================================================
+    function applyWhatsNewReadStateUI(isSeen) {
+      const btn = document.getElementById("whatsNewNavBtn");
+      if (!btn) return;
+
+      if (isSeen) {
+        btn.className = "px-2.5 py-1 rounded-full bg-slate-200/50 dark:bg-darkMuted text-slate-500 dark:text-slate-400 border border-transparent text-[11px] font-semibold flex items-center gap-1 transition shadow-none font-nothing hover:text-slate-900 dark:hover:text-white";
+        btn.innerHTML = `<span>✨ What's New</span>`;
+      } else {
+        btn.className = "px-2.5 py-1 rounded-full bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 text-[11px] font-bold flex items-center gap-1.5 transition shadow-sm font-nothing";
+        btn.innerHTML = `
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+          </span>
+          <span>What's New</span>
+        `;
+      }
+    }
+
     function openWhatsNewDrawer() {
-      document.getElementById("whatsNewDrawer").classList.remove("translate-x-full");
+      const drawer = document.getElementById("whatsNewDrawer");
+      const backdrop = document.getElementById("whatsNewDrawerBackdrop");
+      
+      if (backdrop) {
+        backdrop.classList.remove("hidden");
+        setTimeout(() => backdrop.classList.remove("opacity-0"), 10);
+      }
+      if (drawer) {
+        drawer.classList.remove("translate-x-full");
+      }
+
+      // Mark seen immediately upon opening
+      localStorage.setItem("meshage_seen_v38_update", "true");
+      applyWhatsNewReadStateUI(true);
     }
 
     function closeWhatsNewDrawer() {
-      document.getElementById("whatsNewDrawer").classList.add("translate-x-full");
+      const drawer = document.getElementById("whatsNewDrawer");
+      const backdrop = document.getElementById("whatsNewDrawerBackdrop");
+
+      if (drawer) {
+        drawer.classList.add("translate-x-full");
+      }
+      if (backdrop) {
+        backdrop.classList.add("opacity-0");
+        setTimeout(() => backdrop.classList.add("hidden"), 300);
+      }
     }
 
     function dismissWhatsNewPermanently() {
       closeWhatsNewDrawer();
-      localStorage.setItem("meshage_seen_v2_update", "true");
-      const btn = document.getElementById("whatsNewNavBtn");
-      if (btn) btn.innerHTML = `<span>✨ What's New</span>`;
     }
-
     // =========================================================================
     // UNIFIED NOTIFICATION DISPATCHER (IN-APP & POPUP "new notification")
     // =========================================================================
@@ -2674,10 +2739,8 @@
         checkAndShowDomainNotice();
       }
 
-      if (localStorage.getItem("meshage_seen_v2_update") === "true") {
-        const btn = document.getElementById("whatsNewNavBtn");
-        if (btn) btn.innerHTML = `<span>✨ What's New</span>`;
-      }
+      const isWhatsNewSeen = localStorage.getItem("meshage_seen_v38_update") === "true";
+      applyWhatsNewReadStateUI(isWhatsNewSeen);
 
       if (globalNotificationsEnabled && "Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
