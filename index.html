@@ -555,16 +555,17 @@
   </main>
 
   <!-- ==================== VIEW 2: SPLIT DM & GROUP ==================== -->
-  <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto transition-colors duration-700">
+  <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-[#0b0f17] sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
-    <!-- Full-App Unified Ambient Backdrop (Spans Both Sidebar & Chat Pane) -->
-    <div id="appMusicAmbientCanvas" class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-0 transition-opacity duration-1000">
-      <img id="appGlobalBlurredBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="App Music Aura" class="w-full h-full object-cover scale-150 blur-[120px] saturate-[200%]">
-      <div class="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl"></div>
+    <!-- MASTER AMBIENT LIGHT ENGINE (Single source of atmospheric light for BOTH panes) -->
+    <div id="appMusicAmbientCanvas" class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-0 transition-opacity duration-700">
+      <img id="appGlobalBlurredBackdrop" crossOrigin="anonymous" src="https://picsum.photos/seed/meshage1/600/600" alt="Atmosphere Aura" class="w-full h-full object-cover scale-150 blur-[120px] saturate-[250%] opacity-80 transition-all duration-700">
+      <!-- Universal Frosted Tint Scrim (Preserves High Contrast for all Text) -->
+      <div class="absolute inset-0 bg-white/50 dark:bg-black/60 backdrop-blur-2xl"></div>
     </div>
 
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="relative z-10 w-full sm:w-80 sm:border-r border-slate-200/80 dark:border-white/10 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0 transition-all duration-700">
+    <section id="sidebarPane" class="relative z-10 w-full sm:w-80 sm:border-r border-slate-200/80 dark:border-white/10 flex flex-col h-full shrink-0 transition-colors duration-500 bg-slate-50/70 dark:bg-darkMuted/40">
       
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
@@ -706,8 +707,8 @@
     <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full min-w-0 overflow-hidden">
       
-      <!-- Maximized Glassmorphic Music Sanctuary (Frosted to hide chat contents) -->
-      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-10 backdrop-blur-3xl bg-white/90 dark:bg-[#06080c]/85 text-slate-900 dark:text-white border-b sm:border border-slate-200/50 dark:border-white/10 shadow-2xl transition-all duration-500 ease-out opacity-0 pointer-events-none overflow-hidden select-none">
+      <!-- Maximized Glassmorphic Music Sanctuary (Semi-translucent frosted sheet, matching sidebar fluidity) -->
+      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-10 backdrop-blur-3xl bg-white/40 dark:bg-black/30 text-slate-900 dark:text-white border-b sm:border border-slate-200/40 dark:border-white/10 shadow-2xl transition-all duration-500 ease-out opacity-0 pointer-events-none overflow-hidden select-none">
 
         <!-- Header: Identity & Viewport Controls -->
         <div class="relative z-10 flex items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
@@ -1603,7 +1604,9 @@
       { id: "s9", title: "Dil Ka Jo Haal Hai", file: `${SUPABASE_AUDIO_BASE}/Dil%20Ka%20Jo%20Haal%20Hai%20Abhijeet%20Bhattacharya%2C%20Shreya%20Ghoshal.mp3` },
       { id: "s10", title: "Dracula (JENNIE Remix)", file: `${SUPABASE_AUDIO_BASE}/Tame%20Impala%2C%20JENNIE%20-%20Dracula%20%28JENNIE%20Remix%29%20%28Lyrics%29.mp3` },
       { id: "s11", title: "Just The Way You Are (Milky)", file: `${SUPABASE_AUDIO_BASE}/Milky%20-%20Just%20The%20Way%20You%20Are.mp3` },
-      { id: "s12", title: "Just The Way You Are", file: `${SUPABASE_AUDIO_BASE}/Bruno%20Mars%20-%20Just%20The%20Way%20You%20Are.mp3` }
+      { id: "s12", title: "Just The Way You Are (BrunoMars)", file: `${SUPABASE_AUDIO_BASE}/Bruno%20Mars%20-%20Just%20The%20Way%20You%20Are.mp3` },
+      { id: "s13", title: "Khairiyat - Arijit Singh", file: `${SUPABASE_AUDIO_BASE}/Bruno%20Mars%20-%20Just%20The%20Way%20You%20Are.mp3` },
+      
     ];
     let currentPlayingSongIndex = -1;
 
@@ -2184,10 +2187,12 @@
         overlay.classList.remove("hidden");
         if (expandBtn) expandBtn.innerText = "↙";
 
-        // Awaken global atmospheric wash across the whole app card
+        // Activate global canvas and make sidebar transparent
         if (globalCanvas) globalCanvas.style.opacity = "1";
-        // Sidebar becomes transparent to show the wash
-        if (sidebarPane) sidebarPane.classList.add("bg-transparent", "backdrop-blur-md");
+        if (sidebarPane) {
+          sidebarPane.classList.remove("bg-slate-50/70", "dark:bg-darkMuted/40");
+          sidebarPane.classList.add("bg-transparent");
+        }
 
         setTimeout(() => {
           overlay.classList.remove("opacity-0", "pointer-events-none");
@@ -2196,14 +2201,51 @@
         overlay.classList.add("opacity-0", "pointer-events-none");
         if (expandBtn) expandBtn.innerText = "⛶";
 
-        // Return window to clean neutral styling
+        // Return workspace to default neutral styling
         if (globalCanvas) globalCanvas.style.opacity = "0";
-        // Sidebar returns to default styling
-        if (sidebarPane) sidebarPane.classList.remove("bg-transparent", "backdrop-blur-md");
+        if (sidebarPane) {
+          sidebarPane.classList.remove("bg-transparent");
+          sidebarPane.classList.add("bg-slate-50/70", "dark:bg-darkMuted/40");
+        }
 
         setTimeout(() => {
           overlay.classList.add("hidden");
         }, 300);
+      }
+    }
+
+    function cycleAlbumArt() {
+      const img = document.getElementById("maxOverlayAlbumCover");
+      const skeleton = document.getElementById("maxArtSkeleton");
+      if (!img) return;
+
+      if (skeleton) skeleton.classList.remove("hidden");
+      img.classList.add("opacity-0");
+
+      const randomSeed = "meshage_" + Math.floor(Math.random() * 99999);
+      const newUrl = `https://picsum.photos/seed/${randomSeed}/700/700`;
+
+      const tempImg = new Image();
+      tempImg.crossOrigin = "anonymous";
+      tempImg.onload = () => {
+        img.src = newUrl;
+        const globalAura = document.getElementById("appGlobalBlurredBackdrop");
+        if (globalAura) globalAura.src = newUrl;
+      };
+      tempImg.src = newUrl;
+    }
+
+    function onAlbumArtLoaded() {
+      const img = document.getElementById("maxOverlayAlbumCover");
+      const skeleton = document.getElementById("maxArtSkeleton");
+      const globalAura = document.getElementById("appGlobalBlurredBackdrop");
+
+      if (skeleton) skeleton.classList.add("hidden");
+      if (img) {
+        img.classList.remove("opacity-0");
+        if (globalAura && globalAura.src !== img.src) {
+          globalAura.src = img.src;
+        }
       }
     }
 
