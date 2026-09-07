@@ -729,21 +729,21 @@
           </button>
         </div>
 
-        <!-- Center Stage: Interactive Vinyl Artwork & Atmosphere Tile -->
-        <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 my-auto items-center py-4">
+        <!-- Center Stage: Open Hero Artwork & Fluid Typography (No Rigid File Boxes) -->
+        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-6 max-w-md mx-auto w-full">
           
-          <!-- Clickable Cover Art with Smooth Shimmer Skeleton -->
-          <div class="flex flex-col items-center justify-center relative">
-            <div id="maxArtContainer" onclick="cycleAlbumArt()" title="Click to change artwork vibe" class="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-2xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-black/40 relative flex items-center justify-center transition-all duration-500 cursor-pointer hover:scale-[1.03] active:scale-95 group">
+          <!-- Hero Artwork Floating Canvas -->
+          <div class="relative group cursor-pointer" onclick="cycleAlbumArt()" title="Click cover to shuffle aesthetic">
+            <div id="maxArtContainer" class="w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden shadow-[0_24px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out bg-black/5 dark:bg-white/5 relative flex items-center justify-center">
               
-              <!-- Subtle Hover Hint -->
-              <div class="absolute inset-0 z-20 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span class="px-3 py-1 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur-md text-[10px] font-bold tracking-wider text-slate-900 dark:text-white shadow-lg">SHUFFLE COVER</span>
+              <!-- Subtle Hover Ambient Vignette -->
+              <div class="absolute inset-0 z-20 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
+                <span class="px-3.5 py-1 rounded-full bg-white/90 dark:bg-black/80 text-[10px] font-semibold tracking-wider text-slate-900 dark:text-white shadow-xl">SHUFFLE COVER</span>
               </div>
 
-              <!-- Loading Skeleton Shimmer -->
-              <div id="maxArtSkeleton" class="absolute inset-0 bg-gradient-to-r from-slate-200/50 via-slate-300/50 to-slate-200/50 dark:from-white/5 dark:via-white/15 dark:to-white/5 animate-[pulse_1.5s_infinite] flex items-center justify-center z-10">
-                <span class="text-slate-400 dark:text-white/40 text-xs font-mono">Loading Artwork...</span>
+              <!-- Shimmer Loading Placeholder -->
+              <div id="maxArtSkeleton" class="absolute inset-0 bg-gradient-to-r from-slate-200/40 via-slate-300/40 to-slate-200/40 dark:from-white/5 dark:via-white/10 dark:to-white/5 animate-[pulse_1.5s_infinite] flex items-center justify-center z-10">
+                <span class="text-slate-400 dark:text-white/30 text-xs font-mono">Loading Artwork...</span>
               </div>
 
               <!-- Main Cover Image -->
@@ -751,28 +751,15 @@
             </div>
           </div>
 
-          <!-- Humanized Mood & Lyric Reflection Slate -->
-          <div class="flex flex-col h-56 sm:h-64 rounded-3xl bg-black/[0.02] dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200/60 dark:border-white/10 p-6 justify-between shadow-inner">
-            <div class="flex justify-between items-center text-[10px] tracking-wider text-slate-400 dark:text-white/40 font-mono">
-              <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> STUDIO QUALITY</span>
-              <span id="maxOverlayFormatBadge" class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-slate-700 dark:text-white/80 font-bold">STEREO</span>
+          <!-- Ambient Soundwave Equalizer & Floating Mood Subtitle -->
+          <div class="mt-6 flex flex-col items-center space-y-2 text-center w-full px-4">
+            <div id="maxEqualizerBars" class="flex items-center justify-center gap-1 h-4 opacity-70">
+              <span class="w-1 bg-brand rounded-full animate-[bounce_0.8s_infinite] h-2"></span>
+              <span class="w-1 bg-brand rounded-full animate-[bounce_1.1s_infinite] h-4"></span>
+              <span class="w-1 bg-brand rounded-full animate-[bounce_0.6s_infinite] h-1.5"></span>
+              <span class="w-1 bg-brand rounded-full animate-[bounce_0.95s_infinite] h-3"></span>
             </div>
-
-            <div class="space-y-3 text-center my-auto">
-              <div id="maxEqualizerBars" class="flex items-center justify-center gap-1.5 h-6 opacity-80">
-                <span class="w-1 bg-brand rounded-full animate-[bounce_0.8s_infinite] h-3"></span>
-                <span class="w-1 bg-brand rounded-full animate-[bounce_1.1s_infinite] h-5"></span>
-                <span class="w-1 bg-brand rounded-full animate-[bounce_0.7s_infinite] h-2"></span>
-                <span class="w-1 bg-brand rounded-full animate-[bounce_1s_infinite] h-4"></span>
-              </div>
-              <p id="maxOverlayLyricLine" class="text-sm sm:text-base font-bold text-slate-800 dark:text-white/95 font-nothing transition-all duration-500">Immerse in the soundscape</p>
-              <p class="text-xs text-slate-500 dark:text-white/50 italic">Personal listening space</p>
-            </div>
-
-            <div class="text-[10px] text-slate-400 dark:text-white/30 flex justify-between items-center font-sans">
-              <span>Your Library</span>
-              <span id="maxOverlayModeBadge" class="font-mono">Track Mode</span>
-            </div>
+            <p id="maxOverlayLyricLine" class="text-xs sm:text-sm font-medium text-slate-500 dark:text-white/60 tracking-wide font-sans transition-all duration-500">Immerse in the soundscape</p>
           </div>
         </div>
 
@@ -2276,14 +2263,24 @@
       const artContainer = document.getElementById("maxArtContainer");
       const lyricLine = document.getElementById("maxOverlayLyricLine");
 
-      const isPlaying = activeRadioPlayer && !activeRadioPlayer.paused;
-      if (playIcon) playIcon.innerText = isPlaying ? "⏸" : "▶";
+      // Accurate authoritative audio playback detection
+      const isPlaying = !!(activeRadioPlayer && !activeRadioPlayer.paused && !activeRadioPlayer.ended && activeRadioPlayer.currentTime > 0);
+      
+      if (playIcon) {
+        playIcon.innerText = isPlaying ? "⏸" : "▶";
+      }
+
+      // Sync the small sidebar button as well
+      const sidePauseBtn = document.getElementById("radioPauseBtn");
+      if (sidePauseBtn && activeRadioPlayer) {
+        sidePauseBtn.innerText = isPlaying ? "⏸" : "▶";
+      }
 
       if (artContainer) {
         if (isPlaying) {
-          artContainer.classList.add("scale-[1.02]", "border-brand/40");
+          artContainer.classList.add("scale-[1.03]", "shadow-[0_30px_70px_-15px_rgba(215,25,33,0.35)]");
         } else {
-          artContainer.classList.remove("scale-[1.02]", "border-brand/40");
+          artContainer.classList.remove("scale-[1.03]", "shadow-[0_30px_70px_-15px_rgba(215,25,33,0.35)]");
         }
       }
 
@@ -4170,15 +4167,19 @@
       if (!activeRadioPlayer) return;
       const btn = document.getElementById("radioPauseBtn");
       const maxIcon = document.getElementById("maxOverlayPlayIcon");
+      const artContainer = document.getElementById("maxArtContainer");
       
       if (activeRadioPlayer.paused) {
-        activeRadioPlayer.play();
-        if (btn) btn.innerText = "⏸";
-        if (maxIcon) maxIcon.innerText = "⏸";
+        activeRadioPlayer.play().then(() => {
+          if (btn) btn.innerText = "⏸";
+          if (maxIcon) maxIcon.innerText = "⏸";
+          if (artContainer) artContainer.classList.add("scale-[1.03]", "shadow-[0_30px_70px_-15px_rgba(215,25,33,0.35)]");
+        }).catch(e => console.warn("Playback prevented:", e));
       } else {
         activeRadioPlayer.pause();
         if (btn) btn.innerText = "▶";
         if (maxIcon) maxIcon.innerText = "▶";
+        if (artContainer) artContainer.classList.remove("scale-[1.03]", "shadow-[0_30px_70px_-15px_rgba(215,25,33,0.35)]");
       }
     }
 
