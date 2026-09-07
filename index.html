@@ -558,7 +558,13 @@
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0">
+    <section id="sidebarPane" class="relative overflow-hidden w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0 transition-colors duration-700">
+  <!-- Dynamic Music Glow Underlay for Sidebar (Synced with Maximized Player) -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+    <img id="sidebarMusicAuraBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="Sidebar Ambient Aura" class="w-full h-full object-cover scale-150 blur-[90px] saturate-[180%] opacity-0 transition-opacity duration-700">
+    <!-- Subtle Frosted Scrim to guarantee contact name readability -->
+    <div id="sidebarMusicAuraScrim" class="absolute inset-0 bg-white/40 dark:bg-black/45 backdrop-blur-md opacity-0 transition-opacity duration-700"></div>
+  </div>
       
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
         <div class="flex justify-between items-center">
@@ -2171,6 +2177,8 @@
       const shouldShow = (explicitState !== undefined) ? explicitState : !isMaximizedMusicActive();
       const chatPane = document.getElementById("chatPane");
       const sidebarPane = document.getElementById("sidebarPane");
+      const sidebarAura = document.getElementById("sidebarMusicAuraBackdrop");
+      const sidebarScrim = document.getElementById("sidebarMusicAuraScrim");
 
       if (shouldShow) {
         if (window.innerWidth < 640) {
@@ -2181,12 +2189,22 @@
         syncMaximizedPlayerMetadata();
         overlay.classList.remove("hidden");
         if (expandBtn) expandBtn.innerText = "↙";
+
+        // Awaken ambient glow across the sidebar
+        if (sidebarAura) sidebarAura.classList.replace("opacity-0", "opacity-35");
+        if (sidebarScrim) sidebarScrim.classList.replace("opacity-0", "opacity-100");
+
         setTimeout(() => {
           overlay.classList.remove("opacity-0", "pointer-events-none");
         }, 10);
       } else {
         overlay.classList.add("opacity-0", "pointer-events-none");
         if (expandBtn) expandBtn.innerText = "⛶";
+
+        // Fade out sidebar ambient glow back to crisp neutral styling
+        if (sidebarAura) sidebarAura.classList.replace("opacity-35", "opacity-0");
+        if (sidebarScrim) sidebarScrim.classList.replace("opacity-100", "opacity-0");
+
         setTimeout(() => {
           overlay.classList.add("hidden");
         }, 300);
@@ -2197,9 +2215,12 @@
       const img = document.getElementById("maxOverlayAlbumCover");
       const skeleton = document.getElementById("maxArtSkeleton");
       const backdrop = document.getElementById("maxOverlayBlurredBackdrop");
+      const sidebarBackdrop = document.getElementById("sidebarMusicAuraBackdrop");
+
       if (skeleton) skeleton.classList.add("hidden");
       if (img) img.classList.remove("opacity-0");
       if (backdrop && img) backdrop.src = img.src;
+      if (sidebarBackdrop && img) sidebarBackdrop.src = img.src;
     }
 
     function cycleAlbumArt() {
