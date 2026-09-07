@@ -700,57 +700,98 @@
     <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full min-w-0 overflow-hidden">
       
-      <!-- Maximized Glassmorphic Apple Music Overlay (Workspace Constrained) -->
-      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-8 backdrop-blur-2xl bg-black/85 border-b sm:border border-white/10 shadow-2xl transition-all duration-300 ease-out opacity-0 pointer-events-none">
+      <!-- Maximized Glassmorphic Apple Music Stage (Atmospheric & Emotional) -->
+      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-10 backdrop-blur-3xl bg-[#090b10]/90 border-b sm:border border-white/10 shadow-[0_25px_60px_rgba(0,0,0,0.8)] transition-all duration-500 ease-out opacity-0 pointer-events-none overflow-hidden select-none">
         
-        <!-- Overlay Header -->
-        <div class="flex items-center justify-between pb-3 border-b border-white/10">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
-            <span id="maxOverlayTrackLabel" class="text-[11px] font-mono text-white/70 uppercase tracking-wider">NOW PLAYING // AUDIO HUB</span>
+        <!-- Ambient Fluid Glow Background -->
+        <div id="maxOverlayAura" class="absolute -top-24 -left-24 w-96 h-96 bg-brand/20 rounded-full blur-3xl pointer-events-none transition-all duration-1000 animate-pulse"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl pointer-events-none transition-all duration-1000"></div>
+
+        <!-- Header -->
+        <div class="relative z-10 flex items-center justify-between pb-4 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2.5">
+            <span id="maxOverlayPulse" class="w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_10px_#D71921] animate-ping"></span>
+            <span id="maxOverlayTrackLabel" class="text-xs font-semibold text-white/75 tracking-wider font-nothing">AUDIO EXPERIENCE</span>
           </div>
-          <button onclick="toggleMaximizeMusic(false)" class="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-white/80 bg-white/10 hover:bg-white/20 border border-white/10 transition font-nothing">
-            <span>↓</span> Minimize
+          <button onclick="toggleMaximizeMusic(false)" title="Minimize" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white/80 flex items-center justify-center transition border border-white/10 backdrop-blur-md">
+            <span class="text-sm">↙</span>
           </button>
         </div>
 
-        <!-- Stage: Artwork & Dynamic Lyrics Card -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-auto items-center py-4">
-          <div class="flex flex-col items-center justify-center">
-            <div class="w-48 h-48 sm:w-60 sm:h-60 rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 flex items-center justify-center relative group">
-              <img id="maxOverlayAlbumCover" src="https://picsum.photos/600/600?blur=1" alt="Album Art" class="w-full h-full object-cover">
-              <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+        <!-- Center Stage: Dynamic Vinyl Artwork & Visualizer Lyrics Slate -->
+        <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 my-auto items-center py-4">
+          
+          <!-- Artwork Stage with Shimmer Skeleton -->
+          <div class="flex flex-col items-center justify-center relative">
+            <div id="maxArtContainer" class="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.7)] border border-white/15 bg-black/40 relative flex items-center justify-center transition-all duration-700">
+              
+              <!-- Loading Skeleton Shimmer -->
+              <div id="maxArtSkeleton" class="absolute inset-0 bg-gradient-to-r from-white/5 via-white/15 to-white/5 animate-[pulse_1.5s_infinite] flex items-center justify-center">
+                <span class="text-white/30 text-xs font-mono">Loading Artwork...</span>
+              </div>
+
+              <!-- Main Cover Image -->
+              <img id="maxOverlayAlbumCover" src="https://picsum.photos/seed/meshage1/600/600" alt="Album Cover" class="w-full h-full object-cover transition-opacity duration-500 opacity-0" onload="onAlbumArtLoaded()">
             </div>
           </div>
-          
-          <div class="flex flex-col h-48 sm:h-60 rounded-3xl bg-white/[0.04] border border-white/5 p-5 justify-between">
-            <div class="flex justify-between items-center text-[10px] font-mono text-white/40 border-b border-white/5 pb-1.5">
-              <span>LYRICS</span>
-              <span class="text-brand font-bold">AUTO-SYNC</span>
+
+          <!-- Emotional Lyrics & Animated Equalizer Slate -->
+          <div class="flex flex-col h-56 sm:h-64 rounded-3xl bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 justify-between shadow-inner">
+            <div class="flex justify-between items-center text-[10px] font-mono tracking-wider text-white/40">
+              <span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> HI-RES AUDIO</span>
+              <span id="maxOverlayFormatBadge" class="px-2 py-0.5 rounded-full bg-white/10 text-white/70 font-bold">LOSSLESS</span>
             </div>
-            <div class="my-auto text-center space-y-1.5">
-              <p class="text-sm font-bold text-white/90 font-nothing">Time-synced lyrics coming soon</p>
-              <p class="text-[11px] text-white/40">Lossless Audio Stream • Storage Node</p>
+
+            <div class="space-y-3 text-center my-auto">
+              <div id="maxEqualizerBars" class="flex items-center justify-center gap-1.5 h-6 opacity-60">
+                <span class="w-1 bg-brand rounded-full animate-[bounce_0.8s_infinite] h-3"></span>
+                <span class="w-1 bg-brand rounded-full animate-[bounce_1.1s_infinite] h-5"></span>
+                <span class="w-1 bg-brand rounded-full animate-[bounce_0.7s_infinite] h-2"></span>
+                <span class="w-1 bg-brand rounded-full animate-[bounce_1s_infinite] h-4"></span>
+              </div>
+              <p id="maxOverlayLyricLine" class="text-sm sm:text-base font-bold text-white/90 font-nothing transition-all duration-500">Immerse in the soundscape</p>
+              <p class="text-xs text-white/40 italic">Zero telemetry • Encrypted local playback</p>
             </div>
-            <div class="text-[9px] text-white/25 text-center font-mono">Meshage Audio Engine // Zero-Leak Relay</div>
+
+            <div class="text-[10px] text-white/30 flex justify-between items-center font-mono">
+              <span>Meshage Audio Node</span>
+              <span id="maxOverlayModeBadge">Track Mode</span>
+            </div>
           </div>
         </div>
 
-        <!-- Controls & Scrubber Footer -->
-        <div class="flex flex-col gap-2.5 pt-4 border-t border-white/10 font-mono text-xs">
+        <!-- Controls & Mode-Aware Scrubber Area -->
+        <div class="relative z-10 flex flex-col gap-3 pt-4 border-t border-white/[0.08]">
           <div class="flex justify-between items-center">
-            <div class="min-w-0 pr-2">
-              <h3 id="maxOverlaySongTitle" class="font-bold text-white text-sm sm:text-base font-nothing truncate max-w-[240px]">Idle</h3>
-              <p id="maxOverlayArtistLabel" class="text-[11px] text-white/50 font-sans">Meshage Radio Network</p>
+            <div class="min-w-0 pr-3">
+              <h3 id="maxOverlaySongTitle" class="font-extrabold text-white text-base sm:text-lg tracking-tight font-nothing truncate max-w-[280px]">Idle</h3>
+              <p id="maxOverlayArtistLabel" class="text-xs text-white/50 truncate">Select a stream or track</p>
             </div>
+
+            <!-- Big Tactile Playback & Skip Actions -->
             <div class="flex items-center gap-3 shrink-0">
-              <button onclick="toggleRadioPlayback()" class="w-8 h-8 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs transition hover:bg-slate-200 active:scale-95 shadow-md">
+              <button id="maxOverlayPrevBtn" onclick="playPrevSavedSong()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-white text-xs transition border border-white/10">⏮</button>
+              <button onclick="toggleRadioPlayback()" class="w-11 h-11 rounded-full bg-white hover:bg-slate-200 active:scale-90 text-black flex items-center justify-center font-bold text-sm shadow-[0_0_20px_rgba(255,255,255,0.4)] transition">
                 <span id="maxOverlayPlayIcon">▶</span>
               </button>
-              <span id="maxOverlayTimestamp" class="text-[11px] text-white/50">0:00 / 0:00</span>
+              <button id="maxOverlayNextBtn" onclick="playNextSavedSong()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 flex items-center justify-center text-white text-xs transition border border-white/10">⏭</button>
             </div>
           </div>
-          <input id="maxOverlaySeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer">
+
+          <!-- Saved Music Scrubber (Auto-Hidden during Radio Stream) -->
+          <div id="maxOverlayScrubberRow" class="flex flex-col gap-1.5 transition-all duration-300">
+            <input id="maxOverlaySeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="w-full h-1.5 bg-white/15 hover:bg-white/25 rounded-lg appearance-none cursor-pointer accent-brand transition-colors">
+            <div class="flex justify-between text-[10px] font-mono text-white/45">
+              <span id="maxOverlayCurrentTime">0:00</span>
+              <span id="maxOverlayTotalDuration">0:00</span>
+            </div>
+          </div>
+
+          <!-- Radio Broadcast Banner (Auto-Shown during Live Stream) -->
+          <div id="maxOverlayLiveBadge" class="hidden items-center justify-center gap-2 py-2 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-mono font-bold">
+            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+            <span>LIVE INTERNET BROADCAST • DIRECT ICECAST FEED</span>
+          </div>
         </div>
       </div>
 
@@ -2112,15 +2153,21 @@
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
-    function toggleMaximizeMusic(show) {
+    function isMaximizedMusicActive() {
       const overlay = document.getElementById("maximizedMusicOverlay");
+      return overlay && !overlay.classList.contains("hidden") && !overlay.classList.contains("opacity-0");
+    }
+
+    function toggleMaximizeMusic(explicitState) {
+      const overlay = document.getElementById("maximizedMusicOverlay");
+      const expandBtn = document.getElementById("radioExpandBtn");
       if (!overlay) return;
 
-      // On mobile viewports, ensure chatPane is exposed when maximizing
+      const shouldShow = (explicitState !== undefined) ? explicitState : !isMaximizedMusicActive();
       const chatPane = document.getElementById("chatPane");
       const sidebarPane = document.getElementById("sidebarPane");
 
-      if (show) {
+      if (shouldShow) {
         if (window.innerWidth < 640) {
           sidebarPane.classList.add("hidden");
           chatPane.classList.remove("hidden");
@@ -2128,38 +2175,120 @@
         }
         syncMaximizedPlayerMetadata();
         overlay.classList.remove("hidden");
+        if (expandBtn) expandBtn.innerText = "↙";
         setTimeout(() => {
           overlay.classList.remove("opacity-0", "pointer-events-none");
         }, 10);
       } else {
         overlay.classList.add("opacity-0", "pointer-events-none");
+        if (expandBtn) expandBtn.innerText = "⛶";
         setTimeout(() => {
           overlay.classList.add("hidden");
         }, 300);
       }
     }
 
+    function onAlbumArtLoaded() {
+      const img = document.getElementById("maxOverlayAlbumCover");
+      const skeleton = document.getElementById("maxArtSkeleton");
+      if (skeleton) skeleton.classList.add("hidden");
+      if (img) img.classList.remove("opacity-0");
+    }
+
     function syncMaximizedPlayerMetadata() {
       const titleLbl = document.getElementById("maxOverlaySongTitle");
       const artistLbl = document.getElementById("maxOverlayArtistLabel");
       const playIcon = document.getElementById("maxOverlayPlayIcon");
+      const artImg = document.getElementById("maxOverlayAlbumCover");
+      const skeleton = document.getElementById("maxArtSkeleton");
+      const scrubberRow = document.getElementById("maxOverlayScrubberRow");
+      const liveBadge = document.getElementById("maxOverlayLiveBadge");
+      const modeBadge = document.getElementById("maxOverlayModeBadge");
+      const prevBtn = document.getElementById("maxOverlayPrevBtn");
+      const nextBtn = document.getElementById("maxOverlayNextBtn");
+      const artContainer = document.getElementById("maxArtContainer");
+      const lyricLine = document.getElementById("maxOverlayLyricLine");
 
+      const isPlaying = activeRadioPlayer && !activeRadioPlayer.paused;
+      if (playIcon) playIcon.innerText = isPlaying ? "⏸" : "▶";
+
+      // Breathing animation on artwork container when active
+      if (artContainer) {
+        if (isPlaying) {
+          artContainer.classList.add("scale-[1.02]", "border-brand/40");
+        } else {
+          artContainer.classList.remove("scale-[1.02]", "border-brand/40");
+        }
+      }
+
+      // Check if Saved Music is playing
       if (currentPlayingSongIndex !== -1 && SAVED_SONGS_LIST[currentPlayingSongIndex]) {
         const song = SAVED_SONGS_LIST[currentPlayingSongIndex];
         if (titleLbl) titleLbl.innerText = song.title;
-        if (artistLbl) artistLbl.innerText = "Saved Campus Audio Node";
-      } else {
-        const statusTag = document.getElementById("radioStatusTag");
-        const statusText = statusTag ? statusTag.innerText : "Campus Radio";
-        if (titleLbl) titleLbl.innerText = statusText.replace("Live: ", "").replace("Tuning ", "") || "Campus Radio";
-        if (artistLbl) artistLbl.innerText = "Meshage Icecast Relay";
-      }
+        if (artistLbl) artistLbl.innerText = "Saved Audio Library • Lossless Node";
+        if (modeBadge) modeBadge.innerText = "Track Mode";
+        if (lyricLine) lyricLine.innerText = `"${song.title}"`;
 
-      if (playIcon) {
-        playIcon.innerText = (activeRadioPlayer && !activeRadioPlayer.paused) ? "⏸" : "▶";
+        // Show scrubber, hide live broadcast banner
+        if (scrubberRow) scrubberRow.classList.remove("hidden");
+        if (liveBadge) liveBadge.classList.add("hidden");
+        if (prevBtn) prevBtn.classList.remove("opacity-30", "pointer-events-none");
+        if (nextBtn) nextBtn.classList.remove("opacity-30", "pointer-events-none");
+
+        // Seeded distinct artwork per song
+        if (artImg) {
+          const newArtUrl = `https://picsum.photos/seed/${encodeURIComponent(song.title)}/600/600`;
+          if (artImg.src !== newArtUrl) {
+            if (skeleton) skeleton.classList.remove("hidden");
+            artImg.classList.add("opacity-0");
+            artImg.src = newArtUrl;
+          }
+        }
+      } else {
+        // Radio Broadcast Mode
+        const statusTag = document.getElementById("radioStatusTag");
+        const rawStatus = statusTag ? statusTag.innerText : "Campus Radio";
+        const cleanName = rawStatus.replace("Live: ", "").replace("Tuning ", "") || "Campus Radio";
+
+        if (titleLbl) titleLbl.innerText = cleanName;
+        if (artistLbl) artistLbl.innerText = "Global Live Stream Relay";
+        if (modeBadge) modeBadge.innerText = "Radio Mode";
+        if (lyricLine) lyricLine.innerText = `Tuned into ${cleanName} Live`;
+
+        // Hide scrubber (no finite duration for streams), show live broadcast banner
+        if (scrubberRow) scrubberRow.classList.add("hidden");
+        if (liveBadge) {
+          liveBadge.classList.remove("hidden");
+          liveBadge.classList.add("flex");
+        }
+        if (prevBtn) prevBtn.classList.add("opacity-30", "pointer-events-none");
+        if (nextBtn) nextBtn.classList.add("opacity-30", "pointer-events-none");
+
+        // Seeded radio station artwork
+        if (artImg) {
+          const radioArtUrl = `https://picsum.photos/seed/${encodeURIComponent(cleanName)}/600/600`;
+          if (artImg.src !== radioArtUrl) {
+            if (skeleton) skeleton.classList.remove("hidden");
+            artImg.classList.add("opacity-0");
+            artImg.src = radioArtUrl;
+          }
+        }
       }
     }
 
+    function playPrevSavedSong() {
+      if (SAVED_SONGS_LIST.length === 0) return;
+      let prevIndex = currentPlayingSongIndex - 1;
+      if (prevIndex < 0) prevIndex = SAVED_SONGS_LIST.length - 1;
+      playSavedSong(prevIndex);
+    }
+
+    function playNextSavedSong() {
+      if (SAVED_SONGS_LIST.length === 0) return;
+      let nextIndex = currentPlayingSongIndex + 1;
+      if (nextIndex >= SAVED_SONGS_LIST.length) nextIndex = 0;
+      playSavedSong(nextIndex);
+    }
     function highlightActiveMusicCategory(categoryKey) {
       document.querySelectorAll(".radio-category-tab").forEach(tab => {
         tab.classList.remove("text-brand", "border-brand", "bg-brand/10", "dark:bg-brand/15", "font-bold", "shadow-sm");
@@ -2240,6 +2369,7 @@
 
       currentPlayingSongIndex = index;
       highlightActiveMusicCategory("saved");
+      syncMaximizedPlayerMetadata();
       const song = SAVED_SONGS_LIST[index];
 
       document.getElementById("savedScrubberHUD").classList.remove("hidden");
@@ -2256,11 +2386,13 @@
           document.getElementById("savedCurrentTime").innerText = formatTime(player.currentTime);
           document.getElementById("savedTotalDuration").innerText = formatTime(player.duration);
 
-          // Synchronize maximized player scrubber & time readouts
+          // Synchronize maximized player scrubber & separate timing nodes
           const maxSeek = document.getElementById("maxOverlaySeekSlider");
-          const maxTime = document.getElementById("maxOverlayTimestamp");
+          const curTimeLbl = document.getElementById("maxOverlayCurrentTime");
+          const totalDurLbl = document.getElementById("maxOverlayTotalDuration");
           if (maxSeek) maxSeek.value = pct;
-          if (maxTime) maxTime.innerText = `${formatTime(player.currentTime)} / ${formatTime(player.duration)}`;
+          if (curTimeLbl) curTimeLbl.innerText = formatTime(player.currentTime);
+          if (totalDurLbl) totalDurLbl.innerText = formatTime(player.duration);
         }
       };
 
@@ -3892,6 +4024,8 @@
         let count = 5;
         document.getElementById("radioCountdown").innerText = count;
         document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+        currentPlayingSongIndex = -1;
+      syncMaximizedPlayerMetadata();
         highlightActiveMusicCategory(lang);
 
         radioCountdownInterval = setInterval(() => {
