@@ -1517,14 +1517,26 @@
     const inMemoryChatCache = new Map();
 
     // =========================================================================
-    // STEALTH CLOAK SYSTEM (DOUBLE-ESC TO DECOY ACADEMIC PAPER)
+    // PRIVACY SCREEN SYSTEM (DOUBLE-ESC TO DECOY & BG AUDIO CUT)
     // =========================================================================
     let isCloaked = false;
     let lastEscPressTimestamp = 0;
+    let audioStateBeforeCloak = false;
 
     function activateStealthCloak() {
       isCloaked = true;
       document.title = "Principles of Microeconomics — ECON101 Course Portal";
+
+      // Instantly cut and silence active background audio
+      if (activeRadioPlayer && !activeRadioPlayer.paused) {
+        audioStateBeforeCloak = true;
+        activeRadioPlayer.pause();
+        const pauseBtn = document.getElementById("radioPauseBtn");
+        if (pauseBtn) pauseBtn.innerText = "▶";
+      } else {
+        audioStateBeforeCloak = false;
+      }
+
       document.getElementById("stealthCloakOverlay").classList.remove("hidden");
       document.getElementById("stealthUnlockInput").value = "";
       document.getElementById("stealthUnlockError").classList.add("hidden");
@@ -1541,6 +1553,16 @@
         document.getElementById("stealthCloakOverlay").classList.add("hidden");
         document.title = ORIGINAL_TITLE;
         err.classList.add("hidden");
+
+        // Restore playback if audio was actively playing before privacy screen
+        if (audioStateBeforeCloak && activeRadioPlayer) {
+          activeRadioPlayer.play().then(() => {
+            const pauseBtn = document.getElementById("radioPauseBtn");
+            if (pauseBtn) pauseBtn.innerText = "⏸";
+          }).catch((err) => {
+            console.warn("Audio autoplay resume prevented:", err);
+          });
+        }
       } else {
         err.classList.remove("hidden");
       }
