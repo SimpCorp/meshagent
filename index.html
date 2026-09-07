@@ -2187,12 +2187,13 @@
         overlay.classList.remove("hidden");
         if (expandBtn) expandBtn.innerText = "↙";
 
-        // Activate global canvas and make sidebar transparent
+        // Activate global canvas and force sidebar to be transparent
+        const currentCover = document.getElementById("maxOverlayAlbumCover");
+        const globalAura = document.getElementById("appGlobalBlurredBackdrop");
+        if (globalAura && currentCover && currentCover.src) globalAura.src = currentCover.src;
+
         if (globalCanvas) globalCanvas.style.opacity = "1";
-        if (sidebarPane) {
-          sidebarPane.classList.remove("bg-slate-50/70", "dark:bg-darkMuted/40");
-          sidebarPane.classList.add("bg-transparent");
-        }
+        if (sidebarPane) sidebarPane.classList.add("!bg-transparent");
 
         setTimeout(() => {
           overlay.classList.remove("opacity-0", "pointer-events-none");
@@ -2203,10 +2204,7 @@
 
         // Return workspace to default neutral styling
         if (globalCanvas) globalCanvas.style.opacity = "0";
-        if (sidebarPane) {
-          sidebarPane.classList.remove("bg-transparent");
-          sidebarPane.classList.add("bg-slate-50/70", "dark:bg-darkMuted/40");
-        }
+        if (sidebarPane) sidebarPane.classList.remove("!bg-transparent");
 
         setTimeout(() => {
           overlay.classList.add("hidden");
