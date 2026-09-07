@@ -638,11 +638,11 @@
         </div>
         
         <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono text-[10px]">
-          <button onclick="requestRadioChannel('English')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">ENG</button>
-          <button onclick="requestRadioChannel('Hindi')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">HIN</button>
-          <button onclick="requestRadioChannel('South')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">S.IND</button>
-          <button onclick="requestRadioChannel('Other')" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95">OTH</button>
-          <button onclick="toggleSavedMusicView()" class="py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-brand">SAVED</button>
+          <button id="radioTab-english" onclick="requestRadioChannel('English')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">ENG</button>
+          <button id="radioTab-hindi" onclick="requestRadioChannel('Hindi')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">HIN</button>
+          <button id="radioTab-south" onclick="requestRadioChannel('South')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">S.IND</button>
+          <button id="radioTab-other" onclick="requestRadioChannel('Other')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">OTH</button>
+          <button id="radioTab-saved" onclick="toggleSavedMusicView()" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">SAVED</button>
         </div>
 
         <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5">
@@ -2057,6 +2057,19 @@
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
+    function highlightActiveMusicCategory(categoryKey) {
+      document.querySelectorAll(".radio-category-tab").forEach(tab => {
+        tab.classList.remove("text-brand", "border-brand", "bg-brand/10", "dark:bg-brand/15", "font-bold", "shadow-sm");
+        tab.classList.add("text-slate-700", "dark:text-slate-300");
+      });
+      if (!categoryKey) return;
+      const activeTab = document.getElementById(`radioTab-${categoryKey.toLowerCase()}`);
+      if (activeTab) {
+        activeTab.classList.remove("text-slate-700", "dark:text-slate-300");
+        activeTab.classList.add("text-brand", "border-brand", "bg-brand/10", "dark:bg-brand/15", "font-bold", "shadow-sm");
+      }
+    }
+
     function toggleSavedMusicView() {
       const btnRow = document.getElementById("liveRadioButtonsRow");
       const drawer = document.getElementById("savedMusicDrawer");
@@ -2064,6 +2077,7 @@
       if (drawer.classList.contains("hidden")) {
         btnRow.classList.add("hidden");
         drawer.classList.remove("hidden");
+        highlightActiveMusicCategory("saved");
         renderSavedSongsList();
         setTimeout(() => {
           const inp = document.getElementById("savedSongSearchInput");
@@ -2122,6 +2136,7 @@
       const sessionId = activeAudioSessionId;
 
       currentPlayingSongIndex = index;
+      highlightActiveMusicCategory("saved");
       const song = SAVED_SONGS_LIST[index];
 
       document.getElementById("savedScrubberHUD").classList.remove("hidden");
@@ -3768,6 +3783,7 @@
         let count = 5;
         document.getElementById("radioCountdown").innerText = count;
         document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
+        highlightActiveMusicCategory(lang);
 
         radioCountdownInterval = setInterval(() => {
           count--;
