@@ -558,12 +558,15 @@
   <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="relative overflow-hidden w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0 transition-colors duration-700">
-  <!-- Dynamic Music Glow Underlay for Sidebar (Synced with Maximized Player) -->
+    <section id="sidebarPane" class="relative overflow-hidden w-full sm:w-80 sm:border-r border-slate-200/80 dark:border-white/10 flex flex-col h-full shrink-0 transition-colors duration-700">
+  <!-- Default Neutral Background Underlay (Fades out when player is maximized) -->
+  <div id="sidebarDefaultBg" class="absolute inset-0 bg-slate-50/70 dark:bg-darkMuted/40 transition-opacity duration-700 -z-20"></div>
+
+  <!-- Dynamic Synced Music Glow Underlay -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-    <img id="sidebarMusicAuraBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="Sidebar Ambient Aura" class="w-full h-full object-cover scale-150 blur-[90px] saturate-[180%] opacity-0 transition-opacity duration-700">
-    <!-- Subtle Frosted Scrim to guarantee contact name readability -->
-    <div id="sidebarMusicAuraScrim" class="absolute inset-0 bg-white/40 dark:bg-black/45 backdrop-blur-md opacity-0 transition-opacity duration-700"></div>
+    <img id="sidebarMusicAuraBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="Sidebar Ambient Aura" class="w-full h-full object-cover scale-150 blur-[100px] saturate-[200%] opacity-0 transition-all duration-1000">
+    <!-- Semi-transparent scrim to keep text legible -->
+    <div id="sidebarMusicAuraScrim" class="absolute inset-0 bg-white/60 dark:bg-black/50 backdrop-blur-xl opacity-0 transition-opacity duration-700"></div>
   </div>
       
       <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
@@ -2190,9 +2193,14 @@
         overlay.classList.remove("hidden");
         if (expandBtn) expandBtn.innerText = "↙";
 
-        // Awaken ambient glow across the sidebar
-        if (sidebarAura) sidebarAura.classList.replace("opacity-0", "opacity-35");
-        if (sidebarScrim) sidebarScrim.classList.replace("opacity-0", "opacity-100");
+        // Awaken ambient glow across the sidebar & fade out static background
+        const defaultBg = document.getElementById("sidebarDefaultBg");
+        if (defaultBg) defaultBg.style.opacity = "0";
+        if (sidebarAura) {
+          sidebarAura.src = document.getElementById("maxOverlayAlbumCover")?.src || sidebarAura.src;
+          sidebarAura.style.opacity = "0.45";
+        }
+        if (sidebarScrim) sidebarScrim.style.opacity = "1";
 
         setTimeout(() => {
           overlay.classList.remove("opacity-0", "pointer-events-none");
@@ -2201,10 +2209,11 @@
         overlay.classList.add("opacity-0", "pointer-events-none");
         if (expandBtn) expandBtn.innerText = "⛶";
 
-        // Fade out sidebar ambient glow back to crisp neutral styling
-        if (sidebarAura) sidebarAura.classList.replace("opacity-35", "opacity-0");
-        if (sidebarScrim) sidebarScrim.classList.replace("opacity-100", "opacity-0");
-
+        // Return sidebar back to neutral styling
+        const defaultBg = document.getElementById("sidebarDefaultBg");
+        if (defaultBg) defaultBg.style.opacity = "1";
+        if (sidebarAura) sidebarAura.style.opacity = "0";
+        if (sidebarScrim) sidebarScrim.style.opacity = "0";
         setTimeout(() => {
           overlay.classList.add("hidden");
         }, 300);
