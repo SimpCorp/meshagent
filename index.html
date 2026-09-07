@@ -633,7 +633,8 @@
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
             <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-800 dark:text-slate-200 shadow-sm">⏸</button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-darkCard px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[130px]">Idle</span>
+            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-darkCard px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[110px]">Idle</span>
+            <button id="radioExpandBtn" onclick="toggleMaximizeMusic(true)" title="Maximize Player" class="w-5 h-5 rounded-full bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[9px] font-bold text-slate-600 dark:text-slate-300 transition shadow-sm active:scale-95">⛶</button>
           </div>
         </div>
         
@@ -699,6 +700,60 @@
     <!-- RIGHT SECTION: Chat Pane -->
     <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full min-w-0 overflow-hidden">
       
+      <!-- Maximized Glassmorphic Apple Music Overlay (Workspace Constrained) -->
+      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-8 backdrop-blur-2xl bg-black/85 border-b sm:border border-white/10 shadow-2xl transition-all duration-300 ease-out opacity-0 pointer-events-none">
+        
+        <!-- Overlay Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+            <span id="maxOverlayTrackLabel" class="text-[11px] font-mono text-white/70 uppercase tracking-wider">NOW PLAYING // AUDIO HUB</span>
+          </div>
+          <button onclick="toggleMaximizeMusic(false)" class="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-white/80 bg-white/10 hover:bg-white/20 border border-white/10 transition font-nothing">
+            <span>↓</span> Minimize
+          </button>
+        </div>
+
+        <!-- Stage: Artwork & Dynamic Lyrics Card -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-auto items-center py-4">
+          <div class="flex flex-col items-center justify-center">
+            <div class="w-48 h-48 sm:w-60 sm:h-60 rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-slate-900 flex items-center justify-center relative group">
+              <img id="maxOverlayAlbumCover" src="https://picsum.photos/600/600?blur=1" alt="Album Art" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+            </div>
+          </div>
+          
+          <div class="flex flex-col h-48 sm:h-60 rounded-3xl bg-white/[0.04] border border-white/5 p-5 justify-between">
+            <div class="flex justify-between items-center text-[10px] font-mono text-white/40 border-b border-white/5 pb-1.5">
+              <span>LYRICS</span>
+              <span class="text-brand font-bold">AUTO-SYNC</span>
+            </div>
+            <div class="my-auto text-center space-y-1.5">
+              <p class="text-sm font-bold text-white/90 font-nothing">Time-synced lyrics coming soon</p>
+              <p class="text-[11px] text-white/40">Lossless Audio Stream • Storage Node</p>
+            </div>
+            <div class="text-[9px] text-white/25 text-center font-mono">Meshage Audio Engine // Zero-Leak Relay</div>
+          </div>
+        </div>
+
+        <!-- Controls & Scrubber Footer -->
+        <div class="flex flex-col gap-2.5 pt-4 border-t border-white/10 font-mono text-xs">
+          <div class="flex justify-between items-center">
+            <div class="min-w-0 pr-2">
+              <h3 id="maxOverlaySongTitle" class="font-bold text-white text-sm sm:text-base font-nothing truncate max-w-[240px]">Idle</h3>
+              <p id="maxOverlayArtistLabel" class="text-[11px] text-white/50 font-sans">Meshage Radio Network</p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <button onclick="toggleRadioPlayback()" class="w-8 h-8 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs transition hover:bg-slate-200 active:scale-95 shadow-md">
+                <span id="maxOverlayPlayIcon">▶</span>
+              </button>
+              <span id="maxOverlayTimestamp" class="text-[11px] text-white/50">0:00 / 0:00</span>
+            </div>
+          </div>
+          <input id="maxOverlaySeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer">
+        </div>
+      </div>
+
       <!-- Chat Header -->
       <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10 shrink-0">
         <div class="flex items-center gap-2 min-w-0">
@@ -2057,6 +2112,54 @@
       setTimeout(() => toast.classList.add('hidden'), 4000);
     }
 
+    function toggleMaximizeMusic(show) {
+      const overlay = document.getElementById("maximizedMusicOverlay");
+      if (!overlay) return;
+
+      // On mobile viewports, ensure chatPane is exposed when maximizing
+      const chatPane = document.getElementById("chatPane");
+      const sidebarPane = document.getElementById("sidebarPane");
+
+      if (show) {
+        if (window.innerWidth < 640) {
+          sidebarPane.classList.add("hidden");
+          chatPane.classList.remove("hidden");
+          chatPane.classList.add("flex");
+        }
+        syncMaximizedPlayerMetadata();
+        overlay.classList.remove("hidden");
+        setTimeout(() => {
+          overlay.classList.remove("opacity-0", "pointer-events-none");
+        }, 10);
+      } else {
+        overlay.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => {
+          overlay.classList.add("hidden");
+        }, 300);
+      }
+    }
+
+    function syncMaximizedPlayerMetadata() {
+      const titleLbl = document.getElementById("maxOverlaySongTitle");
+      const artistLbl = document.getElementById("maxOverlayArtistLabel");
+      const playIcon = document.getElementById("maxOverlayPlayIcon");
+
+      if (currentPlayingSongIndex !== -1 && SAVED_SONGS_LIST[currentPlayingSongIndex]) {
+        const song = SAVED_SONGS_LIST[currentPlayingSongIndex];
+        if (titleLbl) titleLbl.innerText = song.title;
+        if (artistLbl) artistLbl.innerText = "Saved Campus Audio Node";
+      } else {
+        const statusTag = document.getElementById("radioStatusTag");
+        const statusText = statusTag ? statusTag.innerText : "Campus Radio";
+        if (titleLbl) titleLbl.innerText = statusText.replace("Live: ", "").replace("Tuning ", "") || "Campus Radio";
+        if (artistLbl) artistLbl.innerText = "Meshage Icecast Relay";
+      }
+
+      if (playIcon) {
+        playIcon.innerText = (activeRadioPlayer && !activeRadioPlayer.paused) ? "⏸" : "▶";
+      }
+    }
+
     function highlightActiveMusicCategory(categoryKey) {
       document.querySelectorAll(".radio-category-tab").forEach(tab => {
         tab.classList.remove("text-brand", "border-brand", "bg-brand/10", "dark:bg-brand/15", "font-bold", "shadow-sm");
@@ -2152,6 +2255,12 @@
           document.getElementById("savedTrackSeekSlider").value = pct;
           document.getElementById("savedCurrentTime").innerText = formatTime(player.currentTime);
           document.getElementById("savedTotalDuration").innerText = formatTime(player.duration);
+
+          // Synchronize maximized player scrubber & time readouts
+          const maxSeek = document.getElementById("maxOverlaySeekSlider");
+          const maxTime = document.getElementById("maxOverlayTimestamp");
+          if (maxSeek) maxSeek.value = pct;
+          if (maxTime) maxTime.innerText = `${formatTime(player.currentTime)} / ${formatTime(player.duration)}`;
         }
       };
 
@@ -3859,13 +3968,16 @@
     function toggleRadioPlayback() {
       if (!activeRadioPlayer) return;
       const btn = document.getElementById("radioPauseBtn");
+      const maxIcon = document.getElementById("maxOverlayPlayIcon");
       
       if (activeRadioPlayer.paused) {
         activeRadioPlayer.play();
-        btn.innerText = "⏸";
+        if (btn) btn.innerText = "⏸";
+        if (maxIcon) maxIcon.innerText = "⏸";
       } else {
         activeRadioPlayer.pause();
-        btn.innerText = "▶";
+        if (btn) btn.innerText = "▶";
+        if (maxIcon) maxIcon.innerText = "▶";
       }
     }
 
