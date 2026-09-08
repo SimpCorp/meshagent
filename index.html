@@ -2529,6 +2529,7 @@
     }
 
     function selectSophieAI() {
+      if (isMaximizedMusicActive()) toggleMaximizeMusic(false);
       isSophieActive = true;
       isVideoBotActive = false;
       document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
@@ -2647,6 +2648,7 @@
     }
 
     function selectVideoBot() {
+      if (isMaximizedMusicActive()) toggleMaximizeMusic(false);
       isVideoBotActive = true;
       isSophieActive = false;
       document.getElementById("vamsMediaTypeToggleGroup").classList.remove("hidden");
@@ -3857,6 +3859,7 @@
     }
 
     function selectLoungeChannel() {
+      if (isMaximizedMusicActive()) toggleMaximizeMusic(false);
       isSophieActive = false;
       isVideoBotActive = false;
       document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
