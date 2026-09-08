@@ -3700,6 +3700,11 @@
 
             if (activeChatUser && activeChatUser.username.toLowerCase() === decrypted.sender.toLowerCase() && !isSophieActive && !isVideoBotActive) {
               renderBubble(decrypted, false);
+              channel.send({
+                type: "broadcast",
+                event: "msg_read",
+                payload: { id: decrypted.id, from: currentUser.username, to: decrypted.sender }
+              });
             } else {
               const currentUnread = unreadMap.get(decrypted.sender) || 0;
               unreadMap.set(decrypted.sender, currentUnread + 1);
@@ -3712,6 +3717,15 @@
           if (payload.to.toLowerCase() === currentUser.username.toLowerCase()) {
             const checkEl = document.getElementById(`ack-${payload.id}`);
             if (checkEl) checkEl.innerText = "✓✓";
+          }
+        })
+        .on("broadcast", { event: "msg_read" }, ({ payload }) => {
+          if (payload.to.toLowerCase() === currentUser.username.toLowerCase()) {
+            const checkEl = document.getElementById(`ack-${payload.id}`);
+            if (checkEl) {
+              checkEl.innerText = "✓✓";
+              checkEl.className = "text-[9px] font-mono font-bold text-brand";
+            }
           }
         })
         .on("broadcast", { event: "reaction_msg" }, ({ payload }) => {
@@ -3956,6 +3970,19 @@
       document.getElementById("videoSourceToggleGroup").classList.add("hidden");
       activeChatUser = peer;
       unreadMap.delete(peer.username);
+
+      // Send read receipts for existing messages from this peer
+      const key = getSessionKey(peer.username);
+      let history = inMemoryChatCache.get(key) || JSON.parse(sessionStorage.getItem(key) || "[]");
+      history.forEach(msg => {
+        if (msg.sender && msg.sender.toLowerCase() === peer.username.toLowerCase() && channel) {
+          channel.send({
+            type: "broadcast",
+            event: "msg_read",
+            payload: { id: msg.id, from: currentUser.username, to: peer.username }
+          });
+        }
+      });
       
       document.getElementById("tabDirectBtn").className = "flex-1 py-1.5 rounded-lg bg-white dark:bg-darkCard shadow-sm transition font-semibold text-slate-900 dark:text-white";
       document.getElementById("tabLoungeBtn").className = "flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-medium flex items-center justify-center gap-1";
