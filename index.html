@@ -2226,18 +2226,6 @@
       if (backdrop && img) backdrop.src = img.src;
     }
 
-    function onAlbumArtLoaded() {
-      const img = document.getElementById("maxOverlayAlbumCover");
-      const skeleton = document.getElementById("maxArtSkeleton");
-      const backdrop = document.getElementById("maxOverlayBlurredBackdrop");
-      const sidebarBackdrop = document.getElementById("sidebarMusicAuraBackdrop");
-
-      if (skeleton) skeleton.classList.add("hidden");
-      if (img) img.classList.remove("opacity-0");
-      if (backdrop && img) backdrop.src = img.src;
-      if (sidebarBackdrop && img) sidebarBackdrop.src = img.src;
-    }
-
     function cycleAlbumArt() {
       albumArtSeedVariant++;
       const img = document.getElementById("maxOverlayAlbumCover");
@@ -3954,6 +3942,7 @@
 
     function selectPeerForChat(peer) {
       if (!peer) return;
+      if (isMaximizedMusicActive()) toggleMaximizeMusic(false);
       isSophieActive = false;
       isVideoBotActive = false;
       document.getElementById("vamsMediaTypeToggleGroup").classList.add("hidden");
