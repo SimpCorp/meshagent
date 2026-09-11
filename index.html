@@ -667,8 +667,26 @@
           <button id="radioTab-english" onclick="requestRadioChannel('English')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">ENG</button>
           <button id="radioTab-hindi" onclick="requestRadioChannel('Hindi')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">HIN</button>
           <button id="radioTab-south" onclick="requestRadioChannel('South')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">S.IND</button>
-          <button id="radioTab-other" onclick="requestRadioChannel('Other')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">OTH</button>
+          <button id="radioTab-search" onclick="toggleGlobalAudioSearch()" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">SEARCH</button>
           <button id="radioTab-saved" onclick="toggleSavedMusicView()" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">SAVED</button>
+        </div>
+
+        <!-- GLOBAL PROXIED MUSIC SEARCH DRAWER -->
+        <div id="globalMusicSearchDrawer" class="hidden space-y-2 pt-0.5">
+          <div class="flex items-center gap-1.5">
+            <button onclick="toggleGlobalAudioSearch()" class="px-2 py-1 bg-white dark:bg-darkCard hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-200 dark:border-slate-800">← Back</button>
+            <input id="globalMusicSearchInput" type="text" placeholder="Search songs, artists..." onkeydown="if(event.key==='Enter') executeMusicSearch()" class="flex-1 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[11px] focus:outline-none focus:border-brand text-slate-800 dark:text-slate-200">
+            <button onclick="executeMusicSearch()" class="px-2.5 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-[10px] font-medium transition active:scale-95">Fetch</button>
+          </div>
+          
+          <div class="flex items-center justify-between text-[9px] text-slate-400 px-1">
+            <span>Routing: Masked Relay</span>
+            <span class="text-amber-500/80">Beta v0.1</span>
+          </div>
+
+          <div id="globalSearchResultsList" class="max-h-36 overflow-y-auto space-y-1 custom-scroll pr-1">
+            <div class="text-center py-4 text-[10px] text-slate-400">Enter query above to search.</div>
+          </div>
         </div>
 
         <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5">
@@ -2085,6 +2103,9 @@
 
       const pauseBtn = document.getElementById("radioPauseBtn");
       if (pauseBtn) pauseBtn.classList.add("hidden");
+
+      const statusTag = document.getElementById("radioStatusTag");
+      if (statusTag) statusTag.innerText = "Idle";
     }
 
     function copyStoredMessage(msgId) {
@@ -2471,6 +2492,99 @@
         drawer.classList.add("hidden");
         btnRow.classList.remove("hidden");
       }
+    }
+
+    let currentSearchResults = [];
+
+    function toggleGlobalAudioSearch() {
+      const searchDrawer = document.getElementById("globalMusicSearchDrawer");
+      const savedDrawer = document.getElementById("savedMusicDrawer");
+      const radioButtons = document.getElementById("liveRadioButtonsRow");
+
+      if (!searchDrawer) return;
+
+      const isOpening = searchDrawer.classList.contains("hidden");
+
+      if (savedDrawer && !savedDrawer.classList.contains("hidden")) {
+        savedDrawer.classList.add("hidden");
+      }
+
+      if (isOpening) {
+        searchDrawer.classList.remove("hidden");
+        if (radioButtons) radioButtons.classList.add("hidden");
+        document.getElementById("globalMusicSearchInput")?.focus();
+      } else {
+        searchDrawer.classList.add("hidden");
+        if (radioButtons) radioButtons.classList.remove("hidden");
+      }
+    }
+
+    async function executeMusicSearch() {
+      const input = document.getElementById("globalMusicSearchInput");
+      const container = document.getElementById("globalSearchResultsList");
+      if (!input || !container) return;
+
+      const query = input.value.trim();
+      if (!query) return;
+
+      container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400 animate-pulse">Querying repositories via relay...</div>`;
+
+      try {
+        const res = await fetch(`/api/music?mode=search&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        currentSearchResults = data.tracks || [];
+        renderSearchResults(currentSearchResults);
+      } catch (err) {
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-red-400">Search timed out. Check network.</div>`;
+      }
+    }
+
+    function renderSearchResults(tracks) {
+      const container = document.getElementById("globalSearchResultsList");
+      if (!container) return;
+
+      if (!tracks || tracks.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400">No tracks found.</div>`;
+        return;
+      }
+
+      container.innerHTML = tracks.slice(0, 3).map((track, idx) => `
+        <div onclick="playProxiedTrack('${track.id}')" 
+             class="group flex items-center justify-between p-1.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-darkCard hover:border-brand/50 cursor-pointer transition">
+          <div class="flex items-center space-x-2 truncate">
+            <span class="text-[10px] font-mono text-slate-400">0${idx + 1}</span>
+            <div class="truncate text-left">
+              <div class="text-[11px] font-medium text-slate-800 dark:text-slate-200 truncate group-hover:text-brand transition">${escapeHtml(track.title)}</div>
+              <div class="text-[9px] text-slate-400 truncate">${escapeHtml(track.artist || "Unknown")}</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <span class="text-[9px] font-mono text-slate-400">${track.duration || "--:--"}</span>
+            <span class="text-[10px] text-slate-500 group-hover:text-brand">▶</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function playProxiedTrack(id) {
+      const track = currentSearchResults.find(t => String(t.id) === String(id));
+      if (!track || !track.streamUrl) return;
+
+      stopAndKillActiveAudio();
+
+      const proxiedUrl = `/api/music?mode=stream&url=${encodeURIComponent(track.streamUrl)}`;
+
+      activeRadioPlayer = new Audio();
+      activeRadioPlayer.crossOrigin = "anonymous";
+      activeRadioPlayer.src = proxiedUrl;
+
+      const statusTag = document.getElementById("radioStatusTag");
+      if (statusTag) statusTag.innerText = track.title;
+
+      const pauseBtn = document.getElementById("radioPauseBtn");
+      if (pauseBtn) pauseBtn.classList.remove("hidden");
+
+      activeRadioPlayer.play().catch(e => console.warn("Stream playback failed:", e));
     }
 
     function renderSavedSongsList(filterText = "") {
@@ -4197,6 +4311,12 @@
     }
 
     function requestRadioChannel(lang) {
+      // Close global music search drawer if currently open
+      const searchDrawer = document.getElementById("globalMusicSearchDrawer");
+      if (searchDrawer && !searchDrawer.classList.contains("hidden")) {
+        toggleGlobalAudioSearch();
+      }
+
       if (!hasShownRadioEarphoneWarning) {
         hasShownRadioEarphoneWarning = true;
         clearInterval(radioCountdownInterval);
@@ -4208,7 +4328,7 @@
         document.getElementById("radioCountdown").innerText = count;
         document.getElementById("radioStatusTag").innerText = `Tuning ${lang}...`;
         currentPlayingSongIndex = -1;
-      syncMaximizedPlayerMetadata();
+        syncMaximizedPlayerMetadata();
         highlightActiveMusicCategory(lang);
 
         radioCountdownInterval = setInterval(() => {
@@ -4229,9 +4349,108 @@
     const RADIO_SOURCE_MAP = {
       hindi: "Uber.Radio / Mixify",
       south: "ZenoFM / Katerumbu",
-      other: "ZenoFM / Play.cz",
       english: "Positivity / Uber"
     };
+
+    // =========================================================================
+    // PROXIED GLOBAL MUSIC SEARCH & PLAYBACK
+    // =========================================================================
+    let currentSearchResults = [];
+
+    function toggleGlobalAudioSearch() {
+      const searchDrawer = document.getElementById("globalMusicSearchDrawer");
+      const savedDrawer = document.getElementById("savedMusicDrawer");
+      const radioButtons = document.getElementById("liveRadioButtonsRow");
+
+      if (!searchDrawer) return;
+
+      const isOpening = searchDrawer.classList.contains("hidden");
+
+      if (savedDrawer && !savedDrawer.classList.contains("hidden")) {
+        savedDrawer.classList.add("hidden");
+      }
+
+      if (isOpening) {
+        searchDrawer.classList.remove("hidden");
+        if (radioButtons) radioButtons.classList.add("hidden");
+        document.getElementById("globalMusicSearchInput")?.focus();
+      } else {
+        searchDrawer.classList.add("hidden");
+        if (radioButtons) radioButtons.classList.remove("hidden");
+      }
+    }
+
+    async function executeMusicSearch() {
+      const input = document.getElementById("globalMusicSearchInput");
+      const container = document.getElementById("globalSearchResultsList");
+      if (!input || !container) return;
+
+      const query = input.value.trim();
+      if (!query) return;
+
+      container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400 animate-pulse">Querying repositories via relay...</div>`;
+
+      try {
+        const res = await fetch(`/api/music?mode=search&q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        currentSearchResults = data.tracks || [];
+        renderSearchResults(currentSearchResults);
+      } catch (err) {
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-red-400">Search timed out. Check network.</div>`;
+      }
+    }
+
+    function renderSearchResults(tracks) {
+      const container = document.getElementById("globalSearchResultsList");
+      if (!container) return;
+
+      if (!tracks || tracks.length === 0) {
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400">No tracks found.</div>`;
+        return;
+      }
+
+      container.innerHTML = tracks.slice(0, 3).map((track, idx) => `
+        <div onclick="playProxiedTrack('${track.id}')" 
+             class="group flex items-center justify-between p-1.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-darkCard hover:border-brand/50 cursor-pointer transition">
+          <div class="flex items-center space-x-2 truncate">
+            <span class="text-[10px] font-mono text-slate-400">0${idx + 1}</span>
+            <div class="truncate text-left">
+              <div class="text-[11px] font-medium text-slate-800 dark:text-slate-200 truncate group-hover:text-brand transition">${escapeHtml(track.title)}</div>
+              <div class="text-[9px] text-slate-400 truncate">${escapeHtml(track.artist || "Unknown")}</div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <span class="text-[9px] font-mono text-slate-400">${track.duration || "--:--"}</span>
+            <span class="text-[10px] text-slate-500 group-hover:text-brand">▶</span>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function playProxiedTrack(id) {
+      const track = currentSearchResults.find(t => String(t.id) === String(id));
+      if (!track || !track.streamUrl) return;
+
+      stopAndKillActiveAudio();
+
+      const proxiedUrl = `/api/music?mode=stream&url=${encodeURIComponent(track.streamUrl)}`;
+
+      activeRadioPlayer = new Audio();
+      activeRadioPlayer.crossOrigin = "anonymous";
+      activeRadioPlayer.src = proxiedUrl;
+      activeRadioPlayer.volume = globalMasterVolume;
+
+      const statusTag = document.getElementById("radioStatusTag");
+      if (statusTag) statusTag.innerText = track.title;
+
+      const pauseBtn = document.getElementById("radioPauseBtn");
+      if (pauseBtn) {
+        pauseBtn.classList.remove("hidden");
+        pauseBtn.innerText = "⏸";
+      }
+
+      activeRadioPlayer.play().catch(e => console.warn("Stream playback failed:", e));
+    }
 
     function executeRadioStream(lang) {
       stopAndKillActiveAudio();
