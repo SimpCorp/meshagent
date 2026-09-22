@@ -1,3 +1,12 @@
+/**
+ * CLOUDFLARE PAGES EDGE FUNCTION: /api/music
+ * - mode=search: Queries catalog via Cloudflare edge, returns top 5 results.
+ * - mode=stream: Relays media bytes with Range support so ISP/firewall only sees your domain.
+ */
+
+const SAAVN_SEARCH_URL = "https://www.jiosaavn.com/api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=";
+const SAAVN_DETAILS_URL = "https://www.jiosaavn.com/api.php?__call=song.getDetails&cc=in&_marker=0&_format=json&pids=";
+
 export async function onRequest(context) {
   const { request } = context;
   const url = new URL(request.url);
@@ -16,7 +25,7 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 1. SEARCH ENDPOINT: PROXIES QUERY SERVER-TO-SERVER
+  // 1. SEARCH ENDPOINT: RETRIEVES TOP 5 OPTIONS VIA BACKEND RELAY
   // =========================================================================
   if (mode === "search") {
     const query = (url.searchParams.get("q") || "").trim();
@@ -28,33 +37,71 @@ export async function onRequest(context) {
     }
 
     try {
-      const jamendoUrl = `https://api.jamendo.com/v3.0/tracks/?client_id=56d30c95&format=json&limit=3&namesearch=${encodeURIComponent(query)}&include=musicinfo`;
-
-      const searchRes = await fetch(jamendoUrl, {
+      // Step A: Search catalog via autocomplete endpoint
+      const searchRes = await fetch(`${SAAVN_SEARCH_URL}${encodeURIComponent(query)}`, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
           "Accept": "application/json"
         },
-        signal: AbortSignal.timeout(4000)
+        signal: AbortSignal.timeout(8000)
       });
 
-      if (!searchRes.ok) throw new Error("Search upstream failure");
-      const data = await searchRes.json();
+      if (!searchRes.ok) throw new Error("Catalog search failed");
+      const searchData = await searchRes.json();
+      const rawSongs = searchData?.songs?.data || [];
 
-      const tracks = (data.results || []).slice(0, 3).map(item => ({
-        id: item.id,
-        title: item.name,
-        artist: item.artist_name,
-        duration: formatSecToMin(item.duration),
-        streamUrl: item.audio
-      }));
+      if (!rawSongs.length) {
+        return new Response(JSON.stringify({ tracks: [] }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      // Step B: Extract top 5 song IDs and query detailed metadata for direct audio URLs
+      const top5 = rawSongs.slice(0, 5);
+      const pids = top5.map(s => s.id).join(",");
+
+      const detailsRes = await fetch(`${SAAVN_DETAILS_URL}${pids}`, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        },
+        signal: AbortSignal.timeout(8000)
+      });
+
+      const detailsData = await detailsRes.json();
+      const tracks = [];
+
+      for (const item of top5) {
+        const full = detailsData[item.id];
+        if (!full) continue;
+
+        // Resolve direct stream URL (upgrade preview to high-rate stream if present)
+        let mediaStream = full.media_preview_url || "";
+        if (mediaStream.includes("preview.saavncdn.com")) {
+          mediaStream = mediaStream
+            .replace("preview.saavncdn.com", "aac.saavn.cdn.jio.com")
+            .replace("_96_p.mp4", "_160.mp4");
+        }
+
+        if (!mediaStream) continue;
+
+        tracks.push({
+          id: item.id,
+          title: cleanHtmlEntities(item.title || "Unknown Track"),
+          artist: cleanHtmlEntities(item.more_info?.primary_artists || item.description || "Various Artists"),
+          album: cleanHtmlEntities(item.more_info?.album || ""),
+          image: item.image ? item.image.replace("150x150", "250x250") : "",
+          duration: formatSecondsToTime(full.duration || item.more_info?.duration || 0),
+          streamUrl: mediaStream
+        });
+      }
 
       return new Response(JSON.stringify({ tracks }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     } catch (err) {
-      return new Response(JSON.stringify({ tracks: [] }), {
+      return new Response(JSON.stringify({ tracks: [], error: err.message }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
@@ -62,7 +109,7 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 2. STREAM RELAY: MASKS AUDIO CDN FROM ISP & SOPHOS
+  // 2. STREAM RELAY: PROXIES AUDIO CHUNKS DIRECTLY (MASKS ISP DESTINATION)
   // =========================================================================
   if (mode === "stream") {
     const rawTarget = url.searchParams.get("url");
@@ -76,18 +123,19 @@ export async function onRequest(context) {
 
       const fetchHeaders = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer": "https://www.jiosaavn.com/",
         "Accept": "*/*"
       };
       if (range) fetchHeaders["Range"] = range;
 
       const upstreamRes = await fetch(targetUrl, {
         headers: fetchHeaders,
-        signal: AbortSignal.timeout(6000)
+        signal: AbortSignal.timeout(10000)
       });
 
       const responseHeaders = new Headers({
         ...corsHeaders,
-        "Content-Type": "application/octet-stream", // Masks explicit audio/mpeg sniffing
+        "Content-Type": "audio/mp4",
         "Accept-Ranges": "bytes"
       });
 
@@ -103,15 +151,25 @@ export async function onRequest(context) {
         headers: responseHeaders
       });
     } catch (streamErr) {
-      return new Response("Proxy relay timed out", { status: 502 });
+      return new Response("Audio relay connection timed out", { status: 502 });
     }
   }
 
   return new Response("Invalid request mode", { status: 400 });
 }
 
-function formatSecToMin(sec) {
-  const m = Math.floor(sec / 60);
-  const s = Math.floor(sec % 60);
+function cleanHtmlEntities(str) {
+  return str.replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&#039;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>');
+}
+
+function formatSecondsToTime(sec) {
+  const total = parseInt(sec, 10);
+  if (isNaN(total) || total <= 0) return "--:--";
+  const m = Math.floor(total / 60);
+  const s = total % 60;
   return `${m}:${s < 10 ? "0" : ""}${s}`;
 }
