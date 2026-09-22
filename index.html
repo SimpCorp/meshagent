@@ -2565,6 +2565,9 @@
       }
     }
 
+   // Fallback to prevent image onload errors from halting execution
+    window.onAlbumArtLoaded = function() {};
+
     async function executeMusicSearch() {
       const input = document.getElementById("globalMusicSearchInput");
       const container = document.getElementById("globalSearchResultsList");
@@ -2573,15 +2576,23 @@
       const query = input.value.trim();
       if (!query) return;
 
-      container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400 animate-pulse">Querying repositories via relay...</div>`;
+      container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400 animate-pulse">Searching catalog via relay...</div>`;
 
       try {
         const res = await fetch(`/api/music?mode=search&q=${encodeURIComponent(query)}`);
+        
+        if (!res.ok) {
+          throw new Error(`Gateway returned HTTP ${res.status}`);
+        }
+
         const data = await res.json();
-        currentSearchResults = data.tracks || [];
-        renderSearchResults(currentSearchResults);
+        const tracks = data.tracks || [];
+        
+        window.currentSearchResults = tracks;
+        renderSearchResults(tracks);
       } catch (err) {
-        container.innerHTML = `<div class="text-center py-4 text-[10px] text-red-400">Search timed out. Check network.</div>`;
+        console.error("Music Search Error:", err);
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-rose-500">Error: ${escapeHtml(err.message || "Failed to fetch")}</div>`;
       }
     }
 
@@ -2590,28 +2601,33 @@
       if (!container) return;
 
       if (!tracks || tracks.length === 0) {
-        container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400">No tracks found.</div>`;
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-slate-400">No tracks found. Try another query.</div>`;
         return;
       }
 
-      container.innerHTML = tracks.slice(0, 3).map((track, idx) => `
+      // Display Top 5 Options with album art & clean metadata
+      container.innerHTML = tracks.slice(0, 5).map((track, idx) => `
         <div onclick="playProxiedTrack('${track.id}')" 
-             class="group flex items-center justify-between p-1.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-darkCard hover:border-brand/50 cursor-pointer transition">
-          <div class="flex items-center space-x-2 truncate">
-            <span class="text-[10px] font-mono text-slate-400">0${idx + 1}</span>
+             class="group flex items-center justify-between p-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-darkCard hover:border-brand/60 dark:hover:border-brand/60 hover:shadow-sm cursor-pointer transition">
+          <div class="flex items-center space-x-2.5 truncate">
+            <div class="relative w-8 h-8 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center">
+              ${track.image ? `<img src="${track.image}" class="w-full h-full object-cover" alt="" onerror="this.style.display='none'">` : ''}
+              <span class="absolute text-[10px] font-mono font-semibold text-slate-400 -z-0">0${idx + 1}</span>
+            </div>
             <div class="truncate text-left">
-              <div class="text-[11px] font-medium text-slate-800 dark:text-slate-200 truncate group-hover:text-brand transition">${escapeHtml(track.title)}</div>
-              <div class="text-[9px] text-slate-400 truncate">${escapeHtml(track.artist || "Unknown")}</div>
+              <div class="text-[11px] font-semibold text-slate-900 dark:text-slate-100 truncate group-hover:text-brand transition">${escapeHtml(track.title)}</div>
+              <div class="text-[9px] text-slate-400 truncate">${escapeHtml(track.artist || "Unknown Artist")}</div>
             </div>
           </div>
-          <div class="flex items-center space-x-2 shrink-0">
+          <div class="flex items-center space-x-2 shrink-0 pr-1">
             <span class="text-[9px] font-mono text-slate-400">${track.duration || "--:--"}</span>
-            <span class="text-[10px] text-slate-500 group-hover:text-brand">▶</span>
+            <div class="w-5 h-5 rounded-full bg-slate-100 dark:bg-darkMuted group-hover:bg-brand group-hover:text-white text-[10px] flex items-center justify-center text-slate-600 dark:text-slate-300 transition">
+              ▶
+            </div>
           </div>
         </div>
       `).join("");
     }
-
     function playProxiedTrack(id) {
       const track = currentSearchResults.find(t => String(t.id) === String(id));
       if (!track || !track.streamUrl) return;
