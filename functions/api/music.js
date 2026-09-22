@@ -1,11 +1,7 @@
 /**
  * CLOUDFLARE PAGES EDGE FUNCTION: /api/music
- * - mode=search: Queries catalog via Cloudflare edge, returns top 5 results.
- * - mode=stream: Relays media bytes with Range support so ISP/firewall only sees your domain.
+ * Robust Search & Stream Relay
  */
-
-const SAAVN_SEARCH_URL = "https://www.jiosaavn.com/api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=";
-const SAAVN_DETAILS_URL = "https://www.jiosaavn.com/api.php?__call=song.getDetails&cc=in&_marker=0&_format=json&pids=";
 
 export async function onRequest(context) {
   const { request } = context;
@@ -25,7 +21,7 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 1. SEARCH ENDPOINT: RETRIEVES TOP 5 OPTIONS VIA BACKEND RELAY
+  // 1. SEARCH ENDPOINT
   // =========================================================================
   if (mode === "search") {
     const query = (url.searchParams.get("q") || "").trim();
@@ -37,19 +33,28 @@ export async function onRequest(context) {
     }
 
     try {
-      // Step A: Search catalog via autocomplete endpoint
-      const searchRes = await fetch(`${SAAVN_SEARCH_URL}${encodeURIComponent(query)}`, {
+      // Direct call to public search endpoint with standard headers
+      const targetEndpoint = `https://www.jiosaavn.com/api.php?__call=autocomplete.get&_format=json&_marker=0&cc=in&includeMetaTags=1&query=${encodeURIComponent(query)}`;
+      
+      const searchRes = await fetch(targetEndpoint, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-          "Accept": "application/json"
-        },
-        signal: AbortSignal.timeout(8000)
+          "Accept": "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9"
+        }
       });
 
-      if (!searchRes.ok) throw new Error("Catalog search failed");
-      const searchData = await searchRes.json();
-      const rawSongs = searchData?.songs?.data || [];
+      const rawText = await searchRes.text();
+      let searchData;
+      try {
+        searchData = JSON.parse(rawText);
+      } catch (e) {
+        // Fallback if API returned wrapped JSON
+        const clean = rawText.substring(rawText.indexOf("{"), rawText.lastIndexOf("}") + 1);
+        searchData = JSON.parse(clean);
+      }
 
+      const rawSongs = searchData?.songs?.data || [];
       if (!rawSongs.length) {
         return new Response(JSON.stringify({ tracks: [] }), {
           status: 200,
@@ -57,15 +62,15 @@ export async function onRequest(context) {
         });
       }
 
-      // Step B: Extract top 5 song IDs and query detailed metadata for direct audio URLs
       const top5 = rawSongs.slice(0, 5);
       const pids = top5.map(s => s.id).join(",");
 
-      const detailsRes = await fetch(`${SAAVN_DETAILS_URL}${pids}`, {
+      // Fetch detail payloads for streams
+      const detailsEndpoint = `https://www.jiosaavn.com/api.php?__call=song.getDetails&cc=in&_marker=0&_format=json&pids=${pids}`;
+      const detailsRes = await fetch(detailsEndpoint, {
         headers: {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-        },
-        signal: AbortSignal.timeout(8000)
+        }
       });
 
       const detailsData = await detailsRes.json();
@@ -75,7 +80,6 @@ export async function onRequest(context) {
         const full = detailsData[item.id];
         if (!full) continue;
 
-        // Resolve direct stream URL (upgrade preview to high-rate stream if present)
         let mediaStream = full.media_preview_url || "";
         if (mediaStream.includes("preview.saavncdn.com")) {
           mediaStream = mediaStream
@@ -109,7 +113,7 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 2. STREAM RELAY: PROXIES AUDIO CHUNKS DIRECTLY (MASKS ISP DESTINATION)
+  // 2. STREAM RELAY: MASKS AUDIO CDN FROM ISP & SOPHOS
   // =========================================================================
   if (mode === "stream") {
     const rawTarget = url.searchParams.get("url");
@@ -129,8 +133,7 @@ export async function onRequest(context) {
       if (range) fetchHeaders["Range"] = range;
 
       const upstreamRes = await fetch(targetUrl, {
-        headers: fetchHeaders,
-        signal: AbortSignal.timeout(10000)
+        headers: fetchHeaders
       });
 
       const responseHeaders = new Headers({
@@ -151,11 +154,11 @@ export async function onRequest(context) {
         headers: responseHeaders
       });
     } catch (streamErr) {
-      return new Response("Audio relay connection timed out", { status: 502 });
+      return new Response("Proxy relay timed out", { status: 502 });
     }
   }
 
-  return new Response("Invalid request mode", { status: 400 });
+  return new Response("Invalid mode", { status: 400 });
 }
 
 function cleanHtmlEntities(str) {
