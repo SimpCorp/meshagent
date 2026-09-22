@@ -2629,60 +2629,34 @@
       `).join("");
     }
     function playProxiedTrack(id) {
-      const track = currentSearchResults.find(t => String(t.id) === String(id));
+      const track = (window.currentSearchResults || currentSearchResults || []).find(t => String(t.id) === String(id));
       if (!track || !track.streamUrl) return;
 
       stopAndKillActiveAudio();
 
+      // Masked stream relayed byte-for-byte through your Cloudflare Pages domain
       const proxiedUrl = `/api/music?mode=stream&url=${encodeURIComponent(track.streamUrl)}`;
 
       activeRadioPlayer = new Audio();
       activeRadioPlayer.crossOrigin = "anonymous";
       activeRadioPlayer.src = proxiedUrl;
+      activeRadioPlayer.volume = typeof globalMasterVolume !== "undefined" ? globalMasterVolume : 1;
 
       const statusTag = document.getElementById("radioStatusTag");
       if (statusTag) statusTag.innerText = track.title;
 
       const pauseBtn = document.getElementById("radioPauseBtn");
-      if (pauseBtn) pauseBtn.classList.remove("hidden");
-
-      activeRadioPlayer.play().catch(e => console.warn("Stream playback failed:", e));
-    }
-
-    function renderSavedSongsList(filterText = "") {
-      const listContainer = document.getElementById("savedSongsList");
-      listContainer.innerHTML = "";
-
-      const query = filterText.toLowerCase().trim();
-      const filtered = SAVED_SONGS_LIST.filter(s => s.title.toLowerCase().includes(query));
-
-      if (filtered.length === 0) {
-        listContainer.innerHTML = `<div class="p-2 text-center text-[10px] text-slate-400">No tracks match filter.</div>`;
-        return;
+      if (pauseBtn) {
+        pauseBtn.classList.remove("hidden");
+        pauseBtn.innerText = "⏸";
       }
 
-      filtered.forEach((song, idx) => {
-        const isCurrent = currentPlayingSongIndex === idx;
-        const item = document.createElement("div");
-        item.className = `p-1.5 rounded-lg flex items-center justify-between transition cursor-pointer text-[11px] ${
-          isCurrent 
-            ? "bg-brand/10 text-brand font-bold border border-brand/20" 
-            : "hover:bg-slate-200/50 dark:hover:bg-darkMuted text-slate-700 dark:text-slate-300 font-medium"
-        }`;
-        
-        item.innerHTML = `
-          <span class="truncate flex items-center gap-1.5 min-w-0">
-            <span class="text-[10px] opacity-60 shrink-0">🎵</span>
-            <span class="truncate font-sans">${song.title}</span>
-          </span>
-          <span class="shrink-0 text-[10px] font-mono ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
-        `;
-
-        item.onclick = () => playSavedSong(idx);
-        listContainer.appendChild(item);
+      activeRadioPlayer.play().catch(e => {
+        console.warn("Stream playback failed:", e);
+        if (statusTag) statusTag.innerText = "Stream failed to load";
       });
     }
-
+    
     function filterSavedSongs() {
       const q = document.getElementById("savedSongSearchInput").value;
       renderSavedSongsList(q);
