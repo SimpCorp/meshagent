@@ -1,8 +1,8 @@
 /**
  * CLOUDFLARE PAGES EDGE FUNCTION: /api/imgbackend
  * 
- * 1. PROXY PIPE: Streams binary image bytes with stripped tracking headers.
- * 2. SEARCH ENGINE: Concurrent multi-source race (Bing + Wikimedia + Unsplash) with zero API keys.
+ * 1. ZERO-LEAK PROXY: Relays binary image bytes, stripping ISP/Firewall detection.
+ * 2. UNRESTRICTED SEARCH MATRIX: Parallel race (Bing Unfiltered + SearXNG + Unsplash) with adult/safe-mode disabled.
  */
 
 export async function onRequest(context) {
@@ -25,7 +25,7 @@ export async function onRequest(context) {
 
   try {
     // =========================================================================
-    // 1. ZERO-LEAK BINARY IMAGE PROXY PIPE (MASKS DESTINATION FROM ISP/FIREWALL)
+    // 1. ZERO-LEAK BINARY IMAGE PROXY PIPE (MASKS DESTINATION FROM ISP)
     // =========================================================================
     if (proxyImgUrl) {
       try {
@@ -39,10 +39,11 @@ export async function onRequest(context) {
 
         const imgRes = await fetch(decodedUrl, {
           headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "Referer": parsedTarget.origin + "/"
           },
-          signal: AbortSignal.timeout(6000)
+          signal: AbortSignal.timeout(7000)
         });
 
         if (imgRes.ok) {
@@ -58,11 +59,10 @@ export async function onRequest(context) {
           });
         }
       } catch (e) {
-        // Fall through to SVG fallback
+        // Fall through to fallback SVG
       }
 
-      // Clean SVG fallback to avoid broken image icons in chat/drawers
-      const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" fill="none"><rect width="300" height="300" fill="#111827"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="12" font-weight="600">Image Expired</text></svg>`;
+      const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300" fill="none"><rect width="300" height="300" fill="#0B0F17"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="12" font-weight="600">Image Expired</text></svg>`;
       return new Response(fallbackSvg, {
         status: 200,
         headers: {
@@ -74,19 +74,18 @@ export async function onRequest(context) {
     }
 
     // =========================================================================
-    // 2. PARALLEL MULTI-ENGINE IMAGE MATRIX
+    // 2. PARALLEL UNRESTRICTED MULTI-ENGINE SEARCH
     // =========================================================================
     if (query) {
-      const selfEndpoint = url.pathname; // automatically matches /api/imgbackend or /api/imagebackend
+      const selfEndpoint = url.pathname;
 
-      // We race 3 independent engines in parallel. The fastest valid batch wins.
+      // Race Bing (Unfiltered) and SearXNG metasearch concurrently
       const candidatePromises = [
-        searchBingDirect(query, selfEndpoint),
-        searchWikimedia(query, selfEndpoint, offset),
-        searchUnsplashDirect(query, selfEndpoint)
+        searchBingUnfiltered(query, selfEndpoint),
+        searchSearXNG(query, selfEndpoint),
+        searchUnsplash(query, selfEndpoint)
       ];
 
-      // Execute race: take the first one that successfully returns at least 3 images
       let aggregatedResults = [];
       try {
         aggregatedResults = await Promise.any(
@@ -96,7 +95,6 @@ export async function onRequest(context) {
           }))
         );
       } catch (allFailedErr) {
-        // If the parallel race fails, collect any partial results from settled promises
         const settled = await Promise.allSettled(candidatePromises);
         for (const item of settled) {
           if (item.status === "fulfilled" && item.value && item.value.length > 0) {
@@ -108,13 +106,13 @@ export async function onRequest(context) {
       if (aggregatedResults.length === 0) {
         return new Response(JSON.stringify({ 
           success: false, 
-          error: "No images found across upstream repositories." 
+          error: "No images found for this query." 
         }), {
           headers: jsonHeaders
         });
       }
 
-      // Deduplicate results based on title/image URL
+      // Deduplicate results
       const seen = new Set();
       const uniqueResults = [];
       for (const item of aggregatedResults) {
@@ -124,7 +122,6 @@ export async function onRequest(context) {
         }
       }
 
-      // Paginate 3 items per page to match your UI drawer cards
       const relativeOffset = offset % uniqueResults.length;
       const pageResults = uniqueResults.slice(relativeOffset, relativeOffset + 3);
       const hasNext = uniqueResults.length > relativeOffset + 3 || uniqueResults.length >= 10;
@@ -154,23 +151,22 @@ export async function onRequest(context) {
 }
 
 // =========================================================================
-// UPSTREAM PROVIDERS (SERVER-SIDE FETCHERS)
+// UPSTREAM ENGINES (UNRESTRICTED / RAW MEDIA EXTRACTION)
 // =========================================================================
 
 /**
- * Engine 1: Bing Images (High Catalog Coverage: pop culture, gaming, campus, general)
- * Robust JSON attribute parser handling current Bing SERP DOM structures.
+ * Engine 1: Bing Images (Strictly Target Results Container + SafeSearch Disabled)
  */
-async function searchBingDirect(query, selfEndpoint) {
+async function searchBingUnfiltered(query, selfEndpoint) {
   try {
-    const bingUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2&first=1&adlt=off`;
-    const res = await fetch(bingUrl, {
+    // adlt=off & safeSearch cookie forces complete adult / unrestricted mode
+    const targetUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2&first=1&adlt=off`;
+    const res = await fetch(targetUrl, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.9",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate"
+        "Cookie": "SRCHHPGUSR=ADLT=OFF&NRSLT=-1;" // Hard override for SafeSearch
       },
       signal: AbortSignal.timeout(5000)
     });
@@ -178,19 +174,24 @@ async function searchBingDirect(query, selfEndpoint) {
     if (!res.ok) return [];
     const html = await res.text();
 
-    const results = [];
+    // Isolate only the results grid to prevent capturing trending/editorial widgets
+    let searchArea = html;
+    const gridMatch = html.match(/id="mmComponent_images_1"[\s\S]*?<\/ul>/i) || html.match(/class="dgControl[\s\S]*?<\/ul>/i);
+    if (gridMatch) {
+      searchArea = gridMatch[0];
+    }
 
-    // Modern Bing pattern: class="iusc" followed by m="{...}" or data-m="{...}"
+    const results = [];
     const blockRegex = /class="iusc"[^>]*?(?:m|data-m)="({.+?})"/g;
     let match;
 
-    while ((match = blockRegex.exec(html)) !== null && results.length < 15) {
+    while ((match = blockRegex.exec(searchArea)) !== null && results.length < 20) {
       try {
         const rawJson = match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&');
         const parsed = JSON.parse(rawJson);
-        
-        const murl = parsed.murl; // Direct source image URL
-        const turl = parsed.turl || parsed.murl; // Direct thumbnail
+
+        const murl = parsed.murl; // Source image link
+        const turl = parsed.turl || parsed.murl; // Thumbnail link
         const title = parsed.t || parsed.desc || "Image";
 
         if (murl && murl.startsWith("http")) {
@@ -203,19 +204,17 @@ async function searchBingDirect(query, selfEndpoint) {
             height: parsed.mh || 0
           });
         }
-      } catch (err) {
-        // Continue if single item JSON parse fails
-      }
+      } catch (err) {}
     }
 
-    // Fallback: If iusc pattern changes, regex search direct murl keys
+    // Fallback search within isolated area
     if (results.length === 0) {
       const fallbackRegex = /&quot;murl&quot;:&quot;(https?:[^&]+?)&quot;/g;
       let fbMatch;
-      while ((fbMatch = fallbackRegex.exec(html)) !== null && results.length < 15) {
+      while ((fbMatch = fallbackRegex.exec(searchArea)) !== null && results.length < 20) {
         const rawUrl = fbMatch[1];
         results.push({
-          title: "Image",
+          title: query,
           image: `${selfEndpoint}?proxy_img=${encodeURIComponent(rawUrl)}`,
           thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(rawUrl)}`,
           source: "Web",
@@ -232,55 +231,65 @@ async function searchBingDirect(query, selfEndpoint) {
 }
 
 /**
- * Engine 2: Wikimedia Commons (Zero rate limits, diagrams, historical, public domain)
+ * Engine 2: SearXNG Open Metasearch (Unfiltered JSON Aggregator)
  */
-async function searchWikimedia(query, selfEndpoint, offset) {
-  try {
-    const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}&gsrlimit=12&gsroffset=${offset}&prop=imageinfo&iiprop=url|size|mime&format=json&origin=*`;
-    const res = await fetch(wikiUrl, {
-      headers: { 
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/2.0" 
-      },
-      signal: AbortSignal.timeout(3500)
-    });
+async function searchSearXNG(query, selfEndpoint) {
+  const instances = [
+    "https://priv.au",
+    "https://search.ononoki.org",
+    "https://searx.be"
+  ];
 
-    if (!res.ok) return [];
-    const data = await res.json();
-    const pages = data?.query?.pages || {};
-    const results = [];
+  for (const host of instances) {
+    try {
+      const apiUrl = `${host}/search?q=${encodeURIComponent(query)}&categories=images&format=json&safesearch=0`;
+      const res = await fetch(apiUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)",
+          "Accept": "application/json"
+        },
+        signal: AbortSignal.timeout(3500)
+      });
 
-    for (const page of Object.values(pages)) {
-      const info = page.imageinfo?.[0];
-      if (info && info.url && !info.mime?.includes("svg") && !info.mime?.includes("pdf")) {
-        const title = (page.title || "Image").replace(/^File:/i, "");
-        results.push({
-          title: title,
-          image: `${selfEndpoint}?proxy_img=${encodeURIComponent(info.url)}`,
-          thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(info.thumburl || info.url)}`,
-          source: "Wikimedia",
-          width: info.width || 0,
-          height: info.height || 0
-        });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const items = data.results || [];
+      const results = [];
+
+      for (const item of items) {
+        const imgUrl = item.img_src || item.url;
+        const thumbUrl = item.thumbnail_src || imgUrl;
+
+        if (imgUrl && imgUrl.startsWith("http")) {
+          results.push({
+            title: item.title || "Image",
+            image: `${selfEndpoint}?proxy_img=${encodeURIComponent(imgUrl)}`,
+            thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(thumbUrl)}`,
+            source: "Web",
+            width: item.resolution ? parseInt(item.resolution.split("x")[0]) : 0,
+            height: item.resolution ? parseInt(item.resolution.split("x")[1]) : 0
+          });
+        }
       }
-    }
-    return results;
-  } catch (e) {
-    return [];
+
+      if (results.length >= 3) return results;
+    } catch (e) {}
   }
+  return [];
 }
 
 /**
- * Engine 3: Unsplash Source API (High Quality photography & wallpapers fallback)
+ * Engine 3: Unsplash Source API (High Quality Aesthetic Backup)
  */
-async function searchUnsplashDirect(query, selfEndpoint) {
+async function searchUnsplash(query, selfEndpoint) {
   try {
-    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=12`;
+    const unsplashUrl = `https://unsplash.com/napi/search/photos?query=${encodeURIComponent(query)}&per_page=15`;
     const res = await fetch(unsplashUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": "*/*"
       },
-      signal: AbortSignal.timeout(3500)
+      signal: AbortSignal.timeout(3000)
     });
 
     if (!res.ok) return [];
