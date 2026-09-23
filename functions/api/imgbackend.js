@@ -158,39 +158,67 @@ export async function onRequest(context) {
 // =========================================================================
 
 /**
- * Engine 1: Bing Images (High Catalog Coverage: pop culture, anime, campus, general)
+ * Engine 1: Bing Images (High Catalog Coverage: pop culture, gaming, campus, general)
+ * Robust JSON attribute parser handling current Bing SERP DOM structures.
  */
 async function searchBingDirect(query, selfEndpoint) {
   try {
-    const bingUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2&first=1&tsc=ImageHoverTitle`;
+    const bingUrl = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}&form=HDRSC2&first=1&adlt=off`;
     const res = await fetch(bingUrl, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate"
       },
-      signal: AbortSignal.timeout(4000)
+      signal: AbortSignal.timeout(5000)
     });
 
     if (!res.ok) return [];
     const html = await res.text();
 
-    // Regex extract Bing's embedded murl (media url) and turl (thumbnail url) JSON objects
     const results = [];
-    const regex = /m=\{&quot;cid&quot;:.*?&quot;murl&quot;:&quot;([^&]+)&quot;.*?&quot;turl&quot;:&quot;([^&]+)&quot;.*?&quot;t&quot;:&quot;([^&]*)&quot;/g;
+
+    // Modern Bing pattern: class="iusc" followed by m="{...}" or data-m="{...}"
+    const blockRegex = /class="iusc"[^>]*?(?:m|data-m)="({.+?})"/g;
     let match;
 
-    while ((match = regex.exec(html)) !== null && results.length < 15) {
-      const fullUrl = decodeURIComponent(match[1]);
-      const thumbUrl = decodeURIComponent(match[2]);
-      const title = decodeURIComponent(match[3] || "Image").replace(/\+/g, " ");
+    while ((match = blockRegex.exec(html)) !== null && results.length < 15) {
+      try {
+        const rawJson = match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+        const parsed = JSON.parse(rawJson);
+        
+        const murl = parsed.murl; // Direct source image URL
+        const turl = parsed.turl || parsed.murl; // Direct thumbnail
+        const title = parsed.t || parsed.desc || "Image";
 
-      if (fullUrl.startsWith("http")) {
+        if (murl && murl.startsWith("http")) {
+          results.push({
+            title: title.replace(/\+/g, " "),
+            image: `${selfEndpoint}?proxy_img=${encodeURIComponent(murl)}`,
+            thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(turl)}`,
+            source: "Web",
+            width: parsed.mw || 0,
+            height: parsed.mh || 0
+          });
+        }
+      } catch (err) {
+        // Continue if single item JSON parse fails
+      }
+    }
+
+    // Fallback: If iusc pattern changes, regex search direct murl keys
+    if (results.length === 0) {
+      const fallbackRegex = /&quot;murl&quot;:&quot;(https?:[^&]+?)&quot;/g;
+      let fbMatch;
+      while ((fbMatch = fallbackRegex.exec(html)) !== null && results.length < 15) {
+        const rawUrl = fbMatch[1];
         results.push({
-          title: title || "Image",
-          image: `${selfEndpoint}?proxy_img=${encodeURIComponent(fullUrl)}`,
-          thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(thumbUrl)}`,
-          source: "Bing",
+          title: "Image",
+          image: `${selfEndpoint}?proxy_img=${encodeURIComponent(rawUrl)}`,
+          thumbnail: `${selfEndpoint}?proxy_img=${encodeURIComponent(rawUrl)}`,
+          source: "Web",
           width: 0,
           height: 0
         });
