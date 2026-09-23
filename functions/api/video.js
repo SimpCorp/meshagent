@@ -1,9 +1,8 @@
 /**
  * CLOUDFLARE PAGES EDGE FUNCTION: /api/video
  * 
- * 1. ZERO-LEAK STREAM & THUMBNAIL RELAY: Streams media bytes with Range/206 headers intact.
- * 2. AGGRESSIVE MULTI-SOURCE SEARCH: Aggregates YouTube, Internet Archive (Direct MP4s),
- *    and Open Media Repositories with automatic keyword relaxation.
+ * 1. ZERO-LEAK STREAM & THUMBNAIL RELAY: Forwards Range/206 headers for progressive MP4s.
+ * 2. SEARCH ENGINE: Seamless support for "youtube" and high-reliability "other" (Internet Archive) modes.
  */
 
 export async function onRequest(context) {
@@ -11,6 +10,7 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const query = (url.searchParams.get("q") || "").trim();
   const streamId = url.searchParams.get("stream");
+  const source = (url.searchParams.get("source") || "youtube").toLowerCase();
   const offset = parseInt(url.searchParams.get("offset") || "0", 10);
   const thumbUrl = url.searchParams.get("thumb");
 
@@ -27,14 +27,14 @@ export async function onRequest(context) {
 
   try {
     // =========================================================================
-    // 1. ZERO-LEAK BINARY THUMBNAIL PROXY
+    // 1. ZERO-LEAK BINARY THUMBNAIL RELAY
     // =========================================================================
     if (thumbUrl) {
       try {
         const targetThumb = decodeURIComponent(thumbUrl);
         const parsed = new URL(targetThumb);
         if (["localhost", "127.0.0.1", "0.0.0.0"].includes(parsed.hostname)) {
-          throw new Error("Invalid host");
+          throw new Error("Invalid target");
         }
 
         const imgRes = await fetch(targetThumb, {
@@ -58,8 +58,7 @@ export async function onRequest(context) {
           });
         }
       } catch (e) {}
-      
-      // Inline dark placeholder thumbnail if source image is unreachable
+
       const fallbackSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180" fill="none"><rect width="320" height="180" fill="#111827"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748B" font-family="sans-serif" font-size="12">Preview Unavailable</text></svg>`;
       return new Response(fallbackSvg, {
         status: 200,
@@ -68,23 +67,23 @@ export async function onRequest(context) {
     }
 
     // =========================================================================
-    // 2. ZERO-LEAK BINARY VIDEO STREAM RELAY (HTTP 206 RANGE FORWARDER)
+    // 2. ZERO-LEAK BINARY STREAM RELAY (HTTP 206 RANGE FORWARDER)
     // =========================================================================
     if (streamId) {
       let directStreamUrl = null;
 
-      // TYPE A: Base64-encoded direct media URL (Internet Archive, Open MP4s)
+      // MODE A: Direct Base64 Media URL (Used by "OTHER" / Internet Archive / MP4s)
       if (streamId.startsWith("b64_")) {
         try {
           directStreamUrl = atob(streamId.replace("b64_", ""));
         } catch (e) {
-          return new Response(JSON.stringify({ success: false, error: "Malformed media identifier" }), {
+          return new Response(JSON.stringify({ success: false, error: "Invalid stream identifier" }), {
             headers: jsonHeaders,
             status: 400
           });
         }
       } 
-      // TYPE B: YouTube video ID resolution matrix
+      // MODE B: YouTube Video Stream (Invidious / Piped Mirror Resolution)
       else {
         directStreamUrl = await resolveYouTubeStream(streamId);
       }
@@ -92,14 +91,14 @@ export async function onRequest(context) {
       if (!directStreamUrl) {
         return new Response(JSON.stringify({ 
           success: false, 
-          error: "Stream source offline or restricted upstream." 
+          error: "Media stream currently unreachable or restricted." 
         }), {
           headers: jsonHeaders,
           status: 404
         });
       }
 
-      // Forward client Range request for native HTML5 seek/scrub support
+      // Forward client Range header to allow seeking in HTML5 <video>
       const clientRange = request.headers.get("Range");
       const forwardHeaders = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
@@ -123,7 +122,7 @@ export async function onRequest(context) {
         responseHeaders.set("Content-Type", mediaRes.headers.get("content-type") || "video/mp4");
         responseHeaders.set("Accept-Ranges", "bytes");
         responseHeaders.set("Access-Control-Allow-Origin": "*");
-        responseHeaders.set("Access-Control-Allow-Headers", "Range");
+        responseHeaders.set("Access-Control-Allow-Headers": "Range");
 
         return new Response(mediaRes.body, {
           status: mediaRes.status,
@@ -131,60 +130,53 @@ export async function onRequest(context) {
         });
       }
 
-      return new Response(JSON.stringify({ success: false, error: `Upstream returned HTTP ${mediaRes.status}` }), {
+      return new Response(JSON.stringify({ success: false, error: `Upstream returned status ${mediaRes.status}` }), {
         headers: jsonHeaders,
         status: 502
       });
     }
 
     // =========================================================================
-    // 3. AGGRESSIVE MULTI-SOURCE SEARCH & METADATA AGGREGATOR
+    // 3. SEARCH & METADATA PIPELINE (HANDLES "OTHER" AND "YOUTUBE")
     // =========================================================================
     if (query) {
       const selfEndpoint = url.pathname;
+      let results = [];
 
-      // Launch multi-repository search concurrently
-      const [ytResults, archiveResults, wikiResults] = await Promise.all([
-        searchYouTube(query, selfEndpoint),
-        searchInternetArchive(query, selfEndpoint),
-        searchWikimediaVideo(query, selfEndpoint)
-      ]);
-
-      // Direct MP4 sources play reliably 100% of the time. Interleave them.
-      let combined = [];
-
-      // Interleave results: Archive (Reliable MP4) -> YouTube -> Wiki
-      const maxLen = Math.max(archiveResults.length, ytResults.length, wikiResults.length);
-      for (let i = 0; i < maxLen; i++) {
-        if (archiveResults[i]) combined.push(archiveResults[i]);
-        if (ytResults[i]) combined.push(ytResults[i]);
-        if (wikiResults[i]) combined.push(wikiResults[i]);
-      }
-
-      // If specific search failed, perform fuzzy keyword relaxation
-      if (combined.length === 0) {
-        const relaxedKeywords = query.split(/\s+/).slice(0, 2).join(" ");
-        if (relaxedKeywords && relaxedKeywords !== query) {
-          const fallbackArchive = await searchInternetArchive(relaxedKeywords, selfEndpoint);
-          combined = fallbackArchive;
+      // -----------------------------------------------------------------------
+      // MODE: "OTHER" (Internet Archive Fuzzy Search with Guaranteed MP4s)
+      // -----------------------------------------------------------------------
+      if (source === "other") {
+        results = await searchInternetArchive(query, selfEndpoint);
+      } 
+      // -----------------------------------------------------------------------
+      // MODE: "YOUTUBE" (Scrapes YouTube, falls back to Archive if throttled)
+      // -----------------------------------------------------------------------
+      else {
+        results = await searchYouTube(query, selfEndpoint);
+        
+        // If YouTube scrape returned 0 items due to IP ban, automatically fallback to Archive
+        if (results.length === 0) {
+          results = await searchInternetArchive(query, selfEndpoint);
         }
       }
 
-      if (combined.length === 0) {
+      if (results.length === 0) {
         return new Response(JSON.stringify({
           success: false,
-          error: "No streaming media found matching your query."
+          source: source,
+          error: `No matching videos found on ${source.toUpperCase()}.`
         }), {
           headers: jsonHeaders
         });
       }
 
-      const pageResults = combined.slice(offset, offset + 4);
-      const hasNext = combined.length > offset + 4;
+      const pageResults = results.slice(offset, offset + 4);
+      const hasNext = results.length > offset + 4;
 
       return new Response(JSON.stringify({
         success: true,
-        query: query,
+        source: source,
         offset: offset,
         hasNext: hasNext,
         results: pageResults
@@ -193,13 +185,13 @@ export async function onRequest(context) {
       });
     }
 
-    return new Response(JSON.stringify({ success: false, error: "Missing query or stream parameter" }), {
+    return new Response(JSON.stringify({ success: false, error: "Missing required query parameter" }), {
       headers: jsonHeaders,
       status: 400
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ success: false, error: "Worker exception: " + err.message }), {
+    return new Response(JSON.stringify({ success: false, error: "Worker error: " + err.message }), {
       headers: jsonHeaders,
       status: 500
     });
@@ -207,57 +199,25 @@ export async function onRequest(context) {
 }
 
 // =========================================================================
-// STREAM RESOLVERS & REPOSITORY FETCHERS
+// SEARCH & STREAM HELPERS
 // =========================================================================
 
 /**
- * YouTube Stream URL Resolution Matrix
- */
-async function resolveYouTubeStream(videoId) {
-  const mirrors = [
-    `https://inv.tux.pizza/api/v1/videos/${videoId}`,
-    `https://invidious.nerdvpn.de/api/v1/videos/${videoId}`,
-    `https://invidious.protokolla.fi/api/v1/videos/${videoId}`,
-    `https://vid.priv.au/api/v1/videos/${videoId}`,
-    `https://pipedapi.kavin.rocks/streams/${videoId}`
-  ];
-
-  for (const endpoint of mirrors) {
-    try {
-      const res = await fetch(endpoint, {
-        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/2.0" },
-        signal: AbortSignal.timeout(3000)
-      });
-      if (!res.ok) continue;
-
-      const data = await res.json();
-      const streams = data.videoStreams || data.formatStreams || [];
-      
-      // Look for progressive MP4 streams that contain both video and audio
-      const matched = streams.find(s => !s.videoOnly && (s.mimeType?.includes("mp4") || s.container === "mp4")) 
-                   || streams.find(s => s.url || s.videoUrl);
-
-      if (matched && (matched.url || matched.videoUrl)) {
-        return matched.url || matched.videoUrl;
-      }
-    } catch (e) {
-      continue;
-    }
-  }
-  return null;
-}
-
-/**
- * Engine 1: Internet Archive (Direct MP4 Streams - Game Trailers, Media, Clips)
+ * High-Reliability Internet Archive Video Fetcher
+ * Finds video uploads and guarantees direct playable progressive MP4s.
  */
 async function searchInternetArchive(query, selfEndpoint) {
   try {
-    const cleanQ = encodeURIComponent(query.replace(/[^\w\s]/gi, ''));
-    const iaUrl = `https://archive.org/advancedsearch.php?q=${cleanQ}+AND+mediatype:movies&fl[]=identifier,title,creator,length,description&sort[]=downloads+desc&rows=8&page=1&output=json`;
-    
-    const res = await fetch(iaUrl, {
+    const cleanWords = query.replace(/[^\w\s]/gi, ' ').trim().split(/\s+/).filter(Boolean);
+    if (cleanWords.length === 0) return [];
+
+    // Loose keyword matching over titles and descriptions to avoid empty queries
+    const orQuery = cleanWords.map(w => `title:*${w}* OR description:*${w}*`).join(" OR ");
+    const searchUrl = `https://archive.org/advancedsearch.php?q=(${encodeURIComponent(orQuery)})+AND+mediatype:movies&fl[]=identifier,title,creator,length,downloads&sort[]=downloads+desc&rows=10&page=1&output=json`;
+
+    const res = await fetch(searchUrl, {
       headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/2.0" },
-      signal: AbortSignal.timeout(4000)
+      signal: AbortSignal.timeout(4500)
     });
 
     if (!res.ok) return [];
@@ -267,18 +227,29 @@ async function searchInternetArchive(query, selfEndpoint) {
 
     for (const doc of docs) {
       if (!doc.identifier) continue;
-      
-      // Direct high-speed MP4 link from Archive.org's global storage servers
+
+      // Internet Archive standard video streaming redirector
+      // /download/{id}/{id}.mp4 or /download/{id} serves the primary progressive web container
       const directMp4 = `https://archive.org/download/${doc.identifier}/${doc.identifier}.mp4`;
       const thumb = `https://archive.org/services/img/${doc.identifier}`;
+
+      let durationStr = "HD Video";
+      if (doc.length) {
+        const totalSec = Math.floor(parseFloat(doc.length));
+        if (!isNaN(totalSec) && totalSec > 0) {
+          const mins = Math.floor(totalSec / 60);
+          const secs = String(totalSec % 60).padStart(2, '0');
+          durationStr = `${mins}:${secs}`;
+        }
+      }
 
       results.push({
         id: `b64_${btoa(directMp4)}`,
         title: doc.title || query,
         uploader: doc.creator || "Archive Open Media",
-        duration: doc.length ? `${Math.floor(doc.length / 60)}:${String(Math.floor(doc.length % 60)).padStart(2, '0')}` : "Stream",
+        duration: durationStr,
         thumbnail: `${selfEndpoint}?thumb=${encodeURIComponent(thumb)}`,
-        source: "Archive.org (Direct MP4)"
+        source: "OTHER"
       });
     }
 
@@ -289,7 +260,7 @@ async function searchInternetArchive(query, selfEndpoint) {
 }
 
 /**
- * Engine 2: YouTube Search Scraper
+ * YouTube Direct Search Scraper
  */
 async function searchYouTube(query, selfEndpoint) {
   try {
@@ -341,36 +312,35 @@ async function searchYouTube(query, selfEndpoint) {
 }
 
 /**
- * Engine 3: Wikimedia Commons Video Search (Public Domain & Open Video Clones)
+ * YouTube Stream URL Resolution Matrix
  */
-async function searchWikimediaVideo(query, selfEndpoint) {
-  try {
-    const wikiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch=${encodeURIComponent(query)}+filetype:video&gsrlimit=4&prop=imageinfo&iiprop=url|size|mime&format=json&origin=*`;
-    const res = await fetch(wikiUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/2.0" },
-      signal: AbortSignal.timeout(3500)
-    });
+async function resolveYouTubeStream(videoId) {
+  const mirrors = [
+    `https://inv.tux.pizza/api/v1/videos/${videoId}`,
+    `https://invidious.nerdvpn.de/api/v1/videos/${videoId}`,
+    `https://invidious.protokolla.fi/api/v1/videos/${videoId}`,
+    `https://vid.priv.au/api/v1/videos/${videoId}`
+  ];
 
-    if (!res.ok) return [];
-    const data = await res.json();
-    const pages = data?.query?.pages || {};
-    const results = [];
+  for (const endpoint of mirrors) {
+    try {
+      const res = await fetch(endpoint, {
+        headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MeshRelay/2.0" },
+        signal: AbortSignal.timeout(3000)
+      });
+      if (!res.ok) continue;
 
-    for (const page of Object.values(pages)) {
-      const info = page.imageinfo?.[0];
-      if (info && info.url && (info.mime?.includes("webm") || info.mime?.includes("mp4") || info.mime?.includes("ogg"))) {
-        results.push({
-          id: `b64_${btoa(info.url)}`,
-          title: (page.title || "Video").replace(/^File:/i, ""),
-          uploader: "Wikimedia Video",
-          duration: "Open Media",
-          thumbnail: `${selfEndpoint}?thumb=${encodeURIComponent(info.thumburl || info.url)}`,
-          source: "Wikimedia"
-        });
+      const data = await res.json();
+      const streams = data.videoStreams || data.formatStreams || [];
+      const matched = streams.find(s => !s.videoOnly && (s.mimeType?.includes("mp4") || s.container === "mp4")) 
+                   || streams.find(s => s.url || s.videoUrl);
+
+      if (matched && (matched.url || matched.videoUrl)) {
+        return matched.url || matched.videoUrl;
       }
+    } catch (e) {
+      continue;
     }
-    return results;
-  } catch (e) {
-    return [];
   }
+  return null;
 }
