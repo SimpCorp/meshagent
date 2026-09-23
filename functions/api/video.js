@@ -119,10 +119,10 @@ export async function onRequest(context) {
           if (val) responseHeaders.set(h, val);
         });
 
-        responseHeaders.set("Content-Type", mediaRes.headers.get("content-type") || "video/mp4");
+       responseHeaders.set("Content-Type", mediaRes.headers.get("content-type") || "video/mp4");
         responseHeaders.set("Accept-Ranges", "bytes");
-        responseHeaders.set("Access-Control-Allow-Origin": "*");
-        responseHeaders.set("Access-Control-Allow-Headers": "Range");
+        responseHeaders.set("Access-Control-Allow-Origin", "*");
+        responseHeaders.set("Access-Control-Allow-Headers", "Range");
 
         return new Response(mediaRes.body, {
           status: mediaRes.status,
