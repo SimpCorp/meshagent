@@ -2524,11 +2524,19 @@
     function toggleSavedMusicView() {
       const btnRow = document.getElementById("liveRadioButtonsRow");
       const drawer = document.getElementById("savedMusicDrawer");
+      const searchDrawer = document.getElementById("globalMusicSearchDrawer");
       
+      if (!drawer) return;
+
+      // Close global search drawer if open so views don't collide
+      if (searchDrawer) searchDrawer.classList.add("hidden");
+
       if (drawer.classList.contains("hidden")) {
-        btnRow.classList.add("hidden");
+        if (btnRow) btnRow.classList.add("hidden");
         drawer.classList.remove("hidden");
-        highlightActiveMusicCategory("saved");
+        if (typeof highlightActiveMusicCategory === "function") {
+          highlightActiveMusicCategory("saved");
+        }
         renderSavedSongsList();
         setTimeout(() => {
           const inp = document.getElementById("savedSongSearchInput");
@@ -2536,12 +2544,78 @@
         }, 50);
       } else {
         drawer.classList.add("hidden");
-        btnRow.classList.remove("hidden");
+        if (btnRow) btnRow.classList.remove("hidden");
       }
     }
 
     let currentSearchResults = [];
+    if (typeof window.currentPlayingSongIndex === "undefined") {
+      window.currentPlayingSongIndex = -1;
+    }
 
+    function renderSavedSongsList(filterText = "") {
+      const listContainer = document.getElementById("savedSongsList");
+      if (!listContainer) return;
+
+      listContainer.innerHTML = "";
+
+      // Safely grab songs array
+      const songs = (typeof SAVED_SONGS_LIST !== "undefined" && Array.isArray(SAVED_SONGS_LIST))
+        ? SAVED_SONGS_LIST 
+        : (window.SAVED_SONGS_LIST || []);
+
+      if (!songs || songs.length === 0) {
+        listContainer.innerHTML = `<div class="p-3 text-center text-[10px] text-slate-400">No saved tracks available.</div>`;
+        return;
+      }
+
+      const query = (filterText || "").toLowerCase().trim();
+
+      // Render each song by array position without relying on non-existent .id keys
+      let renderedCount = 0;
+      songs.forEach((song, idx) => {
+        if (!song) return;
+        const titleStr = typeof song === "string" ? song : (song.title || song.name || "Untitled Track");
+        
+        // Search filter matching
+        if (query && !titleStr.toLowerCase().includes(query)) {
+          return;
+        }
+        renderedCount++;
+
+        const isCurrent = (typeof currentPlayingSongIndex !== "undefined" && currentPlayingSongIndex === idx) ||
+                          (typeof window.currentPlayingSongIndex !== "undefined" && window.currentPlayingSongIndex === idx);
+
+        const safeTitle = (typeof escapeHtml === "function") ? escapeHtml(titleStr) : titleStr;
+
+        const item = document.createElement("div");
+        item.className = `p-1.5 rounded-lg flex items-center justify-between transition cursor-pointer text-[11px] ${
+          isCurrent 
+            ? "bg-brand/10 text-brand font-bold border border-brand/20" 
+            : "hover:bg-slate-200/50 dark:hover:bg-darkMuted text-slate-700 dark:text-slate-300 font-medium"
+        }`;
+        
+        item.innerHTML = `
+          <span class="truncate flex items-center gap-1.5 min-w-0 pr-2">
+            <span class="text-[10px] opacity-60 shrink-0">🎵</span>
+            <span class="truncate font-sans">${safeTitle}</span>
+          </span>
+          <span class="shrink-0 text-[10px] font-mono ${isCurrent ? 'text-brand' : 'opacity-60'}">▶</span>
+        `;
+
+        item.onclick = () => {
+          if (typeof playSavedSong === "function") {
+            playSavedSong(idx);
+          }
+        };
+
+        listContainer.appendChild(item);
+      });
+
+      if (renderedCount === 0) {
+        listContainer.innerHTML = `<div class="p-3 text-center text-[10px] text-slate-400">No tracks match filter.</div>`;
+      }
+    }
     function toggleGlobalAudioSearch() {
       const searchDrawer = document.getElementById("globalMusicSearchDrawer");
       const savedDrawer = document.getElementById("savedMusicDrawer");
