@@ -2159,20 +2159,10 @@
 
       const statusTag = document.getElementById("radioStatusTag");
       if (statusTag) statusTag.innerText = "Idle";
-    }
 
-    function copyStoredMessage(msgId) {
-      const textToCopy = rawMessageTextStore.get(msgId);
-      if (!textToCopy) return;
-
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          showCopyToast();
-        }).catch(() => {
-          fallbackExecCommandCopy(textToCopy);
-        });
-      } else {
-        fallbackExecCommandCopy(textToCopy);
+      // Clear "Now Playing" presence across the mesh
+      if (typeof broadcastNowPlaying === "function") {
+        broadcastNowPlaying("");
       }
     }
 
@@ -2789,6 +2779,9 @@
         pauseBtn.classList.remove("hidden");
         pauseBtn.innerText = "⏸";
         renderSavedSongsList(document.getElementById("savedSongSearchInput").value);
+
+        // Broadcast to mesh network that we are now playing this track
+        broadcastNowPlaying(song.title, song.file);
       };
 
       player.onended = () => {
@@ -2801,13 +2794,14 @@
         if (loadToken !== activeMediaLoadToken || sessionId !== activeAudioSessionId) return;
         showRadioErrorToast(`Error loading ${song.title}.`);
         document.getElementById("radioStatusTag").innerText = "Idle";
+        broadcastNowPlaying(""); // Clear presence on failure
       };
 
       player.src = song.file;
       activeRadioPlayer = player;
       player.play().catch(e => console.warn("Audio playback init:", e));
     }
-
+    
     function onSavedSeekSliderInput(val) {
       if (activeRadioPlayer && activeRadioPlayer.duration) {
         activeRadioPlayer.currentTime = (val / 100) * activeRadioPlayer.duration;
@@ -3941,6 +3935,9 @@
         }
       });
 
+      // Hook up live song presence, nudges, and profile reactions
+      setupPeerPresenceListeners();
+
       channel
         .on("presence", { event: "sync" }, () => {
           const state = channel.presenceState();
@@ -4844,11 +4841,21 @@
       wrap.className = `msg-anim group flex flex-col ${isSelf ? "items-end" : "items-start"} space-y-1 relative transition-all duration-300 w-full min-w-0 max-w-full ${isMentioned ? 'mention-ping-flash p-1 rounded-2xl' : ''}`;
 
       const isSenderVerified = isVerifiedUser(msg.sender);
+      const peerState = window.peerPresenceState?.[msg.sender];
+      const isListening = peerState?.nowPlaying?.active && peerState?.nowPlaying?.title;
+
       const meta = document.createElement("div");
       meta.className = "flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 px-2 font-semibold font-nothing";
       meta.innerHTML = `
-        <span class="flex items-center gap-1">
-          <span>${msg.sender}</span>
+        <span class="flex items-center gap-1.5">
+          <span 
+            onclick="openPeerProfileModal('${msg.sender}')" 
+            class="cursor-pointer hover:text-brand hover:underline transition-colors flex items-center gap-1"
+            title="View Profile"
+          >
+            ${msg.sender}
+            ${isListening ? `<span class="text-[10px] text-emerald-400 animate-pulse font-normal" title="Listening to: ${peerState.nowPlaying.title}">🎵</span>` : ''}
+          </span>
           ${isSenderVerified ? getVerifiedBadgeSvg() : ''}
           ${isMentioned ? `<span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 font-mono">[MENTIONED]</span>` : ''}
         </span>
@@ -5915,6 +5922,153 @@
       showLandingView();
     }
 
+    // =========================================================================
+    // PEER PRESENCE & "NOW PLAYING" PROFILE ENGINE (SUPABASE REALTIME)
+    // =========================================================================
+    window.peerPresenceState = {};
+    let activeProfilePeerId = null;
+
+    function broadcastNowPlaying(songTitle, songUrl = "") {
+      if (!channel || !currentUser) return;
+
+      const payload = {
+        from: currentUser.username,
+        status: "Active on Mesh",
+        nowPlaying: {
+          title: songTitle || "",
+          url: songUrl || "",
+          active: Boolean(songTitle)
+        }
+      };
+
+      channel.send({
+        type: "broadcast",
+        event: "presence_sync",
+        payload: payload
+      });
+    }
+
+    function setupPeerPresenceListeners() {
+      if (!channel) return;
+
+      channel
+        .on("broadcast", { event: "presence_sync" }, ({ payload }) => {
+          if (!payload || !payload.from) return;
+          window.peerPresenceState[payload.from] = {
+            name: payload.from,
+            status: payload.status || "Active",
+            nowPlaying: payload.nowPlaying || { title: "", url: "", active: false }
+          };
+
+          if (activeProfilePeerId === payload.from) {
+            openPeerProfileModal(payload.from);
+          }
+        })
+        .on("broadcast", { event: "peer_interaction" }, ({ payload }) => {
+          if (!payload || !currentUser) return;
+          
+          if (payload.to === currentUser.username) {
+            if (payload.action === "nudge") {
+              if (typeof showCallDiagnostic === "function") {
+                showCallDiagnostic(`⚡ ${payload.from} nudged you!`);
+              }
+              if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else if (payload.action === "reaction") {
+              if (typeof showCallDiagnostic === "function") {
+                showCallDiagnostic(`${payload.emoji} from ${payload.from}`);
+              }
+            }
+          }
+        });
+    }
+
+    function openPeerProfileModal(username) {
+      activeProfilePeerId = username;
+      const peer = window.peerPresenceState[username] || {
+        name: username,
+        status: "Active on Mesh",
+        nowPlaying: { title: "", url: "", active: false }
+      };
+
+      const modal = document.getElementById("peerProfileModal");
+      const nameEl = document.getElementById("modalUserName");
+      const avatarEl = document.getElementById("modalUserAvatar");
+      const statusEl = document.getElementById("modalUserStatus");
+      const titleEl = document.getElementById("modalSongTitle");
+      const pulseRing = document.getElementById("modalMusicPulseRing");
+      const pingDot = document.getElementById("modalSongPingDot");
+      const staticDot = document.getElementById("modalSongStaticDot");
+      const listenBtn = document.getElementById("modalListenAlongBtn");
+
+      nameEl.innerText = peer.name;
+      avatarEl.innerText = (peer.name || "??").slice(0, 2).toUpperCase();
+      statusEl.innerText = peer.status;
+
+      const isPlaying = peer.nowPlaying && peer.nowPlaying.active && peer.nowPlaying.title;
+      if (isPlaying) {
+        titleEl.innerText = peer.nowPlaying.title;
+        pulseRing.classList.remove("hidden");
+        pingDot.classList.remove("hidden");
+        staticDot.className = "relative inline-flex rounded-full h-2 w-2 bg-emerald-400";
+
+        if (peer.nowPlaying.url) {
+          listenBtn.classList.remove("hidden");
+          listenBtn.onclick = () => listenAlongWithPeer(peer.nowPlaying);
+        } else {
+          listenBtn.classList.add("hidden");
+        }
+      } else {
+        titleEl.innerText = "No track playing";
+        pulseRing.classList.add("hidden");
+        pingDot.classList.add("hidden");
+        staticDot.className = "relative inline-flex rounded-full h-2 w-2 bg-slate-500";
+        listenBtn.classList.add("hidden");
+      }
+
+      modal.classList.remove("hidden");
+    }
+
+    function closePeerProfileModal() {
+      const modal = document.getElementById("peerProfileModal");
+      if (modal) modal.classList.add("hidden");
+      activeProfilePeerId = null;
+    }
+
+    document.getElementById("peerProfileModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "peerProfileModal") closePeerProfileModal();
+    });
+
+    function listenAlongWithPeer(nowPlaying) {
+      if (!nowPlaying || !nowPlaying.url) return;
+
+      const player = document.getElementById("audioPlayer") || document.querySelector("audio");
+      if (player) {
+        player.src = nowPlaying.url;
+        player.play().catch(() => {});
+      }
+
+      closePeerProfileModal();
+    }
+
+    function sendPeerNudge() {
+      if (!activeProfilePeerId || !channel || !currentUser) return;
+      channel.send({
+        type: "broadcast",
+        event: "peer_interaction",
+        payload: { action: "nudge", from: currentUser.username, to: activeProfilePeerId }
+      });
+      closePeerProfileModal();
+    }
+
+    function sendProfileReaction(emoji) {
+      if (!activeProfilePeerId || !channel || !currentUser) return;
+      channel.send({
+        type: "broadcast",
+        event: "peer_interaction",
+        payload: { action: "reaction", emoji: emoji, from: currentUser.username, to: activeProfilePeerId }
+      });
+    }
+
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
@@ -5923,5 +6077,63 @@
       parseTwemoji(document.getElementById("themeToggle"));
     });
   </script>
+  <!-- FLOATING APPLE-STYLE PEER PROFILE CARD -->
+<div id="peerProfileModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden transition-opacity duration-200">
+  <div class="relative w-full max-w-xs overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-2xl backdrop-blur-xl text-slate-100">
+    <!-- Close Button -->
+    <button onclick="closePeerProfileModal()" class="absolute top-3.5 right-3.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/5 text-xs text-slate-400 hover:bg-white/10 hover:text-white transition">✕</button>
+
+    <!-- Header & Avatar with Glowing Halo -->
+    <div class="flex items-center gap-3.5 mb-4">
+      <div class="relative">
+        <div id="modalUserAvatar" class="h-12 w-12 rounded-full bg-gradient-to-tr from-brand to-indigo-500 flex items-center justify-center text-sm font-bold shadow-inner uppercase tracking-wider text-white">??</div>
+        <div id="modalMusicPulseRing" class="absolute -inset-1 rounded-full border border-brand/50 animate-ping opacity-60 hidden pointer-events-none"></div>
+      </div>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-1.5">
+          <h4 id="modalUserName" class="text-sm font-bold truncate tracking-tight text-white">Peer</h4>
+          <span class="rounded px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider bg-white/10 text-brand font-semibold">Campus</span>
+        </div>
+        <p id="modalUserStatus" class="text-[11px] text-slate-400 truncate mt-0.5">Online via local Wi-Fi</p>
+      </div>
+    </div>
+
+    <!-- Live "Now Playing" Capsule -->
+    <div id="modalNowPlayingSection" class="mb-4 rounded-xl border border-white/5 bg-white/[0.03] p-3 transition hover:bg-white/[0.05]">
+      <div class="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-slate-400 mb-1.5">
+        <span class="flex items-center gap-1.5">
+          <span class="relative flex h-2 w-2">
+            <span id="modalSongPingDot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 hidden"></span>
+            <span id="modalSongStaticDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+          </span>
+          Now Playing
+        </span>
+        <span id="modalSongDuration" class="opacity-60 text-[9px]">LAN Sync</span>
+      </div>
+
+      <div class="flex items-center justify-between gap-2">
+        <div class="min-w-0 flex-1">
+          <p id="modalSongTitle" class="text-xs font-semibold text-slate-200 truncate font-sans">No track active</p>
+        </div>
+        <!-- Listen Along Action -->
+        <button id="modalListenAlongBtn" class="shrink-0 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-brand text-slate-950 hover:brightness-110 active:scale-95 transition hidden">
+          🎧 Listen Along
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Interactions Bar (Nudge & Reaction Stamps) -->
+    <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/5">
+      <button onclick="sendPeerNudge()" class="flex-1 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 text-[11px] font-medium text-slate-300 transition flex items-center justify-center gap-1.5">
+        <span>⚡</span> Nudge
+      </button>
+      <div class="flex items-center gap-1">
+        <button onclick="sendProfileReaction('🎧')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🎧</button>
+        <button onclick="sendProfileReaction('🔥')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🔥</button>
+        <button onclick="sendProfileReaction('☕')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">☕</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
