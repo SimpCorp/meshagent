@@ -446,60 +446,74 @@
   </div>
 
   <!-- TOP BAR -->
-  <header class="w-full max-w-6xl mx-auto p-3.5 flex items-center justify-between z-30">
-    <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-      <div id="statusDot" class="w-2.5 h-2.5 rounded-full bg-brand shadow-sm shadow-brand/50 animate-pulse"></div>
+<header class="sticky top-0 z-30 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md transition-colors">
+  <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
+    
+    <!-- BRAND / IDENTITY -->
+    <div class="flex items-center gap-2.5 cursor-pointer select-none group" onclick="showLandingView()">
+      <div id="statusDot" class="w-2 h-2 rounded-full bg-emerald-500 transition-transform group-hover:scale-110"></div>
       <div class="flex flex-col">
-        <div class="flex items-center gap-1.5">
-          <h1 class="text-xs font-bold tracking-tight uppercase font-nothing">MESHAGE // LAN CHAT</h1>
-          <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 flex items-center gap-1">
-            <span class="w-1 h-1 rounded-full bg-emerald-500 animate-ping"></span> AES-256 E2EE
-          </span>
-          <span id="devModeBadge" class="hidden text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-devGreen/10 text-devGreen border border-devGreen/30">DEV ISOLATED</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Meshage</span>
+          <span class="text-[10px] font-mono tracking-tight px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-800">E2EE</span>
+          <span id="devModeBadge" class="hidden text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700">DEV</span>
         </div>
-        <span class="text-[11px] text-slate-700 dark:text-slate-200 font-semibold tracking-tight">Direct Campus Messenger</span>
+        <span class="text-[11px] text-zinc-500 dark:text-zinc-400 font-normal">Campus Network</span>
       </div>
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-3">
-      <!-- WHAT'S NEW BADGE -->
-      <button id="whatsNewNavBtn" onclick="openWhatsNewDrawer()" class="px-2.5 py-1 rounded-full bg-brand/10 hover:bg-brand/20 text-brand border border-brand/30 text-[11px] font-bold flex items-center gap-1 transition shadow-sm font-nothing">
-        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
-        <span>What's New</span>
+    <!-- ACTIONS & CONTROLS -->
+    <div class="flex items-center gap-2 sm:gap-2.5">
+      
+      <!-- WHAT'S NEW -->
+      <button id="whatsNewNavBtn" onclick="openWhatsNewDrawer()" class="px-2.5 py-1 rounded-full text-[11px] font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
+        Updates
       </button>
 
-      <!-- DOTPIXELS GAMES BUTTON -->
-      <a href="https://dotpixels.pages.dev" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-slate-200/60 dark:bg-darkMuted hover:bg-slate-300 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-800 text-[11px] font-bold flex items-center gap-1.5 transition shadow-sm font-nothing">
-        <span>🎮</span>
-        <span>Games</span>
+      <!-- GAMES LINK -->
+      <a href="https://dotpixels.pages.dev" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex px-2.5 py-1 rounded-full text-[11px] font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
+        Games
       </a>
 
-      <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
-        <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-5 h-5 rounded-full flex items-center justify-center transition" title="Blue Accent">
+      <!-- ACCENT COLOR SELECTOR -->
+      <div class="flex items-center p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-full border border-zinc-200/80 dark:border-zinc-800">
+        <button id="colorBlueBtn" onclick="setColorGrading('blue')" class="w-4 h-4 rounded-full flex items-center justify-center m-0.5 transition hover:opacity-80" title="Blue Accent">
           <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
         </button>
-        <button id="colorRedBtn" onclick="setColorGrading('red')" class="w-5 h-5 rounded-full flex items-center justify-center transition" title="Red Accent">
+        <button id="colorRedBtn" onclick="setColorGrading('red')" class="w-4 h-4 rounded-full flex items-center justify-center m-0.5 transition hover:opacity-80" title="Red Accent">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span>
         </button>
       </div>
 
-      <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkMuted border border-slate-300 dark:border-slate-800/80 rounded-full text-xs">
-        <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 transition font-semibold shadow-sm text-[11px] font-nothing">SSSIHL-STUDENT</button>
-        <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-2.5 sm:px-3 py-1 rounded-full text-slate-500 transition hover:text-slate-900 dark:hover:text-white font-medium flex items-center gap-1 text-[11px] font-nothing">
-          <span>🔒</span> DEVS
+      <!-- NETWORK SEGMENT SWITCHER -->
+      <div class="flex p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-full border border-zinc-200/80 dark:border-zinc-800 text-[11px]">
+        <button id="netStudentBtn" onclick="switchToStudentNetwork()" class="px-2.5 py-0.5 rounded-full bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-medium shadow-xs transition">
+          Student
+        </button>
+        <button id="netDevsBtn" onclick="promptDevsAccess()" class="px-2.5 py-0.5 rounded-full text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium transition">
+          Devs
         </button>
       </div>
 
-      <button id="themeToggle" class="w-7 h-7 rounded-full border border-slate-300 dark:border-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-darkMuted transition">
-        <span id="themeIcon" class="text-xs">🌓</span>
+      <!-- THEME TOGGLE (Clean SVG instead of emoji) -->
+      <button id="themeToggle" class="w-7 h-7 rounded-full border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition" aria-label="Toggle theme">
+        <svg class="w-3.5 h-3.5 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="5"></circle>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+        </svg>
+        <svg class="w-3.5 h-3.5 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
       </button>
 
-      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-3.5 py-1 rounded-full bg-brand text-white text-[11px] font-semibold hover:opacity-90 transition shadow-sm font-nothing">
-        Enter Terminal
+      <!-- PRIMARY ACTION -->
+      <button id="navLaunchBtn" onclick="handleNavAction()" class="px-3.5 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 text-[11px] font-medium transition shadow-xs">
+        Open Chat
       </button>
     </div>
-  </header>
 
+  </div>
+</header>
   <!-- ==================== VIEW 1: SOCIAL & MUSIC LANDING ==================== -->
   <main id="landingView" class="w-full max-w-4xl mx-auto px-4 py-10 sm:py-14 flex-1 flex flex-col justify-center items-center space-y-10">
     
