@@ -470,6 +470,18 @@
         Updates
       </button>
 
+      <!-- SUGGEST SONGS BUTTON -->
+<button 
+  id="suggestSongsNavBtn" 
+  onclick="openSongSuggestionsModal()" 
+  class="px-2.5 py-1 rounded-full text-[11px] font-medium text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition flex items-center gap-1.5"
+>
+  <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+  </svg>
+  <span>Suggest Songs</span>
+</button>
+
       <!-- GAMES LINK -->
       <a href="https://dotpixels.pages.dev" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex px-2.5 py-1 rounded-full text-[11px] font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
         Games
@@ -1753,11 +1765,22 @@
       { id: "s40", title: "Happy Nation", file: `${SUPABASE_AUDIO_BASE}/happy%20nation.mp3` },
       { id: "s41", title: "Sweet Little Bumble Bee", file: `${SUPABASE_AUDIO_BASE}/sweet%20little%20bumble%20bee.mp3` },
       { id: "s42", title: "Loser - Tame Impala", file: `${SUPABASE_AUDIO_BASE}/loser%20-%20tame%20impala.mp3` },
-      { id: "s43", title: "I Don't Know - Erika", file: `${SUPABASE_AUDIO_BASE}/i%20dont%20know%20-%20erika.mp3` },
-      { id: "s44", title: "Espresso", file: `${SUPABASE_AUDIO_BASE}/espresso.mp3` },
-      { id: "s45", title: "Eight - IU", file: `${SUPABASE_AUDIO_BASE}/eight%20iu.mp3` },
-      { id: "s46", title: "Centuries", file: `${SUPABASE_AUDIO_BASE}/centuries.mp3` },
-      { id: "s47", title: "Dumb Dumb - Jeon Somi", file: `${SUPABASE_AUDIO_BASE}/dumb%20dumb%20-%20jeon%20somi.mp3` }
+      { id: "s43", title: "i don't Know - Erika", file: `${SUPABASE_AUDIO_BASE}/i%20dont%20know%20-%20erika.mp3` },
+      { id: "s44", title: "espresso", file: `${SUPABASE_AUDIO_BASE}/espresso.mp3` },
+      { id: "s45", title: "eight - IU", file: `${SUPABASE_AUDIO_BASE}/eight%20iu.mp3` },
+      { id: "s46", title: "centuries", file: `${SUPABASE_AUDIO_BASE}/centuries.mp3` },
+      { id: "s47", title: "dumb dumb - Jeon Somi", file: `${SUPABASE_AUDIO_BASE}/dumb%20dumb%20-%20jeon%20somi.mp3` },
+      { id: "s48", title: "tere liye", file: `${SUPABASE_AUDIO_BASE}/tere%20liye.mp3` },
+      { id: "s49", title: "watermelon sugar", file: `${SUPABASE_AUDIO_BASE}/watermelon%20sugar.mp3` },
+      { id: "s50", title: "shivers - Ed Sheeran", file: `${SUPABASE_AUDIO_BASE}/shivers%20-%20ed%20sheeran.mp3` },
+      { id: "s51", title: "way back home", file: `${SUPABASE_AUDIO_BASE}/way%20back%20home.mp3` },
+      { id: "s52", title: "sunflower", file: `${SUPABASE_AUDIO_BASE}/sunflower.mp3` },
+      { id: "s53", title: "ice cream", file: `${SUPABASE_AUDIO_BASE}/icecream.mp3` },
+      { id: "s54", title: "aankhon mein teri", file: `${SUPABASE_AUDIO_BASE}/Aankhon%20Mein%20Teri.mp3` },
+      { id: "s55", title: "future - Red Velvet", file: `${SUPABASE_AUDIO_BASE}/future%20red%20velvet.mp3` },
+      { id: "s56", title: "heat waves", file: `${SUPABASE_AUDIO_BASE}/heat%20waves.mp3` },
+      { id: "s57", title: "as if it's your last", file: `${SUPABASE_AUDIO_BASE}/as%20if%20it's%20your%20last.mp3` },
+      { id: "s58", title: "anti hero - ts", file: `${SUPABASE_AUDIO_BASE}/anti%20hero.mp3` }
       
       
     ];
@@ -6089,6 +6112,207 @@
       });
     }
 
+    function sendProfileReaction(emoji) {
+      if (!activeProfilePeerId || !channel || !currentUser) return;
+      channel.send({
+        type: "broadcast",
+        event: "peer_interaction",
+        payload: { action: "reaction", emoji: emoji, from: currentUser.username, to: activeProfilePeerId }
+      });
+    }
+
+    /* --- PASTE SONG SUGGESTIONS JAVASCRIPT DIRECTLY HERE --- */
+    let cachedSongSuggestions = [];
+
+    async function openSongSuggestionsModal() {
+      const modal = document.getElementById("songSuggestionsModal");
+      if (!modal) return;
+      modal.classList.remove("hidden");
+
+      const devsFilter = document.getElementById("devsFilterOption");
+      if (devsFilter) {
+        if (currentNetwork === "DEVS") {
+          devsFilter.classList.remove("hidden");
+          devsFilter.classList.add("flex");
+        } else {
+          devsFilter.classList.add("hidden");
+          devsFilter.classList.remove("flex");
+        }
+      }
+
+      await fetchSongSuggestions();
+    }
+
+    function closeSongSuggestionsModal() {
+      const modal = document.getElementById("songSuggestionsModal");
+      if (modal) modal.classList.add("hidden");
+      const feedback = document.getElementById("suggestFeedback");
+      if (feedback) feedback.innerText = "";
+    }
+
+    async function fetchSongSuggestions() {
+      const container = document.getElementById("suggestedSongsContainer");
+      if (!container) return;
+
+      try {
+        const { data, error } = await sb
+          .from("song_suggestions")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        cachedSongSuggestions = data || [];
+        renderSongSuggestionsUI();
+      } catch (err) {
+        console.error("Fetch suggestions failed:", err);
+        container.innerHTML = `<div class="text-center py-6 text-xs text-rose-500">Failed to load suggestions.</div>`;
+      }
+    }
+
+    function renderSongSuggestionsUI() {
+      const container = document.getElementById("suggestedSongsContainer");
+      const countLabel = document.getElementById("suggestCountLabel");
+      const hideAdded = document.getElementById("hideAddedCheck")?.checked;
+      if (!container) return;
+
+      let list = cachedSongSuggestions;
+      if (hideAdded) {
+        list = list.filter(item => item.status !== "added");
+      }
+
+      if (countLabel) {
+        countLabel.innerText = `${list.length} suggestion${list.length === 1 ? '' : 's'}`;
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-xs text-zinc-400">No suggestions found. Be the first to add one!</div>`;
+        return;
+      }
+
+      const isDevHost = currentNetwork === "DEVS";
+
+      container.innerHTML = list.map(item => {
+        const isAdded = item.status === "added";
+        const isAuthor = currentUser && (item.submitted_by_name === currentUser.username || item.submitted_by_uid === currentUser.id);
+
+        return `
+          <div class="flex items-center justify-between p-2.5 rounded-xl border ${isAdded ? 'border-emerald-500/20 bg-emerald-500/[0.03]' : 'border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40'} transition">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+              ${isDevHost ? `
+                <input 
+                  type="checkbox" 
+                  ${isAdded ? 'checked' : ''} 
+                  onchange="toggleSongStatus('${item.id}', this.checked)"
+                  class="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900 cursor-pointer h-4 w-4"
+                  title="Mark as added"
+                />
+              ` : `
+                <span class="w-2 h-2 rounded-full ${isAdded ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600'} shrink-0"></span>
+              `}
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-xs font-medium text-zinc-900 dark:text-zinc-100 truncate ${isAdded ? 'line-through opacity-70' : ''}">${item.song_title}</span>
+                  ${item.artist ? `<span class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">• ${item.artist}</span>` : ''}
+                </div>
+                <div class="text-[10px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5 mt-0.5">
+                  <span>by ${item.submitted_by_name || 'Anonymous'}</span>
+                  ${isAdded ? `<span class="text-emerald-500 font-semibold">• Added</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            ${(isAuthor || isDevHost) ? `
+              <button 
+                onclick="deleteSongSuggestion('${item.id}')" 
+                class="p-1 rounded text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition text-xs" 
+                title="Remove suggestion"
+              >
+                ✕
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function handleSongSubmission(e) {
+      e.preventDefault();
+      const titleInput = document.getElementById("suggestTitleInput");
+      const artistInput = document.getElementById("suggestArtistInput");
+      const submitBtn = document.getElementById("suggestSubmitBtn");
+      const feedback = document.getElementById("suggestFeedback");
+
+      const songTitle = titleInput.value.trim();
+      const artist = artistInput.value.trim();
+      if (!songTitle) return;
+
+      submitBtn.disabled = true;
+      feedback.className = "text-[11px] text-zinc-500";
+      feedback.innerText = "Submitting...";
+
+      try {
+        const payload = {
+          song_title: songTitle,
+          artist: artist || null,
+          submitted_by_name: currentUser?.username || "Guest",
+          submitted_by_uid: currentUser?.id || null,
+          status: "pending"
+        };
+
+        const { error } = await sb.from("song_suggestions").insert([payload]);
+        if (error) throw error;
+
+        titleInput.value = "";
+        artistInput.value = "";
+        feedback.className = "text-[11px] text-emerald-500 font-medium";
+        feedback.innerText = "Added to requests!";
+        setTimeout(() => { if (feedback) feedback.innerText = ""; }, 2500);
+
+await fetchSongSuggestions();
+      } catch (err) {
+        console.error("Submission failed:", err);
+        feedback.className = "text-[11px] text-rose-500";
+        feedback.innerText = "Error submitting song.";
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function toggleSongStatus(id, isChecked) {
+      if (currentNetwork !== "DEVS") return;
+      try {
+        const nextStatus = isChecked ? "added" : "pending";
+        const { error } = await sb
+          .from("song_suggestions")
+          .update({ status: nextStatus })
+          .eq("id", id);
+
+        if (error) throw error;
+
+        const target = cachedSongSuggestions.find(s => s.id === id);
+        if (target) target.status = nextStatus;
+        renderSongSuggestionsUI();
+      } catch (err) {
+        console.error("Status update error:", err);
+      }
+    }
+
+    async function deleteSongSuggestion(id) {
+      try {
+        const { error } = await sb
+          .from("song_suggestions")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        cachedSongSuggestions = cachedSongSuggestions.filter(s => s.id !== id);
+        renderSongSuggestionsUI();
+      } catch (err) {
+        console.error("Delete suggestion error:", err);
+      }
+    }
+
     const themeBtn = document.getElementById("themeToggle");
     const htmlElem = document.documentElement;
     themeBtn.addEventListener("click", () => {
@@ -6097,63 +6321,129 @@
       parseTwemoji(document.getElementById("themeToggle"));
     });
   </script>
+
   <!-- FLOATING APPLE-STYLE PEER PROFILE CARD -->
-<div id="peerProfileModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden transition-opacity duration-200">
-  <div class="relative w-full max-w-xs overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-2xl backdrop-blur-xl text-slate-100">
-    <!-- Close Button -->
-    <button onclick="closePeerProfileModal()" class="absolute top-3.5 right-3.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/5 text-xs text-slate-400 hover:bg-white/10 hover:text-white transition">✕</button>
+  <div id="peerProfileModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden transition-opacity duration-200">
+    <div class="relative w-full max-w-xs overflow-hidden rounded-2xl border border-white/10 bg-slate-900/90 p-5 shadow-2xl backdrop-blur-xl text-slate-100">
+      <!-- Close Button -->
+      <button onclick="closePeerProfileModal()" class="absolute top-3.5 right-3.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/5 text-xs text-slate-400 hover:bg-white/10 hover:text-white transition">✕</button>
 
-    <!-- Header & Avatar with Glowing Halo -->
-    <div class="flex items-center gap-3.5 mb-4">
-      <div class="relative">
-        <div id="modalUserAvatar" class="h-12 w-12 rounded-full bg-gradient-to-tr from-brand to-indigo-500 flex items-center justify-center text-sm font-bold shadow-inner uppercase tracking-wider text-white">??</div>
-        <div id="modalMusicPulseRing" class="absolute -inset-1 rounded-full border border-brand/50 animate-ping opacity-60 hidden pointer-events-none"></div>
-      </div>
-      <div class="min-w-0 flex-1">
-        <div class="flex items-center gap-1.5">
-          <h4 id="modalUserName" class="text-sm font-bold truncate tracking-tight text-white">Peer</h4>
-          <span class="rounded px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider bg-white/10 text-brand font-semibold">Campus</span>
+      <!-- Header & Avatar with Glowing Halo -->
+      <div class="flex items-center gap-3.5 mb-4">
+        <div class="relative">
+          <div id="modalUserAvatar" class="h-12 w-12 rounded-full bg-gradient-to-tr from-brand to-indigo-500 flex items-center justify-center text-sm font-bold shadow-inner uppercase tracking-wider text-white">??</div>
+          <div id="modalMusicPulseRing" class="absolute -inset-1 rounded-full border border-brand/50 animate-ping opacity-60 hidden pointer-events-none"></div>
         </div>
-        <p id="modalUserStatus" class="text-[11px] text-slate-400 truncate mt-0.5">Online via local Wi-Fi</p>
-      </div>
-    </div>
-
-    <!-- Live "Now Playing" Capsule -->
-    <div id="modalNowPlayingSection" class="mb-4 rounded-xl border border-white/5 bg-white/[0.03] p-3 transition hover:bg-white/[0.05]">
-      <div class="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-slate-400 mb-1.5">
-        <span class="flex items-center gap-1.5">
-          <span class="relative flex h-2 w-2">
-            <span id="modalSongPingDot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 hidden"></span>
-            <span id="modalSongStaticDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
-          </span>
-          Now Playing
-        </span>
-        <span id="modalSongDuration" class="opacity-60 text-[9px]">LAN Sync</span>
-      </div>
-
-      <div class="flex items-center justify-between gap-2">
         <div class="min-w-0 flex-1">
-          <p id="modalSongTitle" class="text-xs font-semibold text-slate-200 truncate font-sans">No track active</p>
+          <div class="flex items-center gap-1.5">
+            <h4 id="modalUserName" class="text-sm font-bold truncate tracking-tight text-white">Peer</h4>
+            <span class="rounded px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider bg-white/10 text-brand font-semibold">Campus</span>
+          </div>
+          <p id="modalUserStatus" class="text-[11px] text-slate-400 truncate mt-0.5">Online via local Wi-Fi</p>
         </div>
-        <!-- Listen Along Action -->
-        <button id="modalListenAlongBtn" class="shrink-0 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-brand text-slate-950 hover:brightness-110 active:scale-95 transition hidden">
-          🎧 Listen Along
-        </button>
       </div>
-    </div>
 
-    <!-- Quick Interactions Bar (Nudge & Reaction Stamps) -->
-    <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/5">
-      <button onclick="sendPeerNudge()" class="flex-1 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 text-[11px] font-medium text-slate-300 transition flex items-center justify-center gap-1.5">
-        <span>⚡</span> Nudge
-      </button>
-      <div class="flex items-center gap-1">
-        <button onclick="sendProfileReaction('🎧')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🎧</button>
-        <button onclick="sendProfileReaction('🔥')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🔥</button>
-        <button onclick="sendProfileReaction('☕')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">☕</button>
+      <!-- Live "Now Playing" Capsule -->
+      <div id="modalNowPlayingSection" class="mb-4 rounded-xl border border-white/5 bg-white/[0.03] p-3 transition hover:bg-white/[0.05]">
+        <div class="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-slate-400 mb-1.5">
+          <span class="flex items-center gap-1.5">
+            <span class="relative flex h-2 w-2">
+              <span id="modalSongPingDot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 hidden"></span>
+              <span id="modalSongStaticDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+            </span>
+            Now Playing
+          </span>
+          <span id="modalSongDuration" class="opacity-60 text-[9px]">LAN Sync</span>
+        </div>
+
+        <div class="flex items-center justify-between gap-2">
+          <div class="min-w-0 flex-1">
+            <p id="modalSongTitle" class="text-xs font-semibold text-slate-200 truncate font-sans">No track active</p>
+          </div>
+          <!-- Listen Along Action -->
+          <button id="modalListenAlongBtn" class="shrink-0 px-2.5 py-1 text-[11px] font-bold rounded-lg bg-brand text-slate-950 hover:brightness-110 active:scale-95 transition hidden">
+            🎧 Listen Along
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Interactions Bar (Nudge & Reaction Stamps) -->
+      <div class="flex items-center justify-between gap-1.5 pt-1 border-t border-white/5">
+        <button onclick="sendPeerNudge()" class="flex-1 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 text-[11px] font-medium text-slate-300 transition flex items-center justify-center gap-1.5">
+          <span>⚡</span> Nudge
+        </button>
+        <div class="flex items-center gap-1">
+          <button onclick="sendProfileReaction('🎧')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🎧</button>
+          <button onclick="sendProfileReaction('🔥')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">🔥</button>
+          <button onclick="sendProfileReaction('☕')" class="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 active:scale-90 text-sm flex items-center justify-center transition">☕</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- SONG SUGGESTIONS MODAL -->
+  <div id="songSuggestionsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity">
+    <div class="w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Suggest Songs</h3>
+          <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Request tracks to be added to the station queue</p>
+        </div>
+        <button onclick="closeSongSuggestionsModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Suggestion Input Form -->
+      <div class="p-4 border-b border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <form id="songSuggestForm" onsubmit="handleSongSubmission(event)" class="space-y-2.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input 
+              type="text" 
+              id="suggestTitleInput" 
+              required 
+              placeholder="Song Title" 
+              class="w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
+            />
+            <input 
+              type="text" 
+              id="suggestArtistInput" 
+              placeholder="Artist (Optional)" 
+              class="w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
+            />
+          </div>
+          <div class="flex items-center justify-between pt-1">
+            <span id="suggestFeedback" class="text-[11px] text-zinc-500"></span>
+            <button 
+              type="submit" 
+              id="suggestSubmitBtn" 
+              class="px-3.5 py-1 text-xs font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-50"
+            >
+              Submit Track
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Suggested Songs Feed -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-2" id="suggestedSongsContainer">
+        <div class="text-center py-8 text-xs text-zinc-400">Loading suggestions...</div>
+      </div>
+
+      <!-- Modal Footer Controls -->
+      <div class="px-4 py-2.5 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/30 flex items-center justify-between text-[11px] text-zinc-500">
+        <span id="suggestCountLabel">0 suggestions</span>
+        <div id="devsFilterOption" class="hidden items-center gap-1.5">
+          <input type="checkbox" id="hideAddedCheck" onchange="renderSongSuggestionsUI()" class="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900">
+          <label for="hideAddedCheck" class="cursor-pointer select-none">Hide added</label>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </body>
 </html>
