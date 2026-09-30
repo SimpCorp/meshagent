@@ -1390,32 +1390,54 @@
   </div>
 
   <!-- DEV ACCESS MODAL -->
-  <div id="devAccessModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 space-y-4 shadow-2xl relative">
-      <button onclick="closeDevModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
-
-      <div class="space-y-1">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-devGreen animate-ping"></span>
-          <span class="text-[11px] font-mono font-bold text-devGreen uppercase">Isolated Dev Channel</span>
-        </div>
-        <h3 class="text-base font-bold font-nothing">Enter Developer Key</h3>
-        <p class="text-xs text-slate-500 leading-relaxed">
-          Switching to DEVS disconnects you from the public student room and enters the developer relay.
-        </p>
+<div id="devAccessModal" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden transition-opacity">
+  <div id="devModalCard" class="w-full max-w-sm bg-white dark:bg-zinc-950 border border-zinc-200/90 dark:border-zinc-800/90 rounded-2xl p-5 space-y-4 shadow-xl relative animate-in fade-in zoom-in-95 duration-150">
+    
+    <div class="flex items-start justify-between">
+      <div class="space-y-0.5">
+        <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Restricted Environment</span>
+        <h3 class="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Developer Authentication</h3>
       </div>
-
-      <div class="space-y-2 pt-1">
-        <input id="devPassInput" type="password" placeholder="Developer Passkey" onkeydown="if(event.key==='Enter') verifyDevAccess()" class="w-full bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-devGreen">
-        <p id="devPassError" class="text-xs text-brand font-medium hidden"></p>
-      </div>
-
-      <div class="flex gap-2 pt-1">
-        <button onclick="closeDevModal()" class="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-darkMuted transition">Cancel</button>
-        <button onclick="verifyDevAccess()" class="flex-1 py-2.5 rounded-xl bg-devGreen text-white text-xs font-bold hover:opacity-90 transition shadow-md shadow-devGreen/20 active:scale-95 font-nothing">Unlock DEVS</button>
-      </div>
+      <button onclick="closeDevModal()" aria-label="Close modal" class="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     </div>
+
+    <p class="text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
+      Accessing the development channel disconnects active room sockets and re-routes session data to local test relays.
+    </p>
+
+    <div class="space-y-1.5 pt-0.5">
+      <input 
+        id="devPassInput" 
+        type="password" 
+        placeholder="Enter passkey" 
+        onkeydown="if(event.key==='Enter') verifyDevAccess()" 
+        class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 transition"
+      />
+      <p id="devPassError" class="text-[11px] text-rose-500 font-medium hidden"></p>
+    </div>
+
+    <div class="flex items-center gap-2 pt-1">
+      <button 
+        onclick="closeDevModal()" 
+        class="flex-1 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition active:scale-[0.99]"
+      >
+        Cancel
+      </button>
+      <button 
+        onclick="verifyDevAccess()" 
+        class="flex-1 py-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 transition active:scale-[0.99]"
+      >
+        Authenticate
+      </button>
+    </div>
+
   </div>
+</div>
 
   <!-- RADIO EARPHONES WARNING MODAL -->
   <div id="radioWarningModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
