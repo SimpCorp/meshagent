@@ -2731,7 +2731,8 @@
         renderSearchResults(tracks);
       } catch (err) {
         console.error("Music Search Error:", err);
-        container.innerHTML = `<div class="text-center py-4 text-[10px] text-rose-500">Error: ${escapeHtml(err.message || "Failed to fetch")}</div>`;
+        const errMsg = typeof escapeHtml === "function" ? escapeHtml(err.message || "Failed to fetch") : (err.message || "Failed to fetch");
+        container.innerHTML = `<div class="text-center py-4 text-[10px] text-rose-500">Error: ${errMsg}</div>`;
       }
     }
 
@@ -2744,7 +2745,8 @@
         return;
       }
 
-      // Display Top 5 Options with album art & clean metadata
+      const sanitize = typeof escapeHtml === "function" ? escapeHtml : (str => str || "");
+
       container.innerHTML = tracks.slice(0, 5).map((track, idx) => `
         <div onclick="playProxiedTrack('${track.id}')" 
              class="group flex items-center justify-between p-1.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-darkCard hover:border-brand/60 dark:hover:border-brand/60 hover:shadow-sm cursor-pointer transition">
@@ -2754,8 +2756,8 @@
               <span class="absolute text-[10px] font-mono font-semibold text-slate-400 -z-0">0${idx + 1}</span>
             </div>
             <div class="truncate text-left">
-              <div class="text-[11px] font-semibold text-slate-900 dark:text-slate-100 truncate group-hover:text-brand transition">${escapeHtml(track.title)}</div>
-              <div class="text-[9px] text-slate-400 truncate">${escapeHtml(track.artist || "Unknown Artist")}</div>
+              <div class="text-[11px] font-semibold text-slate-900 dark:text-slate-100 truncate group-hover:text-brand transition">${sanitize(track.title)}</div>
+              <div class="text-[9px] text-slate-400 truncate">${sanitize(track.artist || "Unknown Artist")}</div>
             </div>
           </div>
           <div class="flex items-center space-x-2 shrink-0 pr-1">
@@ -2767,13 +2769,17 @@
         </div>
       `).join("");
     }
+
     function playProxiedTrack(id) {
-      const track = (window.currentSearchResults || currentSearchResults || []).find(t => String(t.id) === String(id));
+      const results = window.currentSearchResults || [];
+      const track = results.find(t => String(t.id) === String(id));
       if (!track || !track.streamUrl) return;
 
-      stopAndKillActiveAudio();
+      if (typeof stopAndKillActiveAudio === "function") {
+        stopAndKillActiveAudio();
+      }
 
-      // Masked stream relayed byte-for-byte through your Cloudflare Pages domain
+      // Masked stream relayed byte-for-byte through Cloudflare Pages
       const proxiedUrl = `/api/music?mode=stream&url=${encodeURIComponent(track.streamUrl)}`;
 
       activeRadioPlayer = new Audio();
@@ -2790,6 +2796,12 @@
         pauseBtn.innerText = "⏸";
       }
 
+      // Explicitly trigger playback with promise protection
+      activeRadioPlayer.play().catch(playErr => {
+        console.warn("Autoplay / stream error:", playErr);
+        if (pauseBtn) pauseBtn.innerText = "▶";
+      });
+    }
       activeRadioPlayer.play().catch(e => {
         console.warn("Stream playback failed:", e);
         if (statusTag) statusTag.innerText = "Stream failed to load";
