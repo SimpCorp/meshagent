@@ -254,6 +254,27 @@
         padding-bottom: max(0.75rem, var(--sab));
       }
     }
+  /* Sleek custom scrollbars */
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(161, 161, 170, 0.25);
+      border-radius: 9999px;
+    }
+    .dark .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(113, 113, 122, 0.35);
+    }
+    .dark .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(113, 113, 122, 0.6);
+    }
+    .custom-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(113, 113, 122, 0.35) transparent;
+    }
   </style>
 </head>
 <body class="bg-lightBg dark:bg-darkBg text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans flex flex-col justify-between select-none antialiased">
@@ -6124,25 +6145,25 @@
       });
     }
 
-    /* --- PASTE SONG SUGGESTIONS JAVASCRIPT DIRECTLY HERE --- */
+    /* --- REFINED SONG SUGGESTIONS LOGIC --- */
     let cachedSongSuggestions = [];
+    let currentSuggestionFilter = "all";
+
+    function timeAgo(dateString) {
+      if (!dateString) return "";
+      const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+      if (seconds < 60) return "just now";
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}m ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h ago`;
+      return `${Math.floor(hours / 24)}d ago`;
+    }
 
     async function openSongSuggestionsModal() {
       const modal = document.getElementById("songSuggestionsModal");
       if (!modal) return;
       modal.classList.remove("hidden");
-
-      const devsFilter = document.getElementById("devsFilterOption");
-      if (devsFilter) {
-        if (currentNetwork === "DEVS") {
-          devsFilter.classList.remove("hidden");
-          devsFilter.classList.add("flex");
-        } else {
-          devsFilter.classList.add("hidden");
-          devsFilter.classList.remove("flex");
-        }
-      }
-
       await fetchSongSuggestions();
     }
 
@@ -6151,6 +6172,28 @@
       if (modal) modal.classList.add("hidden");
       const feedback = document.getElementById("suggestFeedback");
       if (feedback) feedback.innerText = "";
+    }
+
+    function setSuggestionsFilter(filterType) {
+      currentSuggestionFilter = filterType;
+      
+      const tabs = {
+        all: document.getElementById("filterTabAll"),
+        pending: document.getElementById("filterTabPending"),
+        added: document.getElementById("filterTabAdded")
+      };
+
+      Object.keys(tabs).forEach(key => {
+        const tab = tabs[key];
+        if (!tab) return;
+        if (key === filterType) {
+          tab.className = "px-2.5 py-0.5 rounded-md font-medium text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 shadow-xs transition";
+        } else {
+          tab.className = "px-2.5 py-0.5 rounded-md font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition";
+        }
+      });
+
+      renderSongSuggestionsUI();
     }
 
     async function fetchSongSuggestions() {
@@ -6175,67 +6218,97 @@
     function renderSongSuggestionsUI() {
       const container = document.getElementById("suggestedSongsContainer");
       const countLabel = document.getElementById("suggestCountLabel");
-      const hideAdded = document.getElementById("hideAddedCheck")?.checked;
       if (!container) return;
 
-      let list = cachedSongSuggestions;
-      if (hideAdded) {
+      let list = [...cachedSongSuggestions];
+
+      if (currentSuggestionFilter === "pending") {
         list = list.filter(item => item.status !== "added");
+      } else if (currentSuggestionFilter === "added") {
+        list = list.filter(item => item.status === "added");
       }
 
+      list.sort((a, b) => {
+        if (a.status === b.status) return 0;
+        return a.status === "added" ? 1 : -1;
+      });
+
       if (countLabel) {
-        countLabel.innerText = `${list.length} suggestion${list.length === 1 ? '' : 's'}`;
+        countLabel.innerText = `${list.length} track${list.length === 1 ? '' : 's'}`;
       }
 
       if (list.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-xs text-zinc-400">No suggestions found. Be the first to add one!</div>`;
+        container.innerHTML = `<div class="text-center py-10 text-xs text-zinc-400">No tracks in this view.</div>`;
         return;
       }
 
-      const isDevHost = currentNetwork === "DEVS";
+      const isDevHost = (typeof currentNetwork !== "undefined" && currentNetwork === "DEVS");
 
       container.innerHTML = list.map(item => {
         const isAdded = item.status === "added";
-        const isAuthor = currentUser && (item.submitted_by_name === currentUser.username || item.submitted_by_uid === currentUser.id);
+        const isAuthor = (typeof currentUser !== "undefined" && currentUser) && 
+                         (item.submitted_by_name === currentUser.username || item.submitted_by_uid === currentUser.id);
 
         return `
-          <div class="flex items-center justify-between p-2.5 rounded-xl border ${isAdded ? 'border-emerald-500/20 bg-emerald-500/[0.03]' : 'border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/40'} transition">
+          <div class="flex items-center justify-between px-3 py-2 rounded-xl border ${isAdded ? 'border-zinc-200/50 dark:border-zinc-800/40 bg-zinc-50/40 dark:bg-zinc-900/20 opacity-60' : 'border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60'} transition">
             <div class="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
               ${isDevHost ? `
                 <input 
                   type="checkbox" 
                   ${isAdded ? 'checked' : ''} 
                   onchange="toggleSongStatus('${item.id}', this.checked)"
-                  class="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900 cursor-pointer h-4 w-4"
+                  class="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900 cursor-pointer h-3.5 w-3.5"
                   title="Mark as added"
                 />
               ` : `
-                <span class="w-2 h-2 rounded-full ${isAdded ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-600'} shrink-0"></span>
+                <span class="w-1.5 h-1.5 rounded-full ${isAdded ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'} shrink-0"></span>
               `}
               <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-xs font-medium text-zinc-900 dark:text-zinc-100 truncate ${isAdded ? 'line-through opacity-70' : ''}">${item.song_title}</span>
-                  ${item.artist ? `<span class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">• ${item.artist}</span>` : ''}
+                <div class="flex items-baseline gap-1.5 truncate">
+                  <span class="text-xs font-medium text-zinc-900 dark:text-zinc-100 truncate ${isAdded ? 'line-through text-zinc-400 dark:text-zinc-500' : ''}">${item.song_title}</span>
+                  ${item.artist ? `<span class="text-[11px] text-zinc-400 truncate">— ${item.artist}</span>` : ''}
                 </div>
-                <div class="text-[10px] text-zinc-400 dark:text-zinc-500 flex items-center gap-1.5 mt-0.5">
-                  <span>by ${item.submitted_by_name || 'Anonymous'}</span>
-                  ${isAdded ? `<span class="text-emerald-500 font-semibold">• Added</span>` : ''}
+                <div class="text-[10px] text-zinc-400 flex items-center gap-1.5 mt-0.5">
+                  <span>${item.submitted_by_name || 'Guest'}</span>
+                  <span>•</span>
+                  <span>${timeAgo(item.created_at)}</span>
+                  ${isAdded ? `<span class="text-emerald-500 font-medium">• Added</span>` : ''}
                 </div>
               </div>
             </div>
-
-            ${(isAuthor || isDevHost) ? `
-              <button 
-                onclick="deleteSongSuggestion('${item.id}')" 
-                class="p-1 rounded text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition text-xs" 
-                title="Remove suggestion"
-              >
-                ✕
-              </button>
-            ` : ''}
+            <div class="flex items-center gap-1 shrink-0">
+              ${isDevHost ? `
+                <button 
+                  onclick="copySongTitle('${item.song_title.replace(/'/g, "\\'")}${item.artist ? ' - ' + item.artist.replace(/'/g, "\\'") : ''}')"
+                  class="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition text-[10px] font-mono"
+                  title="Copy song name"
+                >
+                  copy
+                </button>
+              ` : ''}
+              ${(isAuthor || isDevHost) ? `
+                <button 
+                  onclick="deleteSongSuggestion('${item.id}')" 
+                  class="p-1 rounded text-zinc-400 hover:text-rose-500 hover:bg-rose-500/10 transition text-xs" 
+                  title="Remove suggestion"
+                >
+                  ✕
+                </button>
+              ` : ''}
+            </div>
           </div>
         `;
       }).join("");
+    }
+
+    function copySongTitle(text) {
+      navigator.clipboard.writeText(text);
+      const feedback = document.getElementById("suggestFeedback");
+      if (feedback) {
+        feedback.className = "text-[11px] text-emerald-500 font-medium";
+        feedback.innerText = "Copied to clipboard!";
+        setTimeout(() => { feedback.innerText = ""; }, 2000);
+      }
     }
 
     async function handleSongSubmission(e) {
@@ -6257,8 +6330,8 @@
         const payload = {
           song_title: songTitle,
           artist: artist || null,
-          submitted_by_name: currentUser?.username || "Guest",
-          submitted_by_uid: currentUser?.id || null,
+          submitted_by_name: (typeof currentUser !== "undefined" && currentUser?.username) ? currentUser.username : "Guest",
+          submitted_by_uid: (typeof currentUser !== "undefined" && currentUser?.id) ? currentUser.id : null,
           status: "pending"
         };
 
@@ -6268,10 +6341,10 @@
         titleInput.value = "";
         artistInput.value = "";
         feedback.className = "text-[11px] text-emerald-500 font-medium";
-        feedback.innerText = "Added to requests!";
+        feedback.innerText = "Added to queue";
         setTimeout(() => { if (feedback) feedback.innerText = ""; }, 2500);
 
-await fetchSongSuggestions();
+        await fetchSongSuggestions();
       } catch (err) {
         console.error("Submission failed:", err);
         feedback.className = "text-[11px] text-rose-500";
@@ -6282,7 +6355,7 @@ await fetchSongSuggestions();
     }
 
     async function toggleSongStatus(id, isChecked) {
-      if (currentNetwork !== "DEVS") return;
+      if (typeof currentNetwork !== "undefined" && currentNetwork !== "DEVS") return;
       try {
         const nextStatus = isChecked ? "added" : "pending";
         const { error } = await sb
@@ -6384,15 +6457,15 @@ await fetchSongSuggestions();
     </div>
   </div>
 
-  <!-- SONG SUGGESTIONS MODAL -->
-  <div id="songSuggestionsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity">
-    <div class="w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-150">
+  <!-- REFINED SONG SUGGESTIONS MODAL -->
+  <div id="songSuggestionsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs transition-opacity">
+    <div class="w-full max-w-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-150">
       
       <!-- Modal Header -->
-      <div class="px-5 py-4 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between">
+      <div class="px-5 py-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/40">
         <div>
-          <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Suggest Songs</h3>
-          <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Request tracks to be added to the station queue</p>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">Song Requests</h3>
+          <p class="text-[11px] text-zinc-500 dark:text-zinc-400">Queue suggestions for campus playback</p>
         </div>
         <button onclick="closeSongSuggestionsModal()" class="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -6401,49 +6474,50 @@ await fetchSongSuggestions();
         </button>
       </div>
 
-      <!-- Suggestion Input Form -->
-      <div class="p-4 border-b border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/50">
-        <form id="songSuggestForm" onsubmit="handleSongSubmission(event)" class="space-y-2.5">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <!-- Filter Bar & Counter -->
+      <div class="px-5 py-2.5 border-b border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between text-xs bg-white dark:bg-zinc-950">
+        <div class="flex items-center gap-1.5 p-0.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg text-[11px]">
+          <button id="filterTabAll" onclick="setSuggestionsFilter('all')" class="px-2.5 py-0.5 rounded-md font-medium text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 shadow-xs transition">All</button>
+          <button id="filterTabPending" onclick="setSuggestionsFilter('pending')" class="px-2.5 py-0.5 rounded-md font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Pending</button>
+          <button id="filterTabAdded" onclick="setSuggestionsFilter('added')" class="px-2.5 py-0.5 rounded-md font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">Added</button>
+        </div>
+        <span id="suggestCountLabel" class="text-[11px] font-mono text-zinc-400">0 tracks</span>
+      </div>
+
+      <!-- Feed with custom scrollbar -->
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-1.5" id="suggestedSongsContainer">
+        <div class="text-center py-10 text-xs text-zinc-400">Loading queue...</div>
+      </div>
+
+      <!-- Anchored Input Form at Bottom -->
+      <div class="p-3.5 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <form id="songSuggestForm" onsubmit="handleSongSubmission(event)" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-5 gap-2">
             <input 
               type="text" 
               id="suggestTitleInput" 
               required 
               placeholder="Song Title" 
-              class="w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
+              class="sm:col-span-3 w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
             />
             <input 
               type="text" 
               id="suggestArtistInput" 
               placeholder="Artist (Optional)" 
-              class="w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
+              class="sm:col-span-2 w-full px-3 py-1.5 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600"
             />
           </div>
-          <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center justify-between pt-0.5">
             <span id="suggestFeedback" class="text-[11px] text-zinc-500"></span>
             <button 
               type="submit" 
               id="suggestSubmitBtn" 
               class="px-3.5 py-1 text-xs font-medium rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 hover:opacity-90 transition disabled:opacity-50"
             >
-              Submit Track
+              Submit Request
             </button>
           </div>
         </form>
-      </div>
-
-      <!-- Suggested Songs Feed -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-2" id="suggestedSongsContainer">
-        <div class="text-center py-8 text-xs text-zinc-400">Loading suggestions...</div>
-      </div>
-
-      <!-- Modal Footer Controls -->
-      <div class="px-4 py-2.5 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/30 flex items-center justify-between text-[11px] text-zinc-500">
-        <span id="suggestCountLabel">0 suggestions</span>
-        <div id="devsFilterOption" class="hidden items-center gap-1.5">
-          <input type="checkbox" id="hideAddedCheck" onchange="renderSongSuggestionsUI()" class="rounded border-zinc-300 dark:border-zinc-700 text-zinc-900">
-          <label for="hideAddedCheck" class="cursor-pointer select-none">Hide added</label>
-        </div>
       </div>
 
     </div>
