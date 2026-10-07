@@ -689,377 +689,452 @@
   </main>
 
   <!-- ==================== VIEW 2: SPLIT DM & GROUP ==================== -->
-  <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-darkCard sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl relative overflow-hidden my-auto">
+  <main id="chatView" class="hidden w-full max-w-6xl mx-auto flex bg-white dark:bg-zinc-950 sm:rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 shadow-2xl relative overflow-hidden my-auto">
     
     <!-- LEFT SIDEBAR -->
-    <section id="sidebarPane" class="w-full sm:w-80 sm:border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-darkMuted/30 h-full shrink-0">
+    <section id="sidebarPane" class="w-full sm:w-80 sm:border-r border-zinc-200/90 dark:border-zinc-800/90 flex flex-col bg-zinc-50/70 dark:bg-zinc-900/40 h-full shrink-0">
       
-      <div class="p-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
+      <!-- Sidebar Top Section -->
+      <div class="p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5">
         <div class="flex justify-between items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-nothing">Conversations</span>
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Messages</span>
           <div class="flex items-center gap-1.5">
-            <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-bold px-2 py-0.5 rounded-full bg-devGreen/15 text-devGreen border border-devGreen/30 hover:bg-devGreen/25 transition shadow-sm font-nothing">
-              ⚙ Manage Users
+            <button id="adminManageUsersBtn" onclick="openAdminUserManagerModal()" class="hidden text-[10px] font-medium px-2 py-0.5 rounded-md bg-zinc-200/70 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-300/60 dark:border-zinc-700/60 hover:bg-zinc-300/60 dark:hover:bg-zinc-700 transition">
+              Manage
             </button>
-            <span id="activeCountBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-mono">0 Online</span>
+            <span id="activeCountBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-200/60 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-zinc-300/40 dark:border-zinc-700/50 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span>0 online</span>
+            </span>
           </div>
         </div>
 
-        <!-- REFINED GROUP & DM TABS WITH 5% VISUAL PROMINENCE ON GROUP -->
-        <div class="flex p-0.5 bg-slate-200/60 dark:bg-darkBg rounded-xl text-xs font-medium gap-0.5">
-          <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition font-semibold">Direct Messages</button>
-          
-          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1.5 rounded-lg bg-brand/10 text-brand border border-brand/20 dark:bg-brand/15 shadow-sm transition font-bold flex items-center justify-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
-            <span>Group</span>
+        <!-- Segmented Tab Control -->
+        <div class="flex p-0.5 bg-zinc-200/60 dark:bg-zinc-900 rounded-xl text-xs font-medium gap-0.5">
+          <button id="tabDirectBtn" onclick="selectDirectTab()" class="flex-1 py-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition">
+            Direct
+          </button>
+          <button id="tabLoungeBtn" onclick="selectLoungeChannel()" class="flex-1 py-1 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs transition font-semibold flex items-center justify-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>Campus Lounge</span>
           </button>
         </div>
 
+        <!-- Search Bar -->
         <div class="relative">
-          <input id="userSearchInput" type="text" placeholder="Search peers... (Ctrl+K)" oninput="filterUsers()" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:border-brand pr-8">
-          <span class="absolute right-2.5 top-1.5 text-[10px] text-slate-400 font-mono hidden sm:inline">⌘K</span>
+          <input id="userSearchInput" type="text" placeholder="Search people..." oninput="filterUsers()" class="w-full bg-white dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 pr-8 transition">
+          <span class="absolute right-2.5 top-2 text-[10px] text-zinc-400 font-mono hidden sm:inline select-none">⌘K</span>
         </div>
       </div>
 
       <!-- PINNED SOPHIE AI -->
-      <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-purple-500/5 to-transparent">
-        <div onclick="selectSophieAI()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-purple-500/10 border border-purple-500/20 shadow-sm group">
+      <div class="p-2 border-b border-zinc-200/60 dark:border-zinc-800/60">
+        <div onclick="selectSophieAI()" class="w-full p-2.5 rounded-xl flex items-center justify-between transition cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 group">
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">🤖</div>
+            <div class="w-7 h-7 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <circle cx="12" cy="5" r="2"></circle>
+                <path d="M12 7v4"></path>
+                <line x1="8" y1="16" x2="8" y2="16"></line>
+                <line x1="16" y1="16" x2="16" y2="16"></line>
+              </svg>
+            </div>
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
-                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Sophie</p>
-                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30 font-nothing">AI BOT</span>
+                <p class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">Sophie</p>
+                <span class="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.2 rounded bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Assistant</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Sarcastic Campus LLM • 24/7 Online</p>
+              <p class="text-[11px] text-zinc-400 truncate">Campus knowledge & queries</p>
             </div>
           </div>
-          <span class="text-[10px] text-purple-500 font-bold group-hover:translate-x-0.5 transition">Ask →</span>
+          <svg class="w-3.5 h-3.5 text-zinc-400 group-hover:translate-x-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </div>
       </div>
 
       <!-- PINNED VAMS HUB -->
-      <div class="p-2 border-b border-slate-200/60 dark:border-slate-800/60 bg-gradient-to-r from-red-500/5 to-transparent">
-        <div onclick="selectVideoBot()" class="w-full p-2.5 rounded-2xl flex items-center justify-between transition cursor-pointer hover:bg-red-500/10 border border-red-500/20 shadow-sm group">
+      <div class="p-2 border-b border-zinc-200/60 dark:border-zinc-800/60">
+        <div onclick="selectVideoBot()" class="w-full p-2.5 rounded-xl flex items-center justify-between transition cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-800 group">
           <div class="flex items-center gap-2.5 truncate">
-            <div class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">🎬</div>
+            <div class="w-7 h-7 rounded-lg bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center shrink-0">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+            </div>
             <div class="truncate text-left min-w-0">
               <div class="flex items-center gap-1.5">
-                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">Vams</p>
-                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 font-nothing">MEDIA</span>
+                <p class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">Vams</p>
+                <span class="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.2 rounded bg-zinc-200/80 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">Media</span>
               </div>
-              <p class="text-[10px] text-slate-400 font-medium truncate">Video's and Images</p>
+              <p class="text-[11px] text-zinc-400 truncate">Photo & video index</p>
             </div>
           </div>
-          <span class="text-[10px] text-red-500 font-bold group-hover:translate-x-0.5 transition">Search →</span>
+          <svg class="w-3.5 h-3.5 text-zinc-400 group-hover:translate-x-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </div>
       </div>
 
       <!-- Peers List Area -->
       <div id="usersList" class="flex-1 overflow-y-auto p-2 space-y-1 custom-scroll"></div>
 
-      <!-- REFINED & READABLE CAMPUS AUDIO TERMINAL -->
-      <div class="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-100/60 dark:bg-[#0E121A] space-y-2">
+      <!-- AUDIO HUB MINI DOCK -->
+      <div class="p-3 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/50 dark:bg-zinc-900/60 space-y-2.5">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-1.5 truncate">
-            <span class="w-2 h-2 rounded-full bg-brand shrink-0"></span>
-            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-tight">Audio Hub</span>
+          <div class="flex items-center gap-2 truncate">
+            <svg class="w-3.5 h-3.5 text-zinc-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"></path>
+              <circle cx="6" cy="18" r="3"></circle>
+              <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <span class="text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-tight">Audio Hub</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-[10px] transition text-slate-800 dark:text-slate-200 shadow-sm">⏸</button>
-            <span id="radioStatusTag" class="text-[10px] font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-darkCard px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 truncate max-w-[110px]">Idle</span>
-            <button id="radioExpandBtn" onclick="toggleMaximizeMusic(true)" title="Maximize Player" class="w-5 h-5 rounded-full bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[9px] font-bold text-slate-600 dark:text-slate-300 transition shadow-sm active:scale-95">⛶</button>
+            <button id="radioPauseBtn" onclick="toggleRadioPlayback()" class="hidden w-5 h-5 rounded-full bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center justify-center text-[10px] transition text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-xs">
+              ⏸
+            </button>
+            <span id="radioStatusTag" class="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-white dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-200/80 dark:border-zinc-800 truncate max-w-[105px]">
+              Idle
+            </span>
+            <button id="radioExpandBtn" onclick="toggleMaximizeMusic(true)" title="Maximize Player" class="w-5 h-5 rounded-md bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
           </div>
         </div>
         
-        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono text-[10px]">
-          <button id="radioTab-english" onclick="requestRadioChannel('English')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">ENG</button>
-          <button id="radioTab-hindi" onclick="requestRadioChannel('Hindi')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">HIN</button>
-          <button id="radioTab-south" onclick="requestRadioChannel('South')" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">S.IND</button>
-          <button id="radioTab-search" onclick="toggleGlobalAudioSearch()" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">SEARCH</button>
-          <button id="radioTab-saved" onclick="toggleSavedMusicView()" class="radio-category-tab py-1 rounded-lg bg-white dark:bg-darkCard hover:border-brand border border-slate-200 dark:border-slate-800 font-semibold transition text-center shadow-sm active:scale-95 text-slate-700 dark:text-slate-300">SAVED</button>
+        <!-- Stream Source Segmented Bar -->
+        <div id="liveRadioButtonsRow" class="grid grid-cols-5 gap-1 font-mono text-[10px] bg-zinc-200/50 dark:bg-zinc-950 p-0.5 rounded-lg border border-zinc-200/60 dark:border-zinc-800/80">
+          <button id="radioTab-english" onclick="requestRadioChannel('English')" class="radio-category-tab py-1 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-center">ENG</button>
+          <button id="radioTab-hindi" onclick="requestRadioChannel('Hindi')" class="radio-category-tab py-1 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-center">HIN</button>
+          <button id="radioTab-south" onclick="requestRadioChannel('South')" class="radio-category-tab py-1 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-center">S.IND</button>
+          <button id="radioTab-search" onclick="toggleGlobalAudioSearch()" class="radio-category-tab py-1 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-center">FIND</button>
+          <button id="radioTab-saved" onclick="toggleSavedMusicView()" class="radio-category-tab py-1 rounded-md text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-center">SAVED</button>
         </div>
 
         <!-- GLOBAL PROXIED MUSIC SEARCH DRAWER -->
         <div id="globalMusicSearchDrawer" class="hidden space-y-2 pt-0.5">
           <div class="flex items-center gap-1.5">
-            <button onclick="toggleGlobalAudioSearch()" class="px-2 py-1 bg-white dark:bg-darkCard hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-200 dark:border-slate-800">← Back</button>
-            <input id="globalMusicSearchInput" type="text" placeholder="Search songs, artists..." onkeydown="if(event.key==='Enter') executeMusicSearch()" class="flex-1 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-[11px] focus:outline-none focus:border-brand text-slate-800 dark:text-slate-200">
-            <button onclick="executeMusicSearch()" class="px-2.5 py-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-[10px] font-medium transition active:scale-95">Fetch</button>
+            <button onclick="toggleGlobalAudioSearch()" class="px-2 py-1 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-[10px] font-medium text-zinc-500 border border-zinc-200 dark:border-zinc-800 transition">← Back</button>
+            <input id="globalMusicSearchInput" type="text" placeholder="Search track, artist..." onkeydown="if(event.key==='Enter'){event.preventDefault();executeMusicSearch();}" class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-zinc-100">
+            <button onclick="executeMusicSearch()" class="px-2.5 py-1 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-md text-[10px] font-medium transition active:scale-95">Search</button>
           </div>
           
-          <div class="flex items-center justify-between text-[9px] text-slate-400 px-1">
+          <div class="flex items-center justify-between text-[10px] font-mono text-zinc-400 px-0.5">
             <span>Routing: Masked Relay</span>
-            <span class="text-amber-500/80">Beta v0.1</span>
+            <span>Edge Gateway</span>
           </div>
 
-          <div id="globalSearchResultsList" class="max-h-64 overflow-y-auto space-y-1.5 custom-scroll pr-1">
-            <div class="text-center py-4 text-[10px] text-slate-400">Search songs across global catalogs...</div>
+          <div id="globalSearchResultsList" class="max-h-60 overflow-y-auto space-y-1 custom-scroll pr-1">
+            <div class="text-center py-4 text-[11px] text-zinc-400">Search global audio index...</div>
           </div>
         </div>
 
+        <!-- SAVED MUSIC DRAWER -->
         <div id="savedMusicDrawer" class="hidden space-y-1.5 pt-0.5">
-          <div class="flex items-center gap-1">
-            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-white dark:bg-darkCard hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-[10px] font-bold text-slate-500 border border-slate-200 dark:border-slate-800">← Radio</button>
-            <input id="savedSongSearchInput" type="text" placeholder="Filter songs..." oninput="filterSavedSongs()" class="flex-1 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-[11px] focus:outline-none focus:border-brand">
+          <div class="flex items-center gap-1.5">
+            <button onclick="toggleSavedMusicView()" class="px-2 py-1 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-[10px] font-medium text-zinc-500 border border-zinc-200 dark:border-zinc-800 transition">← Back</button>
+            <input id="savedSongSearchInput" type="text" placeholder="Filter library..." oninput="filterSavedSongs()" class="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-600">
           </div>
           <div id="savedSongsList" class="max-h-24 overflow-y-auto space-y-1 custom-scroll pr-1"></div>
           
-          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 space-y-1 font-mono text-[10px]">
-            <div class="flex items-center justify-between text-slate-500">
+          <div id="savedScrubberHUD" class="hidden p-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-1 font-mono text-[10px]">
+            <div class="flex items-center justify-between text-zinc-400">
               <span id="savedCurrentTime">0:00</span>
               <span id="savedTotalDuration">0:00</span>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="seekSavedSongDelta(-5)" title="Rewind 5s" class="text-slate-400 hover:text-brand font-bold transition px-1">↺ 5s</button>
-              <input id="savedTrackSeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="flex-1 h-1 bg-slate-200 dark:bg-darkMuted rounded-lg appearance-none cursor-pointer">
-              <button onclick="seekSavedSongDelta(5)" title="Forward 5s" class="text-slate-400 hover:text-brand font-bold transition px-1">5s ↻</button>
+              <button onclick="seekSavedSongDelta(-5)" title="Rewind 5s" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition px-1">↺ 5s</button>
+              <input id="savedTrackSeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="flex-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+              <button onclick="seekSavedSongDelta(5)" title="Forward 5s" class="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition px-1">5s ↻</button>
             </div>
           </div>
         </div>
 
-        <div class="space-y-1 pt-1">
-          <div class="flex justify-between text-[10px] font-semibold text-slate-500 dark:text-slate-400">
-            <span>Master Volume</span>
+        <!-- Master Volume -->
+        <div class="space-y-1 pt-0.5">
+          <div class="flex justify-between text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+            <span>Volume</span>
             <span id="volPercentLabel" class="font-mono">100%</span>
           </div>
-          <div class="flex items-center gap-2 px-1">
-            <span class="text-[10px] text-slate-400">🔈</span>
-            <input id="masterVolumeSlider" type="range" min="0" max="100" value="100" oninput="adjustMasterVolume(this.value)" class="w-full h-1 bg-slate-200 dark:bg-darkBg rounded-lg appearance-none cursor-pointer">
-            <span class="text-[10px] text-slate-400">🔊</span>
+          <div class="flex items-center gap-2">
+            <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            </svg>
+            <input id="masterVolumeSlider" type="range" min="0" max="100" value="100" oninput="adjustMasterVolume(this.value)" class="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+            <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
           </div>
         </div>
       </div>
 
       <!-- Bottom Profile Bar -->
-      <div onclick="openProfileModal()" class="p-2.5 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs glass-nav cursor-pointer hover:bg-slate-100 dark:hover:bg-darkMuted transition group">
+      <div onclick="openProfileModal()" class="p-2.5 border-t border-zinc-200/90 dark:border-zinc-800/90 flex items-center justify-between text-xs bg-white dark:bg-zinc-950 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-900 transition group">
         <div class="flex items-center gap-2.5 truncate">
-          <div class="w-7 h-7 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm font-nothing">
+          <div class="w-7 h-7 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center font-medium text-xs shrink-0">
             <span id="myAvatarLetter">U</span>
           </div>
           <div class="truncate min-w-0">
             <div class="flex items-center gap-1.5">
-              <span id="myUsernameDisplay" class="font-bold text-slate-900 dark:text-white truncate text-xs font-nothing">@me</span>
+              <span id="myUsernameDisplay" class="font-medium text-zinc-900 dark:text-zinc-100 truncate text-xs">@me</span>
               <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div>
             </div>
-            <p id="myBioDisplay" class="text-[10px] text-slate-400 truncate">Tap to edit status...</p>
+            <p id="myBioDisplay" class="text-[11px] text-zinc-400 truncate">Tap to edit status...</p>
           </div>
         </div>
-        <span class="text-[10px] text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white font-medium font-nothing">Settings ⚙</span>
+        <svg class="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
       </div>
     </section>
 
     <!-- RIGHT SECTION: Chat Pane -->
-    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-[#FAFAFC] dark:bg-darkBg relative h-full min-w-0 overflow-hidden">
+    <section id="chatPane" class="hidden sm:flex flex-1 flex-col bg-zinc-50/30 dark:bg-zinc-950 relative h-full min-w-0 overflow-hidden">
       
-      <!-- Maximized Glassmorphic Music Sanctuary (Atmospheric, Light/Dark Adaptive) -->
-      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-10 backdrop-blur-3xl bg-white/90 dark:bg-[#090b10]/90 text-slate-900 dark:text-white border-b sm:border border-slate-200/80 dark:border-white/10 shadow-2xl transition-all duration-500 ease-out opacity-0 pointer-events-none overflow-hidden select-none">
+      <!-- Maximized Music Overlay (Minimalist Ambient Stage) -->
+      <div id="maximizedMusicOverlay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-6 sm:p-10 backdrop-blur-2xl bg-white/95 dark:bg-zinc-950/95 text-zinc-900 dark:text-zinc-50 border-b sm:border border-zinc-200 dark:border-zinc-800 transition-all duration-300 ease-out opacity-0 pointer-events-none overflow-hidden select-none">
         
         <!-- Live Blurred Album Artwork Backdrop -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10">
-          <img id="maxOverlayBlurredBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="Backdrop Blur" class="w-full h-full object-cover scale-150 blur-[90px] saturate-[180%] opacity-35 dark:opacity-25 transition-all duration-1000">
+          <img id="maxOverlayBlurredBackdrop" src="https://picsum.photos/seed/meshage1/600/600" alt="Backdrop Blur" class="w-full h-full object-cover scale-125 blur-3xl opacity-20 dark:opacity-15 transition-all duration-700">
         </div>
 
-        <!-- Header: Identity & Viewport Controls -->
-        <div class="relative z-10 flex items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
-          <div class="flex items-center gap-2.5">
-            <span id="maxOverlayPulse" class="w-2.5 h-2.5 rounded-full bg-brand shadow-[0_0_12px_#D71921] animate-ping"></span>
-            <span id="maxOverlayTrackLabel" class="text-xs font-semibold tracking-wider font-nothing text-slate-700 dark:text-white/80">NOW PLAYING</span>
+        <!-- Header: Identity & Controls -->
+        <div class="relative z-10 flex items-center justify-between pb-4 border-b border-zinc-200/80 dark:border-zinc-800/80">
+          <div class="flex items-center gap-2">
+            <span id="maxOverlayPulse" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span id="maxOverlayTrackLabel" class="text-xs font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Audio Deck</span>
           </div>
 
-          <!-- In-Window Audio Source Switcher Pills -->
-          <div class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 font-mono text-[11px]">
-            <button onclick="requestRadioChannel('English')" id="maxTab-english" class="max-source-tab px-2.5 py-0.5 rounded-full transition hover:text-brand">ENG</button>
-            <button onclick="requestRadioChannel('Hindi')" id="maxTab-hindi" class="max-source-tab px-2.5 py-0.5 rounded-full transition hover:text-brand">HIN</button>
-            <button onclick="requestRadioChannel('South')" id="maxTab-south" class="max-source-tab px-2.5 py-0.5 rounded-full transition hover:text-brand">S.IND</button>
-            <button onclick="requestRadioChannel('Other')" id="maxTab-other" class="max-source-tab px-2.5 py-0.5 rounded-full transition hover:text-brand">OTH</button>
-            <button onclick="triggerSavedFromMax()" id="maxTab-saved" class="max-source-tab px-2.5 py-0.5 rounded-full transition hover:text-brand">LIBRARY</button>
+          <div class="hidden sm:flex items-center gap-1 p-0.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 font-mono text-[11px] border border-zinc-200/80 dark:border-zinc-800">
+            <button onclick="requestRadioChannel('English')" id="maxTab-english" class="max-source-tab px-2.5 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">ENG</button>
+            <button onclick="requestRadioChannel('Hindi')" id="maxTab-hindi" class="max-source-tab px-2.5 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">HIN</button>
+            <button onclick="requestRadioChannel('South')" id="maxTab-south" class="max-source-tab px-2.5 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">S.IND</button>
+            <button onclick="requestRadioChannel('Other')" id="maxTab-other" class="max-source-tab px-2.5 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">OTH</button>
+            <button onclick="triggerSavedFromMax()" id="maxTab-saved" class="max-source-tab px-2.5 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition">SAVED</button>
           </div>
 
-          <button onclick="toggleMaximizeMusic(false)" title="Minimize" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 active:scale-90 flex items-center justify-center transition border border-black/5 dark:border-white/10 text-slate-700 dark:text-white">
-            <span class="text-sm">↙</span>
+          <button onclick="toggleMaximizeMusic(false)" title="Minimize" class="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center transition border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 14 10 14 10 20"></polyline>
+              <polyline points="20 10 14 10 14 4"></polyline>
+              <line x1="14" y1="10" x2="21" y2="3"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
           </button>
         </div>
 
-        <!-- Center Stage: Open Hero Artwork & Fluid Typography (No Rigid File Boxes) -->
-        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-6 max-w-md mx-auto w-full">
-          
-          <!-- Hero Artwork Floating Canvas -->
-          <div class="relative group cursor-pointer" onclick="cycleAlbumArt()" title="Click cover to shuffle aesthetic">
-            <div id="maxArtContainer" class="w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden shadow-[0_24px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-700 ease-out bg-black/5 dark:bg-white/5 relative flex items-center justify-center">
-              
-              <!-- Subtle Hover Ambient Vignette -->
-              <div class="absolute inset-0 z-20 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                <span class="px-3.5 py-1 rounded-full bg-white/90 dark:bg-black/80 text-[10px] font-semibold tracking-wider text-slate-900 dark:text-white shadow-xl">SHUFFLE COVER</span>
+        <!-- Center Stage: Artwork & Metadata -->
+        <div class="relative z-10 flex flex-col items-center justify-center my-auto py-6 max-w-sm mx-auto w-full">
+          <div class="relative group cursor-pointer" onclick="cycleAlbumArt()" title="Click to shuffle art">
+            <div id="maxArtContainer" class="w-60 h-60 sm:w-68 sm:h-68 rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 bg-zinc-100 dark:bg-zinc-900 relative flex items-center justify-center border border-zinc-200/80 dark:border-zinc-800">
+              <div id="maxArtSkeleton" class="absolute inset-0 bg-zinc-100 dark:bg-zinc-900 animate-pulse flex items-center justify-center z-10">
+                <span class="text-zinc-400 text-xs font-mono">Loading art...</span>
               </div>
-
-              <!-- Shimmer Loading Placeholder -->
-              <div id="maxArtSkeleton" class="absolute inset-0 bg-gradient-to-r from-slate-200/40 via-slate-300/40 to-slate-200/40 dark:from-white/5 dark:via-white/10 dark:to-white/5 animate-[pulse_1.5s_infinite] flex items-center justify-center z-10">
-                <span class="text-slate-400 dark:text-white/30 text-xs font-mono">Loading Artwork...</span>
-              </div>
-
-              <!-- Main Cover Image -->
-              <img id="maxOverlayAlbumCover" src="https://picsum.photos/seed/meshage1/600/600" alt="Album Cover" class="w-full h-full object-cover transition-opacity duration-500 opacity-0" onload="onAlbumArtLoaded()">
+              <img id="maxOverlayAlbumCover" src="https://picsum.photos/seed/meshage1/600/600" alt="Album Cover" class="w-full h-full object-cover transition-opacity duration-300 opacity-0" onload="onAlbumArtLoaded()">
             </div>
           </div>
 
-          <!-- Ambient Soundwave Equalizer & Floating Mood Subtitle -->
+          <!-- Soundwave / Lyric Line -->
           <div class="mt-6 flex flex-col items-center space-y-2 text-center w-full px-4">
-            <div id="maxEqualizerBars" class="flex items-center justify-center gap-1 h-4 opacity-70">
-              <span class="w-1 bg-brand rounded-full animate-[bounce_0.8s_infinite] h-2"></span>
-              <span class="w-1 bg-brand rounded-full animate-[bounce_1.1s_infinite] h-4"></span>
-              <span class="w-1 bg-brand rounded-full animate-[bounce_0.6s_infinite] h-1.5"></span>
-              <span class="w-1 bg-brand rounded-full animate-[bounce_0.95s_infinite] h-3"></span>
+            <div id="maxEqualizerBars" class="flex items-center justify-center gap-1 h-3 opacity-60">
+              <span class="w-0.5 bg-zinc-900 dark:bg-zinc-100 rounded-full animate-[bounce_0.8s_infinite] h-2"></span>
+              <span class="w-0.5 bg-zinc-900 dark:bg-zinc-100 rounded-full animate-[bounce_1.1s_infinite] h-3"></span>
+              <span class="w-0.5 bg-zinc-900 dark:bg-zinc-100 rounded-full animate-[bounce_0.6s_infinite] h-1.5"></span>
+              <span class="w-0.5 bg-zinc-900 dark:bg-zinc-100 rounded-full animate-[bounce_0.95s_infinite] h-2.5"></span>
             </div>
-            <p id="maxOverlayLyricLine" class="text-xs sm:text-sm font-medium text-slate-500 dark:text-white/60 tracking-wide font-sans transition-all duration-500">Immerse in the soundscape</p>
+            <p id="maxOverlayLyricLine" class="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate max-w-xs">Connecting to local stream...</p>
           </div>
         </div>
 
         <!-- Controls & Scrubber Area -->
-        <div class="relative z-10 flex flex-col gap-3 pt-4 border-t border-slate-200/60 dark:border-white/[0.08]">
+        <div class="relative z-10 flex flex-col gap-3 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80">
           <div class="flex justify-between items-center">
             <div class="min-w-0 pr-3">
-              <h3 id="maxOverlaySongTitle" class="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg tracking-tight font-nothing truncate max-w-[280px]">Idle</h3>
-              <p id="maxOverlayArtistLabel" class="text-xs text-slate-500 dark:text-white/50 truncate">Select a stream or song</p>
+              <h3 id="maxOverlaySongTitle" class="font-semibold text-zinc-900 dark:text-zinc-50 text-base sm:text-lg tracking-tight truncate max-w-[280px]">Idle</h3>
+              <p id="maxOverlayArtistLabel" class="text-xs text-zinc-400 truncate">Select a stream or track</p>
             </div>
 
-            <!-- Tactile Controls -->
-            <div class="flex items-center gap-3 shrink-0">
-              <button id="maxOverlayPrevBtn" onclick="playPrevSavedSong()" class="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 active:scale-90 flex items-center justify-center text-slate-800 dark:text-white text-xs transition border border-black/5 dark:border-white/10">⏮</button>
-              <button onclick="toggleRadioPlayback()" class="w-11 h-11 rounded-full bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 active:scale-90 text-white dark:text-black flex items-center justify-center font-bold text-sm shadow-xl transition">
+            <!-- Playback Controls -->
+            <div class="flex items-center gap-2.5 shrink-0">
+              <button id="maxOverlayPrevBtn" onclick="playPrevSavedSong()" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 text-xs transition border border-zinc-200 dark:border-zinc-800">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                  <line x1="5" y1="19" x2="5" y2="5"></line>
+                </svg>
+              </button>
+              <button onclick="toggleRadioPlayback()" class="w-10 h-10 rounded-full bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-zinc-900 flex items-center justify-center font-medium text-xs transition">
                 <span id="maxOverlayPlayIcon">▶</span>
               </button>
-              <button id="maxOverlayNextBtn" onclick="playNextSavedSong()" class="w-9 h-9 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 active:scale-90 flex items-center justify-center text-slate-800 dark:text-white text-xs transition border border-black/5 dark:border-white/10">⏭</button>
+              <button id="maxOverlayNextBtn" onclick="playNextSavedSong()" class="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 text-xs transition border border-zinc-200 dark:border-zinc-800">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" y1="5" x2="19" y2="19"></line>
+                </svg>
+              </button>
             </div>
           </div>
 
-          <!-- Saved Music Scrubber (Hidden during Radio Stream) -->
-          <div id="maxOverlayScrubberRow" class="flex flex-col gap-1.5 transition-all duration-300">
-            <input id="maxOverlaySeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="w-full h-1.5 bg-black/10 dark:bg-white/15 hover:bg-black/20 dark:hover:bg-white/25 rounded-lg appearance-none cursor-pointer accent-brand transition-colors">
-            <div class="flex justify-between text-[10px] font-mono text-slate-500 dark:text-white/45">
+          <!-- Saved Track Scrubber Row -->
+          <div id="maxOverlayScrubberRow" class="flex flex-col gap-1 transition-all">
+            <input id="maxOverlaySeekSlider" type="range" min="0" max="100" value="0" oninput="onSavedSeekSliderInput(this.value)" class="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-[10px] font-mono text-zinc-400">
               <span id="maxOverlayCurrentTime">0:00</span>
               <span id="maxOverlayTotalDuration">0:00</span>
             </div>
           </div>
 
-          <!-- Live Broadcast Indicator (Shown during Live Stream) -->
-          <div id="maxOverlayLiveBadge" class="hidden items-center justify-center gap-2 py-2 px-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 dark:text-red-400 text-xs font-mono font-bold">
-            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span>LIVE BROADCAST • ON AIR</span>
+          <!-- Live Broadcast Indicator -->
+          <div id="maxOverlayLiveBadge" class="hidden items-center justify-center gap-2 py-1.5 px-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 text-xs font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span>Broadcast Feed Active</span>
           </div>
         </div>
       </div>
 
       <!-- Chat Header -->
-      <div class="p-3 border-b border-slate-200 dark:border-slate-800/80 flex justify-between items-center glass-nav bg-white/70 dark:bg-darkCard/70 z-10 shrink-0">
+      <div class="p-3 border-b border-zinc-200/80 dark:border-zinc-800/80 flex justify-between items-center bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md z-10 shrink-0">
         <div class="flex items-center gap-2 min-w-0">
-          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-1.5 rounded-lg bg-slate-100 dark:bg-darkMuted mr-1 shrink-0 font-nothing">← Back</button>
+          <button onclick="closeChatMobile()" class="sm:hidden text-xs font-medium text-zinc-600 dark:text-zinc-300 p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 mr-1 shrink-0">
+            ← Back
+          </button>
           
-          <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition min-w-0">
-            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0 font-nothing">?</div>
+          <div id="peerHeaderTrigger" onclick="openActivePeerProfileModal()" class="flex items-center gap-2.5 cursor-pointer hover:opacity-85 transition min-w-0">
+            <div id="activeChatPeerAvatar" class="w-8 h-8 rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center font-medium text-xs shrink-0">?</div>
             <div class="truncate max-w-[140px] sm:max-w-[200px] min-w-0">
               <div class="flex items-center gap-1">
-                <p id="activeChatPeerName" class="text-xs font-bold text-slate-900 dark:text-white truncate font-nothing">Select a peer</p>
+                <p id="activeChatPeerName" class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">Select conversation</p>
                 <span id="activePeerVerifiedIcon" class="hidden inline-flex items-center justify-center">
                   <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
                 </span>
               </div>
-              <p id="activeChatPeerMeta" class="text-[10px] text-slate-400 truncate">No active session</p>
+              <p id="activeChatPeerMeta" class="text-[11px] text-zinc-400 truncate">No active room</p>
             </div>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          <button id="quickMutePeerBtn" onclick="toggleMuteCurrentPeer()" class="hidden w-7 h-7 rounded-full bg-slate-100 dark:bg-darkMuted hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-xs transition" title="Toggle Notifications for Peer">
-            <span id="quickMuteIcon">🔔</span>
+          <button id="quickMutePeerBtn" onclick="toggleMuteCurrentPeer()" class="hidden w-7 h-7 rounded-md bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center text-xs text-zinc-500 transition" title="Toggle Notifications">
+            <span id="quickMuteIcon">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </span>
           </button>
 
-          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-bold flex items-center gap-1 transition shadow-sm disabled:opacity-40 disabled:cursor-not-allowed font-nothing">
-            <span>⚡</span> <span id="pokeBtnLabel">Poke</span>
+          <button id="pokePeerBtn" onclick="sendHapticPoke()" class="hidden px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 text-xs font-medium transition disabled:opacity-40 disabled:cursor-not-allowed">
+            <span id="pokeBtnLabel">Poke</span>
           </button>
 
-          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-3 sm:px-3.5 py-1 rounded-full bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm font-nothing">
-            <span>📞</span> <span class="hidden sm:inline">Call</span>
+          <button id="startCallBtn" onclick="initiateAudioCall()" class="hidden px-2.5 py-1 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium flex items-center gap-1.5 transition">
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span class="hidden sm:inline">Call</span>
           </button>
           
-          <span id="activeNetIndicatorPill" class="hidden sm:inline text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-darkMuted px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 font-medium truncate">
+          <span id="activeNetIndicatorPill" class="hidden sm:inline text-[10px] font-mono text-zinc-500 bg-zinc-100 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800">
             SSSIHL-STUDENT
           </span>
         </div>
       </div>
 
       <!-- Message History Scroll Area -->
-      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2.5 custom-scroll relative min-w-0"></div>
+      <div id="dmChatArea" onscroll="handleChatScroll()" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 custom-scroll relative min-w-0"></div>
 
-      <!-- Realtime Typing Indicator Bubble -->
-      <div id="typingIndicatorBubble" class="hidden px-4 py-1.5 flex items-center gap-2 transition-all">
-        <div class="bg-white dark:bg-darkMuted border border-slate-200/80 dark:border-slate-800 px-3 py-2 rounded-2xl rounded-bl-sm flex items-center gap-1 shadow-sm">
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
-          <span class="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-slate-500 typing-dot"></span>
+      <!-- Realtime Typing Indicator -->
+      <div id="typingIndicatorBubble" class="hidden px-4 py-1.5 flex items-center gap-2">
+        <div class="bg-zinc-100 dark:bg-zinc-900 px-2.5 py-1.5 rounded-lg flex items-center gap-1 border border-zinc-200/80 dark:border-zinc-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 typing-dot"></span>
         </div>
-        <span id="typingUserLabel" class="text-[10px] text-slate-400 font-medium font-mono">@peer is typing...</span>
+        <span id="typingUserLabel" class="text-[10px] text-zinc-400 font-mono">typing...</span>
       </div>
 
-      <!-- Floating Unread New Messages Pill -->
-      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-24 right-4 sm:right-6 px-3.5 py-2 rounded-full bg-slate-950/80 dark:bg-white/90 text-white dark:text-slate-950 text-xs font-bold shadow-xl backdrop-blur flex items-center gap-1.5 transition hover:scale-105 z-10 font-nothing">
+      <!-- Floating Unread Messages Pill -->
+      <button id="scrollDownPill" onclick="scrollChatToBottom(true)" class="hidden absolute bottom-20 right-4 sm:right-6 px-3 py-1.5 rounded-full bg-zinc-900/90 dark:bg-zinc-100/90 text-white dark:text-zinc-900 text-xs font-medium shadow-lg backdrop-blur flex items-center gap-1.5 transition hover:scale-102 z-10">
         <span>↓</span> New messages
       </button>
 
       <!-- Active Quote / Reply Preview Drawer -->
-      <div id="activeReplyBar" class="hidden px-3 sm:px-4 py-1.5 sm:py-2 border-t border-slate-200 dark:border-slate-800/80 bg-slate-100/80 dark:bg-darkMuted/60 flex items-center justify-between text-xs z-10 smooth-transition">
-        <div class="flex items-center gap-2 truncate border-l-2 border-brand pl-2 min-w-0">
+      <div id="activeReplyBar" class="hidden px-3 sm:px-4 py-1.5 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-between text-xs z-10">
+        <div class="flex items-center gap-2 truncate border-l-2 border-zinc-900 dark:border-zinc-100 pl-2 min-w-0">
           <div class="truncate min-w-0">
-            <span class="font-bold text-[10px] sm:text-[11px] text-brand font-nothing" id="replyAuthorLabel">Replying to @peer</span>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[200px] sm:max-w-md" id="replySnippetLabel">Message snippet...</p>
+            <span class="font-medium text-[11px] text-zinc-900 dark:text-zinc-100" id="replyAuthorLabel">Replying</span>
+            <p class="text-[10px] text-zinc-400 truncate max-w-[200px] sm:max-w-md" id="replySnippetLabel">...</p>
           </div>
         </div>
-        <button type="button" onclick="cancelActiveReply()" class="w-5 h-5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-xs">✕</button>
+        <button type="button" onclick="cancelActiveReply()" class="w-5 h-5 rounded-md hover:bg-zinc-200 dark:hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 text-xs">✕</button>
       </div>
 
-      <!-- MENTION AUTOCOMPLETE POPUP FOR GROUP CHAT -->
-      <div id="mentionAutocompleteBox" class="absolute bottom-20 left-12 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 min-w-[180px] max-h-40 overflow-y-auto hidden z-40 custom-scroll text-xs">
-        <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase font-mono">Mention Peer</div>
+      <!-- Mention Autocomplete Box -->
+      <div id="mentionAutocompleteBox" class="absolute bottom-16 left-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1 shadow-xl space-y-0.5 min-w-[180px] max-h-40 overflow-y-auto hidden z-40 custom-scroll text-xs">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 px-2 py-0.5">Peers</div>
         <div id="mentionCandidatesList" class="space-y-0.5"></div>
       </div>
 
       <!-- Message Customization Sub-Bar -->
-      <div class="px-3 sm:px-4 py-1 border-t border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-darkCard/50 flex items-center gap-2 sm:gap-3 text-[11px] z-10 select-none shrink-0 font-nothing">
+      <div class="px-3 sm:px-4 py-1 border-t border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 flex items-center gap-2 text-[11px] z-10 select-none shrink-0">
         
         <!-- Vams Mode Toggle -->
-        <div id="vamsMediaTypeToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px]">
-          <button type="button" id="vamsModeVideoBtn" onclick="setVamsSearchMode('video')" class="px-2.5 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">VIDEO</button>
-          <button type="button" id="vamsModeImageBtn" onclick="setVamsSearchMode('image')" class="px-2.5 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">IMAGE</button>
+        <div id="vamsMediaTypeToggleGroup" class="hidden flex items-center bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[10px]">
+          <button type="button" id="vamsModeVideoBtn" onclick="setVamsSearchMode('video')" class="px-2 py-0.5 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-medium transition shadow-xs">Video</button>
+          <button type="button" id="vamsModeImageBtn" onclick="setVamsSearchMode('image')" class="px-2 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium transition">Image</button>
         </div>
 
         <!-- Video Source Switcher -->
-        <div id="videoSourceToggleGroup" class="hidden flex items-center gap-1 bg-slate-200/70 dark:bg-darkMuted p-0.5 rounded-full border border-slate-300 dark:border-slate-800 text-[10px] font-mono">
-          <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-full bg-brand text-white font-bold transition shadow-sm">YT</button>
-          <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-full text-slate-500 hover:text-slate-900 dark:hover:text-white font-semibold transition">OTHER</button>
+        <div id="videoSourceToggleGroup" class="hidden flex items-center bg-zinc-100 dark:bg-zinc-900 p-0.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-[10px] font-mono">
+          <button type="button" id="vSourceYtBtn" onclick="setVideoSourceEngine('youtube')" class="px-2 py-0.5 rounded-md bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-medium transition shadow-xs">YT</button>
+          <button type="button" id="vSourceOtherBtn" onclick="setVideoSourceEngine('other')" class="px-2 py-0.5 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium transition">Web</button>
         </div>
 
-        <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition text-[10px] sm:text-[11px]">
-          <span>⚠️</span> Spoiler
+        <!-- Spoiler Button -->
+        <button type="button" id="spoilerToggleBtn" onclick="toggleSpoilerOption()" class="flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-[11px]">
+          <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+          <span>Spoiler</span>
         </button>
 
+        <!-- Burner Self-Destruct Menu -->
         <div class="relative flex items-center">
-          <button type="button" id="burnerToggleBtn" onclick="toggleBurnerOption()" class="flex items-center gap-1 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition text-[10px] sm:text-[11px]">
-            <span>⏱️</span> <span id="burnerLabelDisplay">Burner Off</span>
+          <button type="button" id="burnerToggleBtn" onclick="toggleBurnerOption()" class="flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition text-[11px]">
+            <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="burnerLabelDisplay">Timer Off</span>
           </button>
 
-          <div id="burnerMenu" class="absolute bottom-8 left-0 bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1 min-w-[150px] hidden z-30">
-            <div class="text-[10px] font-bold text-slate-400 px-2 py-0.5 uppercase font-mono">Self-Destruct in:</div>
-            <button type="button" onclick="selectBurnerDuration(0, 'Burner Off')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">Off (Normal)</button>
-            <button type="button" onclick="selectBurnerDuration(5, '5s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">5 Seconds</button>
-            <button type="button" onclick="selectBurnerDuration(10, '10s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">10 Seconds</button>
-            <button type="button" onclick="selectBurnerDuration(15, '15s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">15 Seconds</button>
-            <button type="button" onclick="selectBurnerDuration(30, '30s')" class="w-full text-left px-2 py-1 text-xs rounded-lg hover:bg-slate-100 dark:hover:bg-darkMuted transition">30 Seconds</button>
-            <div class="pt-1 border-t border-slate-200 dark:border-slate-800 flex items-center gap-1 px-1">
-              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-0.5 text-xs focus:outline-none font-mono">
-              <button type="button" onclick="applyCustomBurner()" class="px-2 py-0.5 bg-brand text-white text-[10px] font-bold rounded-lg hover:bg-brandDark">Set</button>
+          <div id="burnerMenu" class="absolute bottom-8 left-0 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-1.5 shadow-xl space-y-0.5 min-w-[150px] hidden z-30">
+            <div class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 px-2 py-0.5">Self-destruct</div>
+            <button type="button" onclick="selectBurnerDuration(0, 'Timer Off')" class="w-full text-left px-2 py-1 text-xs rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">Off (Standard)</button>
+            <button type="button" onclick="selectBurnerDuration(5, '5s')" class="w-full text-left px-2 py-1 text-xs rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">5 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(10, '10s')" class="w-full text-left px-2 py-1 text-xs rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">10 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(15, '15s')" class="w-full text-left px-2 py-1 text-xs rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">15 Seconds</button>
+            <button type="button" onclick="selectBurnerDuration(30, '30s')" class="w-full text-left px-2 py-1 text-xs rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">30 Seconds</button>
+            <div class="pt-1 mt-1 border-t border-zinc-200 dark:border-zinc-800 flex items-center gap-1.5 px-1">
+              <input id="customBurnerInput" type="number" min="1" max="300" placeholder="Secs" class="w-16 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md px-2 py-0.5 text-xs focus:outline-none font-mono">
+              <button type="button" onclick="applyCustomBurner()" class="px-2 py-0.5 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 text-[10px] font-medium rounded-md">Set</button>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Message Form -->
