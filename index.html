@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="google-site-verification" content="eteZJujY-M8kwqKT30VLNYP4HshXtNrdet8Eg_suMhM" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, upd=no, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta name="theme-color" content="#080A0F" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1410,32 +1410,64 @@
   </div>
 
   <!-- USER PROFILE & SETTINGS MODAL -->
-  <div id="profileModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-    <div class="w-full max-w-sm bg-white dark:bg-darkCard border border-slate-200 dark:border-slate-800 rounded-3xl p-6 relative shadow-2xl space-y-4">
-      <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-900 dark:hover:text-white text-sm">✕</button>
+  <div id="profileModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden transition-opacity">
+    <div class="w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 relative shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+      
+      <!-- Close Button -->
+      <button onclick="closeProfileModal()" aria-label="Close" class="w-7 h-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition absolute top-4 right-4">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
 
-      <div class="text-center space-y-1 pt-1">
-        <div class="w-12 h-12 rounded-full bg-brand text-white flex items-center justify-center text-base font-bold mx-auto shadow-md font-nothing">
+      <!-- Profile Header (Instagram / iOS Style) -->
+      <div class="text-center space-y-2 pt-2">
+        <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 flex items-center justify-center text-xl font-medium mx-auto border border-zinc-200/80 dark:border-zinc-700/60 shadow-xs">
           <span id="profileAvatarInitial">U</span>
         </div>
-        <div class="flex items-center justify-center gap-1">
-          <h3 id="profileUsername" class="text-sm font-bold text-slate-900 dark:text-white font-nothing">@username</h3>
-          <span id="myProfileVerifiedIcon" class="hidden inline-flex items-center justify-center">
-            <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/></svg>
-          </span>
+        <div>
+          <div class="flex items-center justify-center gap-1.5">
+            <h3 id="profileUsername" class="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">@username</h3>
+            <span id="myProfileVerifiedIcon" class="hidden inline-flex items-center justify-center">
+              <svg class="w-3.5 h-3.5 text-blue-500 shrink-0 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15-5-5 1.41-1.41L11 13.17l7.59-7.59L20 7l-9 10z"/>
+              </svg>
+            </span>
+          </div>
+          <p id="profileMeta" class="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">Course • Year</p>
         </div>
-        <p id="profileMeta" class="text-[11px] text-slate-400 font-mono">Course • Year</p>
       </div>
 
-      <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 space-y-2">
-        <div class="flex justify-between items-center">
-          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Your Status (Active 2 Hours)</label>
-          <span id="bioSavedNotice" class="text-[10px] text-emerald-500 font-bold hidden">Saved ✓</span>
+      <!-- Status Section (WhatsApp / Instagram About Style) -->
+      <div class="space-y-3 pt-1">
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center px-0.5">
+            <label for="myBioInput" class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">About / Status</label>
+            <span id="bioSavedNotice" class="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium hidden">Saved</span>
+          </div>
+          <div class="relative">
+            <input 
+              id="myBioInput" 
+              type="text" 
+              maxlength="60" 
+              placeholder="Add a status..." 
+              class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/70 rounded-xl px-3.5 py-2.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500 transition"
+            >
+          </div>
         </div>
-        <input id="myBioInput" type="text" maxlength="60" placeholder="e.g. In Library 📚 / Coding Lab 💻" class="w-full bg-white dark:bg-darkBg border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs focus:outline-none focus:border-brand">
-        <button onclick="saveMyBio()" class="w-full py-2 rounded-xl bg-brand text-white text-xs font-bold hover:opacity-90 transition shadow-sm active:scale-95 font-nothing">Update Status</button>
+
+        <!-- Action Button -->
+        <button 
+          onclick="saveMyBio()" 
+          class="w-full py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium hover:opacity-90 active:scale-[0.99] transition shadow-xs"
+        >
+          Save Status
+        </button>
       </div>
 
+    </div>
+  </div>
       <!-- NOTIFICATION SYSTEM TOGGLE -->
       <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-darkMuted/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
         <div>
